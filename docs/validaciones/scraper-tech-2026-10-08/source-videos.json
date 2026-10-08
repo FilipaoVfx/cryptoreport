@@ -1,0 +1,19 @@
+{
+  "observed_date": "2026-10-08",
+  "channel": "Nacho IC",
+  "channel_id": "UCZLtNl1TyvNJ9K8OYKT43Cw",
+  "rss_url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCZLtNl1TyvNJ9K8OYKT43Cw",
+  "rss_http_status": 200,
+  "videos": [
+    {
+      "video_id": "r1OaW5sDS6s",
+      "published": "2026-10-08T16:30:12+00:00",
+      "url": "https://www.youtube.com/watch?v=r1OaW5sDS6s"
+    },
+    {
+      "video_id": "slO7zep3F-4",
+      "published": "2026-10-07T16:30:33+00:00",
+      "url": "https://www.youtube.com/watch?v=slO7zep3F-4"
+    }
+  ]
+}

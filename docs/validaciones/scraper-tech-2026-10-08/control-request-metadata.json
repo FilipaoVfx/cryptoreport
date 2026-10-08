@@ -1,0 +1,34 @@
+[
+  {
+    "http_status": 200,
+    "seconds": 12.505258,
+    "bytes": 91,
+    "video_id": "ZacjOVVgoLY",
+    "curl_exit_code": 0,
+    "response_file": "response-example.json",
+    "fields": [
+      "error",
+      "video_status",
+      "captions_status"
+    ],
+    "error": "Some error occured",
+    "video_status": "Available",
+    "captions_status": "Not Available"
+  },
+  {
+    "http_status": 200,
+    "seconds": 3.724933,
+    "bytes": 87,
+    "video_id": "r1OaW5sDS6s",
+    "curl_exit_code": 0,
+    "response_file": "response-es-flat.json",
+    "fields": [
+      "error",
+      "video_status",
+      "captions_status"
+    ],
+    "error": "Some error occured",
+    "video_status": "Available",
+    "captions_status": "Available"
+  }
+]
