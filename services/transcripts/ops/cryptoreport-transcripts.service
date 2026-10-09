@@ -1,0 +1,16 @@
+# Instalar: sudo ops/install.sh (copia las unidades, recarga systemd y habilita el timer)
+[Unit]
+Description=Crypto Report: transcripciones de Nacho IC y KManuS88 (RSS → Scraper.Tech captions → disco)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+WorkingDirectory=/root/cryptoreport/services/transcripts
+ExecStart=/root/cryptoreport/services/transcripts/.venv/bin/python -m crtranscripts run
+StateDirectory=cryptoreport-transcripts
+Environment=PYTHONUNBUFFERED=1
+Nice=10
+MemoryMax=300M
+TimeoutStartSec=25min
+# Sin OnFailure= a propósito: el propio servicio avisa por Telegram de los problemas y de los errores inesperados.

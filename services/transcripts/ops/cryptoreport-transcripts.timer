@@ -1,0 +1,11 @@
+[Unit]
+Description=Crypto Report: buscar videos nuevos y sus transcripciones cada 15 minutos
+
+[Timer]
+OnBootSec=3min
+OnCalendar=*:0/15
+RandomizedDelaySec=60
+Persistent=true
+
+[Install]
+WantedBy=timers.target

@@ -1,0 +1,3 @@
+# El núcleo solo usa la biblioteca estándar. yt-dlp es el proveedor de respaldo (gratuito, hoy bloqueado
+# por YouTube desde la IP del VPS para estos canales; funciona si se configura CR_YTDLP_PROXY o CR_YTDLP_COOKIES).
+yt-dlp[default]==2026.8.19
