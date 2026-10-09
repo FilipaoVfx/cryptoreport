@@ -3,16 +3,27 @@
 Obtiene de forma autónoma el texto, con sus tiempos, de cada video nuevo de **Nacho IC** y **KManuS88**. Corre en el VPS con un timer de systemd cada 15 minutos.
 
 ```
-RSS de cada canal ──► videos nuevos (ventana 72 h) ──► Scraper.Tech captions.php (es) ──► JSON + Markdown en disco
-                                                   └─► respaldo yt-dlp local           └─► SQLite (estado, intentos, cuota)
-                                                                                         └─► aviso Telegram (opcional)
+RSS de cada canal ──► videos nuevos (ventana 72 h) ──► 1. Scraper.Tech captions.php (es)   gratis (1.000/mes)
+                                                   ├─► 2. yt-dlp local                     gratis (hoy bloqueado)
+                                                   ├─► 3. Supadata nativo                  1 crédito, solo si 1 y 2 fallan
+                                                   └─► 4. Supadata generate (IA)           2 créditos/min, a las 6 h sin subtítulos
+                                                          │
+                                       JSON + Markdown en disco · SQLite (estado, intentos, cuota) · aviso Telegram
 ```
 
 - **Descubrimiento:** se lee el RSS público de cada canal, que trae las últimas 15 publicaciones. Se detecta si cada una es un short con `HEAD /shorts/<id>`, que no consume cuota.
 - **Subtítulos:** se pide la pista original en español. Las pistas `ar/en/pt` vienen del doblaje automático y no se usan. Ante `data=null` se hace un reintento inmediato.
+- **Supadata (respaldo de pago).** En modo nativo solo se consulta si los proveedores gratuitos fallan, nunca cuando ya se sabe que aún no hay subtítulos, porque su respuesta 206 también se cobra.
+- **Generación con IA.** A las 6 h sin subtítulos se genera el texto desde el audio, solo si se cumplen tres condiciones:
+  - el video tiene **una sola pista de audio**;
+  - se conoce su duración;
+  - el costo cabe en el tope mensual (`CR_SUPADATA_MONTHLY_CREDITS`) y en el saldo real que da `/me`.
+
+  Si el trabajo sigue en curso, se guarda su `jobId` y se consulta gratis en el siguiente ciclo, sin volver a pagar. Un resultado en otro idioma se descarta y no se repite.
 - **Validación:** `video.php` aporta la duración para calcular la cobertura, es decir, hasta dónde llegan los subtítulos. Con cobertura menor del 85 % el video queda marcado para revisión.
 - **Reintentos:** si los subtítulos aún no existen, se reintenta a los 15 min, 30 min, 1 h, 2 h y 4 h, y después cada 6 h. A las 72 h el video pasa a `no_captions` y se avisa. Con errores del proveedor, a los 8 intentos pasa a `failed`.
-- **Avisos:** se envían en las transiciones (nueva transcripción, fallo definitivo, RSS o proveedor caído y recuperado, 80 % de la cuota mensual), no en cada ciclo.
+- **RSS inestable.** Cada canal se reintenta hasta 5 veces con pausas crecientes. El 9 de octubre falló el 52 % de las peticiones sueltas, pero todos los ensayos lo consiguieron en 3 intentos o menos. Se avisa solo si un canal lleva 3 ciclos seguidos sin RSS.
+- **Avisos:** se envían en las transiciones (nueva transcripción, fallo definitivo, proveedor caído o recuperado, 80 % de la cuota de Scraper.Tech, falta de saldo en Supadata), no en cada ciclo.
 
 ## Salida
 
@@ -41,7 +52,9 @@ La configuración está en `.env` (ver `.env.example`, `chmod 600`, no se versio
 
 ## Costo
 
-Cada video consume **2 solicitudes** (subtítulos y duración), más el reintento ocasional. La carga inicial de 13 videos gastó 30: 26 de base y 4 reintentos.
+En Scraper.Tech, cada video consume **2 solicitudes** (subtítulos y duración), más el reintento ocasional. La carga inicial de 13 videos gastó 30: 26 de base y 4 reintentos.
+
+Supadata solo gasta cuando Scraper.Tech falla: 1 crédito por video en modo nativo, o 2 créditos por minuto si genera. En las pruebas del 9 de octubre se usaron 9 de los 100 créditos del plan Free.
 
 Con unos 130 videos al mes entre los dos canales, el consumo ronda las **300 solicitudes**. El plan Free cubre 1.000 al mes y Basic cuesta $2 por 50.000. El servicio no necesita LLM ni audio.
 
@@ -55,10 +68,12 @@ Con unos 130 videos al mes entre los dos canales, el consumo ronda las **300 sol
 | Scraper.Tech **Youtube Transcript** (`youtube-transcript3`) | ❌ `Some error occured` en 6 de 6 solicitudes ([detalle](../../docs/validaciones/scraper-tech-2026-10-08/README.md)) |
 | Scraper.Tech **YouTube API** `captions.php` por **POST** | ✅ **13 de 13 videos**, cobertura del 97,5 al 100 %, incluido un directo de 1 h 08 min. Alrededor del 30 % de las primeras consultas devolvió `data=null` tras 15-20 s y funcionó al repetir. |
 | `captions.php` por GET | ❌ `data=null` en la única prueba. Se usa POST, como el playground oficial. |
+| **Supadata** `mode=native` | ✅ 4 de 4 videos, en 3,5-5 s y 1 crédito cada uno. Mismos segmentos y tiempos que Scraper.Tech; en 2 segmentos quita comas. |
+| **Supadata** `mode=generate` | ⚠️ Transcribe la pista **doblada al árabe**, no el original. Pasó en 2 de 2 llamadas al mismo short y cada una costó 2 créditos. La API no permite elegir la pista de audio. Por eso no se genera en videos con varias pistas de audio (los metadatos de Scraper.Tech las listan) y se rechaza cualquier resultado que no esté en español. |
 
 ## Pendiente
 
-- **Videos sin subtítulos.** Aún no hay respaldo por audio. Groq Whisper o whisper local necesitan descargar el audio, y esa descarga está igual de bloqueada desde esta IP. Si aparecen casos `no_captions`, el siguiente paso es un proxy residencial (`CR_YTDLP_PROXY`, unos $1/GB; una transcripción ocupa KB) o Supadata en modo `generate`.
+- **Videos con doblaje y sin subtítulos.** Supadata `generate` no puede elegir la pista original, así que estos videos terminan en `no_captions` y se avisa. Es un caso poco probable, porque el doblaje automático parte de los subtítulos del original. Si ocurre, la salida sería descargar la pista `es` original con un proxy residencial (`CR_YTDLP_PROXY`) y transcribirla con Groq o whisper.
 - **Respaldo gratuito.** `yt-dlp` sigue en la cadena porque no cuesta nada y vuelve a funcionar si YouTube deja de marcar la IP o si se configura un proxy o cookies (`CR_YTDLP_COOKIES`). Hoy siempre devuelve `blocked`.
 - **Latencia.** El sondeo cada 15 min más el tiempo que tarda YouTube en generar los subtítulos dejan la demora típica por debajo de 30 min. Con WebSub (PubSubHubbub) se reduciría el primer tramo, pero necesita un endpoint HTTPS público.
 - **Histórico.** El ciclo solo encola lo publicado en las últimas 72 h. Para cargar el pasado hay que usar `fetch` con `--published`, o listar la playlist de subidas del canal con `playlist_videos.php`.

@@ -16,6 +16,7 @@ from datetime import datetime
 from .config import load_config
 from .notify import Notifier
 from .pipeline import run
+from .providers import Supadata
 from .store import Store, iso, now_utc
 
 
@@ -33,9 +34,10 @@ def _lock(config):
 def cmd_run(config, notifier) -> int:
     summary = run(config, notifier)
     print(json.dumps({k: summary[k] for k in ("feeds", "new_videos", "pending", "errors", "providers_down",
-                                              "scrapertech_requests_month")}, ensure_ascii=False))
+                                              "scrapertech_requests_month", "supadata_credits_month")}, ensure_ascii=False))
     for item in summary["transcribed"]:
-        print(f"OK {item['video_id']} · {item['channel']} · {item['segments']} segm. · {item['duration']} → {item['path']}")
+        print(f"OK {item['video_id']} · {item['channel']} · {item['provider']} · {item['segments']} segm. · "
+              f"{item['duration']} → {item['path']}")
     for item in summary["final"]:
         print(f"FINAL {item['video_id']} · {item['status']} · {item['detail']}")
     return 0
@@ -55,7 +57,7 @@ def cmd_fetch(config, notifier, args) -> int:
         store.close()
     summary = run(config, notifier, only_video=args.video_id)
     for item in summary["transcribed"]:
-        print(f"OK {item['video_id']} · {item['segments']} segm. · {item['duration']} → {item['path']}")
+        print(f"OK {item['video_id']} · {item['provider']} · {item['segments']} segm. · {item['duration']} → {item['path']}")
     store = Store(config.db_path)
     try:
         row = store.get(args.video_id)
@@ -70,7 +72,13 @@ def cmd_status(config, args) -> int:
     try:
         rows = store.recent(args.limit)
         month_start = now_utc().replace(day=1, hour=0, minute=0, second=0)
-        print(f"Datos: {config.data_dir} · Scraper.Tech este mes: {store.requests_since(month_start)} solicitudes")
+        print(f"Datos: {config.data_dir} · Scraper.Tech este mes: {store.requests_since(month_start, 'scrapertech')} "
+              f"solicitudes · Supadata (registro local): {store.requests_since(month_start, 'supadata')} créditos")
+        if config.supadata_key:
+            account = Supadata(config.supadata_key).account()
+            if account:
+                print(f"Supadata cuenta: plan {account.get('plan')}, {account.get('usedCredits')} de "
+                      f"{account.get('maxCredits')} créditos usados (tope del servicio: {config.supadata_monthly_credits})")
         for r in rows:
             kind = "short" if r["is_short"] else "video"
             print(f"{r['published_at'][:16]}  {r['channel_slug']:<7} {kind:<5} {r['video_id']}  {r['status']:<11} "

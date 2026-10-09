@@ -105,6 +105,44 @@ class Feed(unittest.TestCase):
                          ("abc123", "Bitcoin hoy", "2026-10-08T16:30:12+00:00"))
 
 
+class FeedRetries(unittest.TestCase):
+    XML = (b'<feed xmlns="http://www.w3.org/2005/Atom" xmlns:yt="http://www.youtube.com/xml/schemas/2015"><entry>'
+           b'<yt:videoId>a</yt:videoId><title>t</title><published>2026-10-08T16:30:12+00:00</published></entry></feed>')
+
+    def fake(self, *statuses):
+        queue = list(statuses)
+        original = feeds.http.request
+        feeds.http.request = lambda *a, **k: feeds.http.Response(queue.pop(0), self.XML)
+        self.addCleanup(setattr, feeds.http, "request", original)
+
+    def test_transient_404_and_500_are_retried(self):
+        self.fake(404, 500, 200)
+        self.assertEqual(len(feeds.fetch_feed("UC1", pauses=(0, 0, 0, 0))), 1)
+
+    def test_gives_up_after_all_attempts(self):
+        self.fake(404, 404, 404)
+        with self.assertRaisesRegex(feeds.FeedError, "HTTP 404 tras 3 intentos"):
+            feeds.fetch_feed("UC1", pauses=(0, 0))
+
+
+class FeedAlerts(unittest.TestCase):
+    def test_alert_only_after_three_failed_cycles_and_recovery_once(self):
+        from crtranscripts.pipeline import alert
+        with tempfile.TemporaryDirectory() as tmp:
+            store = Store(Path(tmp) / "s.sqlite")
+            sent = []
+            notifier = type("N", (), {"send": lambda self, text: sent.append(text)})()
+            config = type("C", (), {"notify_success": False, "providers": ()})()
+            for state in ("error: HTTP 404", "error: HTTP 404", "error: HTTP 500", "error: HTTP 404", "ok", "ok"):
+                summary = {"transcribed": [], "final": [], "budget": [], "providers_down": {},
+                           "feeds": {"nacho": state}, "scrapertech_requests_month": 0}
+                alert(config, store, summary, notifier, 1000)
+            store.close()
+        self.assertEqual(len(sent), 2)
+        self.assertIn("3 ciclos seguidos", sent[0])
+        self.assertIn("recuperado", sent[1])
+
+
 class FakeProvider:
     def __init__(self, name, *outcomes):
         self.name = name
@@ -123,7 +161,9 @@ class Pipeline(unittest.TestCase):
                              providers=("fake",), language="es", lookback_hours=72, give_up_hours=72,
                              max_attempts=3, max_videos_per_run=20, include_shorts=True, scraper_tech_key="",
                              ytdlp_bin="", ytdlp_proxy="", ytdlp_cookies="", telegram_token="",
-                             telegram_chat_id="", notify_success=True, scrapertech_monthly_quota=1000)
+                             telegram_chat_id="", notify_success=True, scrapertech_monthly_quota=1000,
+                             supadata_key="", supadata_generate=True, supadata_generate_after_hours=6,
+                             supadata_monthly_credits=100)
         self.store = Store(self.config.db_path)
         self.summary = {"transcribed": [], "pending": [], "errors": [], "final": []}
 

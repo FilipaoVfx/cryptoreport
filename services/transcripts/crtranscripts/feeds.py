@@ -1,6 +1,7 @@
 """Descubrimiento de videos: RSS público de cada canal (últimas 15 publicaciones) y detección de shorts."""
 from __future__ import annotations
 
+import time
 import xml.etree.ElementTree as ET
 from dataclasses import dataclass
 from datetime import datetime
@@ -37,10 +38,17 @@ def parse_feed(xml_bytes: bytes) -> list[FeedEntry]:
     return entries
 
 
-def fetch_feed(channel_id: str) -> list[FeedEntry]:
+# El RSS de YouTube devuelve 404/500 transitorios: el 2026-10-09 falló el 52 % de las peticiones sueltas, pero
+# 12 de 12 ensayos lo consiguieron en 3 intentos o menos. Pausas crecientes: ~17 s como máximo por canal.
+RETRY_PAUSES_S = (1.5, 3, 5, 8)
+
+
+def fetch_feed(channel_id: str, pauses: tuple[float, ...] = RETRY_PAUSES_S) -> list[FeedEntry]:
     url = f"https://www.youtube.com/feeds/videos.xml?channel_id={channel_id}"
     last_error = ""
-    for _ in range(2):  # el RSS de YouTube devuelve 404/500 esporádicos; un reintento basta
+    for attempt in range(len(pauses) + 1):
+        if attempt:
+            time.sleep(pauses[attempt - 1])
         try:
             resp = http.request("GET", url, timeout=20)
         except OSError as err:
@@ -52,7 +60,7 @@ def fetch_feed(channel_id: str) -> list[FeedEntry]:
             except ET.ParseError as err:
                 raise FeedError(f"XML inválido: {err}") from err
         last_error = f"HTTP {resp.status}"
-    raise FeedError(last_error)
+    raise FeedError(f"{last_error} tras {len(pauses) + 1} intentos")
 
 
 def is_short(video_id: str) -> bool | None:

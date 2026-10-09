@@ -28,6 +28,7 @@ CREATE TABLE IF NOT EXISTS videos (
     transcript_path   TEXT,
     fetched_at        TEXT,
     notified_status   TEXT,
+    supadata_job      TEXT,
     updated_at        TEXT NOT NULL
 );
 CREATE INDEX IF NOT EXISTS videos_due ON videos(status, next_attempt_at);
@@ -62,6 +63,13 @@ class Store:
         self.db = sqlite3.connect(db_path)
         self.db.row_factory = sqlite3.Row
         self.db.executescript(SCHEMA)
+        self._migrate()
+
+    def _migrate(self) -> None:
+        columns = {row[1] for row in self.db.execute("PRAGMA table_info(videos)")}
+        if "supadata_job" not in columns:  # añadida con Supadata (2026-10-09)
+            self.db.execute("ALTER TABLE videos ADD COLUMN supadata_job TEXT")
+            self.db.commit()
 
     def close(self) -> None:
         self.db.close()
@@ -105,9 +113,10 @@ class Store:
         self.db.execute(f"UPDATE videos SET {cols} WHERE video_id = ?", (*fields.values(), video_id))
         self.db.commit()
 
-    def requests_since(self, since: datetime) -> int:
-        row = self.db.execute("SELECT COALESCE(SUM(requests), 0) FROM attempts WHERE provider = 'scrapertech'"
-                              " AND at >= ?", (iso(since),)).fetchone()
+    def requests_since(self, since: datetime, provider: str) -> int:
+        """Solicitudes (Scraper.Tech) o créditos (Supadata, incluida la generación) registrados desde `since`."""
+        row = self.db.execute("SELECT COALESCE(SUM(requests), 0) FROM attempts WHERE (provider = ? OR provider LIKE ?)"
+                              " AND at >= ?", (provider, f"{provider}-%", iso(since))).fetchone()
         return int(row[0])
 
     def recent(self, limit: int = 30) -> list[sqlite3.Row]:

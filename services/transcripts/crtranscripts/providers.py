@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import html
 import json
+import math
 import re
 import subprocess
 import tempfile
@@ -21,6 +22,7 @@ BLOCKED = "blocked"          # YouTube pidió iniciar sesión a esta IP
 ERROR = "error"              # transitorio: reintentar más tarde
 AUTH = "auth"                # clave inválida: no insistir en esta ejecución
 QUOTA = "quota"              # cuota o límite de velocidad: no insistir en esta ejecución
+RUNNING = "running"          # trabajo asíncrono del proveedor aún en curso (se consulta en el siguiente ciclo)
 
 PROVIDER_DOWN = {AUTH, QUOTA}
 
@@ -33,6 +35,7 @@ class Outcome:
     language: str = ""
     track_kind: str = ""
     requests_used: int = 0
+    job_id: str = ""
 
 
 def _clean_text(text: str) -> str:
@@ -133,7 +136,7 @@ class ScraperTech:
         return outcome
 
     def metadata(self, video_id: str) -> dict:
-        """Duración y estado en vivo (1 solicitud). El título que devuelve viene traducido: se usa el del RSS."""
+        """Duración, estado en vivo y pistas de audio (1 solicitud). El título viene traducido: se usa el del RSS."""
         try:
             status, body = self._post("video.php", {"video_id": video_id})
         except OSError:
@@ -144,7 +147,136 @@ class ScraperTech:
         meta = {"is_live": bool(data.get("isLiveContent"))}
         if data.get("durationMs"):
             meta["duration_s"] = round(float(data["durationMs"]) / 1000, 3)
+        # Con doblaje automático hay varias pistas (p. ej. "es-US.4" original, "en-US.10" por defecto, "ar.10").
+        formats = ((data.get("streamingData") or {}).get("adaptiveFormats") or []) + (data.get("formats") or [])
+        tracks = {f["audioTrack"].get("id") for f in formats if isinstance(f.get("audioTrack"), dict)}
+        meta["audio_tracks"] = sorted(t for t in tracks if t)
         return meta
+
+
+# --- Supadata (de pago por crédito; respaldo y generación desde audio) ---------------------------------------------
+
+SUPADATA_BASE = "https://api.supadata.ai/v1"
+
+
+def supadata_segments(content: list) -> list[dict]:
+    return normalize_segments([{"start": c["offset"] / 1000, "dur": (c.get("duration") or 0) / 1000,
+                                "text": c.get("text", "")} for c in content])
+
+
+def classify_supadata(status: int, body: dict | None) -> Outcome:
+    """Interpreta /transcript y /transcript/{jobId}. El idioma devuelto lo valida quien llama."""
+    body = body if isinstance(body, dict) else {}
+    message = str(body.get("message") or body.get("error") or "")[:200]
+    if status == 200:
+        job_status = body.get("status")
+        if job_status in ("queued", "active"):
+            return Outcome(RUNNING, f"trabajo {job_status}")
+        if job_status == "failed":
+            error = body.get("error")
+            return Outcome(ERROR, f"trabajo fallido: {error.get('message') if isinstance(error, dict) else error}")
+        content = body.get("content")
+        if isinstance(content, list) and content:
+            segments = supadata_segments(content)
+            if segments:
+                return Outcome(OK, segments=segments, language=body.get("lang") or "")
+        return Outcome(PENDING, "sin voz detectada (contenido vacío)")
+    if status == 206:
+        return Outcome(PENDING, "transcripción no disponible (206)")
+    if status == 401:
+        return Outcome(AUTH, message or "HTTP 401")
+    if status in (402, 429):
+        return Outcome(QUOTA, message or f"HTTP {status}")
+    if status in (403, 404):
+        return Outcome(UNAVAILABLE, message or f"HTTP {status}")
+    return Outcome(ERROR, message or f"HTTP {status}")
+
+
+class Supadata:
+    """Modo nativo (1 crédito, incluso si no hay subtítulos: 206) y generación con IA (2 créditos/min).
+
+    Ojo: `generate` ignora `lang` y transcribe la pista de audio que elija el proveedor. En un video con doblaje
+    automático devolvió la pista árabe (probado el 2026-10-09), por eso quien llama comprueba el idioma."""
+
+    name = "supadata"
+    paid = True
+
+    def __init__(self, key: str, timeout: float = 150, poll_interval_s: float = 3, poll_budget_s: float = 240):
+        self.key = key
+        self.timeout = timeout
+        self.poll_interval_s = poll_interval_s
+        self.poll_budget_s = poll_budget_s
+
+    def _get(self, path: str, params: dict | None = None) -> tuple[int, dict | None, dict]:
+        url = f"{SUPADATA_BASE}{path}" + (f"?{urllib.parse.urlencode(params)}" if params else "")
+        resp = http.request("GET", url, headers={"x-api-key": self.key}, timeout=self.timeout)
+        try:
+            body = json.loads(resp.body) if resp.body else None
+        except ValueError:
+            body = None
+        return resp.status, body, resp.headers
+
+    def _transcript(self, video_id: str, language: str, mode: str) -> Outcome:
+        if not self.key:
+            return Outcome(AUTH, "falta SUPADATA_API_KEY")
+        params = {"url": f"https://www.youtube.com/watch?v={video_id}", "lang": language, "mode": mode}
+        try:
+            status, body, headers = self._get("/transcript", params)
+        except OSError as err:
+            return Outcome(ERROR, f"red: {err}")
+        # Créditos cobrados (en un 202 es la estimación previa; el sondeo posterior es gratis).
+        billed = int(headers.get("x-billable-requests") or (1 if status in (200, 206) else 0))
+        if status == 202 and isinstance(body, dict) and body.get("jobId"):
+            outcome = self.poll(body["jobId"])
+        else:
+            outcome = classify_supadata(status, body)
+        outcome.requests_used = billed
+        return outcome
+
+    def fetch(self, video_id: str, language: str) -> Outcome:
+        outcome = self._transcript(video_id, language, "native")
+        if outcome.status == OK and outcome.language != language:
+            # Sin pista en el idioma pedido, el proveedor devuelve la primera disponible (p. ej. un doblaje).
+            return Outcome(PENDING, f"solo hay pista '{outcome.language}'", requests_used=outcome.requests_used)
+        if outcome.status == OK:
+            outcome.track_kind = "unknown"
+        return outcome
+
+    def generate(self, video_id: str, language: str) -> Outcome:
+        outcome = self._transcript(video_id, language, "generate")
+        if outcome.status == OK:
+            outcome.track_kind = "ai"
+        return outcome
+
+    def poll(self, job_id: str) -> Outcome:
+        """Consulta el trabajo hasta completarse o agotar el tiempo; RUNNING conserva job_id para el siguiente ciclo."""
+        deadline = time.monotonic() + self.poll_budget_s
+        while True:
+            try:
+                status, body, _ = self._get(f"/transcript/{job_id}")
+            except OSError as err:
+                return Outcome(RUNNING, f"red al consultar el trabajo: {err}", job_id=job_id)
+            if status == 404:
+                return Outcome(ERROR, "trabajo expirado o inexistente")  # sin job_id: se volverá a pedir
+            outcome = classify_supadata(status, body)
+            if outcome.status != RUNNING:
+                return outcome
+            if time.monotonic() >= deadline:
+                outcome.job_id = job_id
+                return outcome
+            time.sleep(self.poll_interval_s)
+
+    def account(self) -> dict:
+        """{'plan', 'maxCredits', 'usedCredits'} o {} si no se pudo consultar."""
+        try:
+            status, body, _ = self._get("/me")
+        except OSError:
+            return {}
+        return body if status == 200 and isinstance(body, dict) else {}
+
+
+def generation_cost(duration_s: float) -> int:
+    return 2 * max(1, math.ceil(duration_s / 60))
 
 
 # --- yt-dlp local (gratis; hoy YouTube bloquea esta IP para estos canales) ---------------------------------------
@@ -212,6 +344,8 @@ def build_providers(config) -> list:
             providers.append(ScraperTech(config.scraper_tech_key))
         elif name == "ytdlp":
             providers.append(YtDlp(config.ytdlp_bin, config.ytdlp_proxy, config.ytdlp_cookies))
+        elif name == "supadata":
+            providers.append(Supadata(config.supadata_key))
         else:
             raise ValueError(f"proveedor desconocido: {name}")
     return providers

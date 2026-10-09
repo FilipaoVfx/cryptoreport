@@ -3,7 +3,7 @@ from __future__ import annotations
 
 import urllib.error
 import urllib.request
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 
 USER_AGENT = "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0 Safari/537.36"
 
@@ -13,6 +13,7 @@ class Response:
     status: int
     body: bytes
     location: str = ""
+    headers: dict = field(default_factory=dict)  # claves en minúsculas
 
 
 class _NoRedirect(urllib.request.HTTPRedirectHandler):
@@ -31,6 +32,7 @@ def request(method: str, url: str, *, headers: dict | None = None, timeout: floa
     opener = _follow if follow_redirects else _no_follow
     try:
         with opener.open(req, timeout=timeout) as resp:
-            return Response(resp.status, resp.read())
+            return Response(resp.status, resp.read(), headers={k.lower(): v for k, v in resp.headers.items()})
     except urllib.error.HTTPError as err:
-        return Response(err.code, err.read() or b"", err.headers.get("Location", "") if err.headers else "")
+        headers = {k.lower(): v for k, v in err.headers.items()} if err.headers else {}
+        return Response(err.code, err.read() or b"", headers.get("location", ""), headers)

@@ -48,6 +48,10 @@ class Config:
     telegram_chat_id: str
     notify_success: bool
     scrapertech_monthly_quota: int
+    supadata_key: str
+    supadata_generate: bool
+    supadata_generate_after_hours: float
+    supadata_monthly_credits: int
 
     @property
     def db_path(self) -> Path:
@@ -71,7 +75,7 @@ def load_config() -> Config:
     channels = tuple(Channel(**item) for item in json.loads(channels_file.read_text(encoding="utf-8")))
     # systemd define STATE_DIRECTORY con StateDirectory=; así las ejecuciones manuales y las del timer comparten datos.
     data_dir = Path(os.environ.get("CR_DATA_DIR") or os.environ.get("STATE_DIRECTORY") or DEFAULT_DATA_DIR)
-    providers = tuple(p.strip() for p in os.environ.get("CR_PROVIDERS", "scrapertech,ytdlp").split(",") if p.strip())
+    providers = tuple(p.strip() for p in os.environ.get("CR_PROVIDERS", "scrapertech,ytdlp,supadata").split(",") if p.strip())
     return Config(
         data_dir=data_dir,
         channels=channels,
@@ -90,4 +94,8 @@ def load_config() -> Config:
         telegram_chat_id=os.environ.get("CR_TELEGRAM_CHAT_ID", ""),
         notify_success=_flag("CR_NOTIFY_SUCCESS", True),
         scrapertech_monthly_quota=int(os.environ.get("CR_SCRAPERTECH_MONTHLY_QUOTA", "1000")),
+        supadata_key=os.environ.get("SUPADATA_API_KEY", ""),
+        supadata_generate=_flag("CR_SUPADATA_GENERATE", True),
+        supadata_generate_after_hours=float(os.environ.get("CR_SUPADATA_GENERATE_AFTER_HOURS", "6")),
+        supadata_monthly_credits=int(os.environ.get("CR_SUPADATA_MONTHLY_CREDITS", "100")),
     )
