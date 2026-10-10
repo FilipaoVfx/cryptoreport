@@ -38,9 +38,9 @@ def parse_feed(xml_bytes: bytes) -> list[FeedEntry]:
     return entries
 
 
-# El RSS de YouTube devuelve 404/500 transitorios: el 2026-10-09 falló el 52 % de las peticiones sueltas, pero
-# 12 de 12 ensayos lo consiguieron en 3 intentos o menos. Pausas crecientes: ~17 s como máximo por canal.
-RETRY_PAUSES_S = (1.5, 3, 5, 8)
+# El RSS de YouTube devuelve 404/500 en rachas: el 2026-10-09 falló el 52 % de las peticiones sueltas y se midió
+# una racha de 12 errores seguidos (~30 s). Pausas crecientes que cubren ~1 min por canal (6 intentos).
+RETRY_PAUSES_S = (2, 4, 8, 15, 30)
 
 
 def fetch_feed(channel_id: str, pauses: tuple[float, ...] = RETRY_PAUSES_S) -> list[FeedEntry]:

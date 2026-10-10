@@ -22,7 +22,7 @@ RSS de cada canal ──► videos nuevos (ventana 72 h) ──► 1. Scraper.Te
   Si el trabajo sigue en curso, se guarda su `jobId` y se consulta gratis en el siguiente ciclo, sin volver a pagar. Un resultado en otro idioma se descarta y no se repite.
 - **Validación:** `video.php` aporta la duración para calcular la cobertura, es decir, hasta dónde llegan los subtítulos. Con cobertura menor del 85 % el video queda marcado para revisión.
 - **Reintentos:** si los subtítulos aún no existen, se reintenta a los 15 min, 30 min, 1 h, 2 h y 4 h, y después cada 6 h. A las 72 h el video pasa a `no_captions` y se avisa. Con errores del proveedor, a los 8 intentos pasa a `failed`.
-- **RSS inestable.** Cada canal se reintenta hasta 5 veces con pausas crecientes. El 9 de octubre falló el 52 % de las peticiones sueltas, pero todos los ensayos lo consiguieron en 3 intentos o menos. Se avisa solo si un canal lleva 3 ciclos seguidos sin RSS.
+- **RSS inestable.** El 9 de octubre falló el 52 % de las peticiones sueltas, con rachas de hasta unos 30 s de errores seguidos. Por eso cada canal se reintenta hasta 6 veces con pausas crecientes, que cubren aproximadamente 1 minuto. Se avisa solo si un canal lleva 3 ciclos seguidos sin RSS.
 - **Avisos:** se envían en las transiciones (nueva transcripción, fallo definitivo, proveedor caído o recuperado, 80 % de la cuota de Scraper.Tech, falta de saldo en Supadata), no en cada ciclo.
 
 ## Salida
