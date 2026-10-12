@@ -1,0 +1,258 @@
+{
+ "prompt_version": "1.0.0",
+ "estado": "parcial",
+ "video": {
+  "video_id": "ejemplo-sintetico",
+  "canal": "Canal de ejemplo",
+  "titulo": "¿Se acerca una crisis?",
+  "publicado_en": "2026-10-11T12:00:00Z",
+  "analizado_en": "2026-10-12T12:00:00Z"
+ },
+ "alcance": {
+  "material_recibido": [
+   "titulo",
+   "transcripcion"
+  ],
+  "cobertura_reportada": 0.133,
+  "limitaciones": [
+   "La transcripción cubre 8 de 60 segundos: el análisis es parcial."
+  ],
+  "verificacion_externa": "no_realizada",
+  "alcance_verificacion": "No se recibieron fuentes externas ni herramientas de búsqueda."
+ },
+ "resumen": {
+  "tesis_principal": "Las compras de oro de los bancos anticipan una posible crisis.",
+  "mensaje_explicito": "El creador afirma que los bancos compran oro y opina que podría venir una crisis.",
+  "narrativa_sugerida": "La yuxtaposición invita a leer las compras de oro como señal de crisis.",
+  "respaldo_demostrable": "Ninguna afirmación pudo contrastarse con fuentes externas.",
+  "conclusion_provisional": "Las compras de oro son verificables y siguen pendientes; la crisis es una predicción sin plazo ni definición evaluable."
+ },
+ "cadena_narrativa": [
+  {
+   "premisa": "Los bancos están comprando oro.",
+   "conclusion": "Podría venir una crisis.",
+   "vinculo": "inferido",
+   "supuesto": "Que las compras de oro de los bancos respondan a la expectativa de una crisis.",
+   "afirmacion_ids": [
+    "A1",
+    "A2"
+   ],
+   "evidencia_ids": [
+    "E1"
+   ]
+  }
+ ],
+ "afirmaciones": [
+  {
+   "id": "A1",
+   "enunciado": "Los bancos están comprando oro.",
+   "tipo": "hecho_verificable",
+   "emisor": "creador",
+   "evidencia_ids": [
+    "E1"
+   ],
+   "fuente_ids": [],
+   "estado_verificacion": "no_verificada",
+   "justificacion_verificacion": "No se recibieron datos de compras de oro por bancos.",
+   "conviccion_creador": "alta",
+   "confianza_extraccion": "alta",
+   "motivo_confianza": "Frase literal y sin ambigüedad.",
+   "mercado": null
+  },
+  {
+   "id": "A2",
+   "enunciado": "Podría venir una crisis.",
+   "tipo": "prediccion",
+   "emisor": "creador",
+   "evidencia_ids": [
+    "E1"
+   ],
+   "fuente_ids": [],
+   "estado_verificacion": "no_verificable",
+   "justificacion_verificacion": "Sin plazo ni definición de crisis no puede evaluarse un acierto.",
+   "conviccion_creador": "baja",
+   "confianza_extraccion": "alta",
+   "motivo_confianza": "El creador usa «creo» y «podría».",
+   "mercado": null
+  }
+ ],
+ "ocho_aspectos": {
+  "intencion": {
+   "estado": "parcial",
+   "hallazgos": [
+    {
+     "observacion": "Pregunta alarmante en el título.",
+     "interpretacion": "Posible función de generar atención.",
+     "evidencia_ids": [
+      "E2"
+     ],
+     "fuente_ids": [],
+     "confianza": "media",
+     "limite": "No permite inferir intenciones privadas."
+    }
+   ],
+   "limitaciones": [
+    "Solo 8 segundos de transcripción."
+   ]
+  },
+  "lenguaje": {
+   "estado": "parcial",
+   "hallazgos": [],
+   "limitaciones": [
+    "Fragmento demasiado breve."
+   ]
+  },
+  "emociones": {
+   "estado": "parcial",
+   "hallazgos": [
+    {
+     "observacion": "El título plantea una crisis como pregunta.",
+     "interpretacion": "Puede convocar miedo.",
+     "evidencia_ids": [
+      "E2"
+     ],
+     "fuente_ids": [],
+     "confianza": "baja",
+     "limite": "No se midió la reacción de la audiencia."
+    }
+   ],
+   "limitaciones": []
+  },
+  "pruebas": {
+   "estado": "parcial",
+   "hallazgos": [
+    {
+     "observacion": "No se citan magnitudes, fechas ni actores concretos de las compras de oro.",
+     "interpretacion": null,
+     "evidencia_ids": [
+      "E1"
+     ],
+     "fuente_ids": [],
+     "confianza": "alta",
+     "limite": null
+    }
+   ],
+   "limitaciones": []
+  },
+  "saltos_logicos": {
+   "estado": "parcial",
+   "hallazgos": [
+    {
+     "observacion": "Se pasa de compras de oro a una posible crisis sin mecanismo explícito.",
+     "interpretacion": "Hay explicaciones alternativas como diversificación de reservas.",
+     "evidencia_ids": [
+      "E1"
+     ],
+     "fuente_ids": [],
+     "confianza": "media",
+     "limite": "El resto del video podría desarrollar el mecanismo."
+    }
+   ],
+   "limitaciones": []
+  },
+  "omisiones": {
+   "estado": "parcial",
+   "hallazgos": [],
+   "limitaciones": [
+    "No se puede distinguir lo omitido de lo no transcrito."
+   ]
+  },
+  "audiovisual": {
+   "estado": "no_evaluable",
+   "hallazgos": [],
+   "limitaciones": [
+    "Solo se recibió texto; no hay miniatura, audio ni fotogramas."
+   ]
+  },
+  "incentivos": {
+   "estado": "no_evaluable",
+   "hallazgos": [],
+   "limitaciones": [
+    "No hay descripción ni enlaces para identificar patrocinios."
+   ]
+  }
+ },
+ "tecnicas_narrativas": [],
+ "escenarios": [
+  {
+   "id": "S1",
+   "nombre": "Compras de oro como señal de tensión",
+   "origen": "creador",
+   "afirmacion_ids": [
+    "A1",
+    "A2"
+   ],
+   "supuestos": [
+    "Que las compras existan y sean significativas."
+   ],
+   "mecanismo": null,
+   "catalizadores": [],
+   "horizonte": null,
+   "origen_horizonte": null,
+   "senales_a_favor": [],
+   "senales_en_contra": [],
+   "invalidacion": null,
+   "evidencia_faltante": [
+    "Datos de compras de oro por bancos centrales con fechas."
+   ],
+   "plausibilidad": "limitada",
+   "justificacion": "Las premisas no están verificadas y la consecuencia no está definida.",
+   "probabilidad": null,
+   "metodo_probabilidad": null
+  }
+ ],
+ "seguimiento": [
+  {
+   "afirmacion_ids": [
+    "A2"
+   ],
+   "que_observar": "Definición y plazo de la crisis anunciada.",
+   "criterio": null,
+   "origen_criterio": "analista",
+   "plazo": null,
+   "dato_o_fuente_necesaria": "Resto de la transcripción."
+  }
+ ],
+ "historial": {
+  "estado": "no_disponible",
+  "videos_comparados": [],
+  "hallazgos": [],
+  "limitaciones": [
+   "No se recibió historial del canal."
+  ]
+ },
+ "verificaciones_pendientes": [
+  {
+   "afirmacion_ids": [
+    "A1"
+   ],
+   "prioridad": "alta",
+   "pregunta": "¿Qué bancos compran oro, cuánto y desde cuándo?",
+   "fuente_o_dato_buscado": "Estadísticas oficiales de reservas de oro.",
+   "impacto_en_conclusion": "Sostiene o descarta la premisa central."
+  }
+ ],
+ "evidencias": [
+  {
+   "id": "E1",
+   "video_id": "ejemplo-sintetico",
+   "origen": "transcripcion",
+   "cita": "Los bancos están comprando oro. Creo que podría venir una crisis.",
+   "observacion": null,
+   "inicio_s": 0,
+   "fin_s": 8,
+   "localizador": "transcript.segments[0]"
+  },
+  {
+   "id": "E2",
+   "video_id": "ejemplo-sintetico",
+   "origen": "titulo",
+   "cita": "¿Se acerca una crisis?",
+   "observacion": null,
+   "inicio_s": null,
+   "fin_s": null,
+   "localizador": "video.title"
+  }
+ ],
+ "fuentes_externas": []
+}

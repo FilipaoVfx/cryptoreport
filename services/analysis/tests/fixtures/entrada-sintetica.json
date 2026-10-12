@@ -1,0 +1,41 @@
+{
+ "analizado_en": "2026-10-12T12:00:00Z",
+ "documento": {
+  "schema_version": 1,
+  "video": {
+   "video_id": "ejemplo-sintetico",
+   "url": null,
+   "title": "¿Se acerca una crisis?",
+   "published_at": "2026-10-11T12:00:00Z",
+   "is_short": false,
+   "duration_s": 60,
+   "channel": {
+    "slug": "ejemplo",
+    "name": "Canal de ejemplo",
+    "channel_id": null
+   }
+  },
+  "transcript": {
+   "provider": "fixture",
+   "language": "es",
+   "track_kind": "manual",
+   "fetched_at": "2026-10-12T11:00:00Z",
+   "segment_count": 1,
+   "first_start_s": 0,
+   "last_end_s": 8,
+   "coverage": 0.133,
+   "segments": [
+    {
+     "start": 0,
+     "dur": 8,
+     "text": "Los bancos están comprando oro. Creo que podría venir una crisis."
+    }
+   ]
+  }
+ },
+ "descripcion": null,
+ "material_audiovisual": [],
+ "fuentes_externas": [],
+ "datos_mercado": [],
+ "historial": []
+}

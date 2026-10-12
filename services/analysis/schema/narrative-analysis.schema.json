@@ -1,0 +1,843 @@
+{
+ "$schema": "https://json-schema.org/draft/2020-12/schema",
+ "$id": "https://cryptoreport/schemas/narrative-analysis/1.0.0",
+ "title": "CryptoReport · Análisis de narrativa v1.0.0",
+ "description": "Contrato de salida de prompts/narrative-analysis.system.md v1.0.0, apto para salidas estructuradas de la API de Claude (objetos cerrados, todas las claves obligatorias, null para lo desconocido).",
+ "$defs": {
+  "texto_o_null": {
+   "anyOf": [
+    {
+     "type": "string"
+    },
+    {
+     "type": "null"
+    }
+   ]
+  },
+  "numero_o_null": {
+   "anyOf": [
+    {
+     "type": "number"
+    },
+    {
+     "type": "null"
+    }
+   ]
+  },
+  "booleano_o_null": {
+   "anyOf": [
+    {
+     "type": "boolean"
+    },
+    {
+     "type": "null"
+    }
+   ]
+  },
+  "lista_texto": {
+   "type": "array",
+   "items": {
+    "type": "string"
+   }
+  },
+  "ids": {
+   "type": "array",
+   "items": {
+    "type": "string"
+   }
+  },
+  "nivel": {
+   "type": "string",
+   "enum": [
+    "baja",
+    "media",
+    "alta"
+   ]
+  },
+  "nivel_o_null": {
+   "anyOf": [
+    {
+     "$ref": "#/$defs/nivel"
+    },
+    {
+     "type": "null"
+    }
+   ]
+  },
+  "aspecto": {
+   "type": "object",
+   "properties": {
+    "estado": {
+     "type": "string",
+     "enum": [
+      "evaluado",
+      "parcial",
+      "no_evaluable"
+     ]
+    },
+    "hallazgos": {
+     "type": "array",
+     "items": {
+      "type": "object",
+      "properties": {
+       "observacion": {
+        "type": "string"
+       },
+       "interpretacion": {
+        "$ref": "#/$defs/texto_o_null"
+       },
+       "evidencia_ids": {
+        "$ref": "#/$defs/ids"
+       },
+       "fuente_ids": {
+        "$ref": "#/$defs/ids"
+       },
+       "confianza": {
+        "$ref": "#/$defs/nivel"
+       },
+       "limite": {
+        "$ref": "#/$defs/texto_o_null"
+       }
+      },
+      "required": [
+       "observacion",
+       "interpretacion",
+       "evidencia_ids",
+       "fuente_ids",
+       "confianza",
+       "limite"
+      ],
+      "additionalProperties": false
+     }
+    },
+    "limitaciones": {
+     "$ref": "#/$defs/lista_texto"
+    }
+   },
+   "required": [
+    "estado",
+    "hallazgos",
+    "limitaciones"
+   ],
+   "additionalProperties": false
+  },
+  "mercado": {
+   "type": "object",
+   "properties": {
+    "activo_literal": {
+     "$ref": "#/$defs/texto_o_null"
+    },
+    "activo_normalizado": {
+     "$ref": "#/$defs/texto_o_null"
+    },
+    "postura": {
+     "$ref": "#/$defs/texto_o_null"
+    },
+    "horizonte_literal": {
+     "$ref": "#/$defs/texto_o_null"
+    },
+    "condicion": {
+     "$ref": "#/$defs/texto_o_null"
+    },
+    "entrada": {
+     "$ref": "#/$defs/texto_o_null"
+    },
+    "objetivo": {
+     "$ref": "#/$defs/texto_o_null"
+    },
+    "invalidacion": {
+     "$ref": "#/$defs/texto_o_null"
+    },
+    "catalizador": {
+     "$ref": "#/$defs/texto_o_null"
+    },
+    "operacion_propia_declarada": {
+     "$ref": "#/$defs/booleano_o_null"
+    }
+   },
+   "required": [
+    "activo_literal",
+    "activo_normalizado",
+    "postura",
+    "horizonte_literal",
+    "condicion",
+    "entrada",
+    "objetivo",
+    "invalidacion",
+    "catalizador",
+    "operacion_propia_declarada"
+   ],
+   "additionalProperties": false,
+   "description": "Niveles como texto literal con unidad y condición; nunca niveles propuestos por el analista."
+  }
+ },
+ "type": "object",
+ "properties": {
+  "prompt_version": {
+   "type": "string",
+   "const": "1.0.0"
+  },
+  "estado": {
+   "type": "string",
+   "enum": [
+    "completo",
+    "parcial",
+    "insuficiente"
+   ]
+  },
+  "video": {
+   "type": "object",
+   "properties": {
+    "video_id": {
+     "$ref": "#/$defs/texto_o_null"
+    },
+    "canal": {
+     "$ref": "#/$defs/texto_o_null"
+    },
+    "titulo": {
+     "$ref": "#/$defs/texto_o_null"
+    },
+    "publicado_en": {
+     "$ref": "#/$defs/texto_o_null"
+    },
+    "analizado_en": {
+     "$ref": "#/$defs/texto_o_null"
+    }
+   },
+   "required": [
+    "video_id",
+    "canal",
+    "titulo",
+    "publicado_en",
+    "analizado_en"
+   ],
+   "additionalProperties": false
+  },
+  "alcance": {
+   "type": "object",
+   "properties": {
+    "material_recibido": {
+     "$ref": "#/$defs/lista_texto"
+    },
+    "cobertura_reportada": {
+     "$ref": "#/$defs/numero_o_null"
+    },
+    "limitaciones": {
+     "$ref": "#/$defs/lista_texto"
+    },
+    "verificacion_externa": {
+     "type": "string",
+     "enum": [
+      "realizada",
+      "parcial",
+      "no_realizada"
+     ]
+    },
+    "alcance_verificacion": {
+     "$ref": "#/$defs/texto_o_null"
+    }
+   },
+   "required": [
+    "material_recibido",
+    "cobertura_reportada",
+    "limitaciones",
+    "verificacion_externa",
+    "alcance_verificacion"
+   ],
+   "additionalProperties": false
+  },
+  "resumen": {
+   "type": "object",
+   "properties": {
+    "tesis_principal": {
+     "$ref": "#/$defs/texto_o_null"
+    },
+    "mensaje_explicito": {
+     "$ref": "#/$defs/texto_o_null"
+    },
+    "narrativa_sugerida": {
+     "$ref": "#/$defs/texto_o_null"
+    },
+    "respaldo_demostrable": {
+     "$ref": "#/$defs/texto_o_null"
+    },
+    "conclusion_provisional": {
+     "$ref": "#/$defs/texto_o_null"
+    }
+   },
+   "required": [
+    "tesis_principal",
+    "mensaje_explicito",
+    "narrativa_sugerida",
+    "respaldo_demostrable",
+    "conclusion_provisional"
+   ],
+   "additionalProperties": false
+  },
+  "cadena_narrativa": {
+   "type": "array",
+   "items": {
+    "type": "object",
+    "properties": {
+     "premisa": {
+      "type": "string"
+     },
+     "conclusion": {
+      "type": "string"
+     },
+     "vinculo": {
+      "type": "string",
+      "enum": [
+       "explicito",
+       "inferido"
+      ]
+     },
+     "supuesto": {
+      "$ref": "#/$defs/texto_o_null"
+     },
+     "afirmacion_ids": {
+      "$ref": "#/$defs/ids"
+     },
+     "evidencia_ids": {
+      "$ref": "#/$defs/ids"
+     }
+    },
+    "required": [
+     "premisa",
+     "conclusion",
+     "vinculo",
+     "supuesto",
+     "afirmacion_ids",
+     "evidencia_ids"
+    ],
+    "additionalProperties": false
+   }
+  },
+  "afirmaciones": {
+   "type": "array",
+   "items": {
+    "type": "object",
+    "properties": {
+     "id": {
+      "type": "string"
+     },
+     "enunciado": {
+      "type": "string"
+     },
+     "tipo": {
+      "type": "string",
+      "enum": [
+       "hecho_verificable",
+       "opinion",
+       "hipotesis",
+       "prediccion",
+       "insinuacion"
+      ]
+     },
+     "emisor": {
+      "type": "string"
+     },
+     "evidencia_ids": {
+      "$ref": "#/$defs/ids"
+     },
+     "fuente_ids": {
+      "$ref": "#/$defs/ids"
+     },
+     "estado_verificacion": {
+      "type": "string",
+      "enum": [
+       "respaldada",
+       "parcialmente_respaldada",
+       "contradicha",
+       "no_verificada",
+       "no_verificable"
+      ]
+     },
+     "justificacion_verificacion": {
+      "$ref": "#/$defs/texto_o_null"
+     },
+     "conviccion_creador": {
+      "$ref": "#/$defs/nivel_o_null"
+     },
+     "confianza_extraccion": {
+      "$ref": "#/$defs/nivel"
+     },
+     "motivo_confianza": {
+      "$ref": "#/$defs/texto_o_null"
+     },
+     "mercado": {
+      "anyOf": [
+       {
+        "$ref": "#/$defs/mercado"
+       },
+       {
+        "type": "null"
+       }
+      ]
+     }
+    },
+    "required": [
+     "id",
+     "enunciado",
+     "tipo",
+     "emisor",
+     "evidencia_ids",
+     "fuente_ids",
+     "estado_verificacion",
+     "justificacion_verificacion",
+     "conviccion_creador",
+     "confianza_extraccion",
+     "motivo_confianza",
+     "mercado"
+    ],
+    "additionalProperties": false
+   }
+  },
+  "ocho_aspectos": {
+   "type": "object",
+   "properties": {
+    "intencion": {
+     "$ref": "#/$defs/aspecto"
+    },
+    "lenguaje": {
+     "$ref": "#/$defs/aspecto"
+    },
+    "emociones": {
+     "$ref": "#/$defs/aspecto"
+    },
+    "pruebas": {
+     "$ref": "#/$defs/aspecto"
+    },
+    "saltos_logicos": {
+     "$ref": "#/$defs/aspecto"
+    },
+    "omisiones": {
+     "$ref": "#/$defs/aspecto"
+    },
+    "audiovisual": {
+     "$ref": "#/$defs/aspecto"
+    },
+    "incentivos": {
+     "$ref": "#/$defs/aspecto"
+    }
+   },
+   "required": [
+    "intencion",
+    "lenguaje",
+    "emociones",
+    "pruebas",
+    "saltos_logicos",
+    "omisiones",
+    "audiovisual",
+    "incentivos"
+   ],
+   "additionalProperties": false
+  },
+  "tecnicas_narrativas": {
+   "type": "array",
+   "items": {
+    "type": "object",
+    "properties": {
+     "tecnica": {
+      "type": "string"
+     },
+     "mecanismo": {
+      "type": "string"
+     },
+     "evidencia_ids": {
+      "$ref": "#/$defs/ids"
+     },
+     "fuente_ids": {
+      "$ref": "#/$defs/ids"
+     },
+     "explicacion_alternativa": {
+      "$ref": "#/$defs/texto_o_null"
+     },
+     "confianza": {
+      "$ref": "#/$defs/nivel"
+     }
+    },
+    "required": [
+     "tecnica",
+     "mecanismo",
+     "evidencia_ids",
+     "fuente_ids",
+     "explicacion_alternativa",
+     "confianza"
+    ],
+    "additionalProperties": false
+   }
+  },
+  "escenarios": {
+   "type": "array",
+   "items": {
+    "type": "object",
+    "properties": {
+     "id": {
+      "type": "string"
+     },
+     "nombre": {
+      "type": "string"
+     },
+     "origen": {
+      "type": "string",
+      "enum": [
+       "creador",
+       "analista"
+      ]
+     },
+     "afirmacion_ids": {
+      "$ref": "#/$defs/ids"
+     },
+     "supuestos": {
+      "$ref": "#/$defs/lista_texto"
+     },
+     "mecanismo": {
+      "$ref": "#/$defs/texto_o_null"
+     },
+     "catalizadores": {
+      "$ref": "#/$defs/lista_texto"
+     },
+     "horizonte": {
+      "$ref": "#/$defs/texto_o_null"
+     },
+     "origen_horizonte": {
+      "anyOf": [
+       {
+        "type": "string",
+        "enum": [
+         "creador",
+         "analista"
+        ]
+       },
+       {
+        "type": "null"
+       }
+      ]
+     },
+     "senales_a_favor": {
+      "$ref": "#/$defs/lista_texto"
+     },
+     "senales_en_contra": {
+      "$ref": "#/$defs/lista_texto"
+     },
+     "invalidacion": {
+      "$ref": "#/$defs/texto_o_null"
+     },
+     "evidencia_faltante": {
+      "$ref": "#/$defs/lista_texto"
+     },
+     "plausibilidad": {
+      "anyOf": [
+       {
+        "type": "string",
+        "enum": [
+         "limitada",
+         "plausible",
+         "bien_sustentada"
+        ]
+       },
+       {
+        "type": "null"
+       }
+      ]
+     },
+     "justificacion": {
+      "$ref": "#/$defs/texto_o_null"
+     },
+     "probabilidad": {
+      "$ref": "#/$defs/numero_o_null"
+     },
+     "metodo_probabilidad": {
+      "$ref": "#/$defs/texto_o_null"
+     }
+    },
+    "required": [
+     "id",
+     "nombre",
+     "origen",
+     "afirmacion_ids",
+     "supuestos",
+     "mecanismo",
+     "catalizadores",
+     "horizonte",
+     "origen_horizonte",
+     "senales_a_favor",
+     "senales_en_contra",
+     "invalidacion",
+     "evidencia_faltante",
+     "plausibilidad",
+     "justificacion",
+     "probabilidad",
+     "metodo_probabilidad"
+    ],
+    "additionalProperties": false
+   }
+  },
+  "seguimiento": {
+   "type": "array",
+   "items": {
+    "type": "object",
+    "properties": {
+     "afirmacion_ids": {
+      "$ref": "#/$defs/ids"
+     },
+     "que_observar": {
+      "type": "string"
+     },
+     "criterio": {
+      "$ref": "#/$defs/texto_o_null"
+     },
+     "origen_criterio": {
+      "type": "string",
+      "enum": [
+       "creador",
+       "analista"
+      ]
+     },
+     "plazo": {
+      "$ref": "#/$defs/texto_o_null"
+     },
+     "dato_o_fuente_necesaria": {
+      "$ref": "#/$defs/texto_o_null"
+     }
+    },
+    "required": [
+     "afirmacion_ids",
+     "que_observar",
+     "criterio",
+     "origen_criterio",
+     "plazo",
+     "dato_o_fuente_necesaria"
+    ],
+    "additionalProperties": false
+   }
+  },
+  "historial": {
+   "type": "object",
+   "properties": {
+    "estado": {
+     "type": "string",
+     "enum": [
+      "evaluado",
+      "parcial",
+      "no_disponible"
+     ]
+    },
+    "videos_comparados": {
+     "$ref": "#/$defs/lista_texto"
+    },
+    "hallazgos": {
+     "type": "array",
+     "items": {
+      "type": "object",
+      "properties": {
+       "descripcion": {
+        "type": "string"
+       },
+       "evidencia_ids": {
+        "$ref": "#/$defs/ids"
+       },
+       "fuente_ids": {
+        "$ref": "#/$defs/ids"
+       }
+      },
+      "required": [
+       "descripcion",
+       "evidencia_ids",
+       "fuente_ids"
+      ],
+      "additionalProperties": false
+     }
+    },
+    "limitaciones": {
+     "$ref": "#/$defs/lista_texto"
+    }
+   },
+   "required": [
+    "estado",
+    "videos_comparados",
+    "hallazgos",
+    "limitaciones"
+   ],
+   "additionalProperties": false
+  },
+  "verificaciones_pendientes": {
+   "type": "array",
+   "items": {
+    "type": "object",
+    "properties": {
+     "afirmacion_ids": {
+      "$ref": "#/$defs/ids"
+     },
+     "prioridad": {
+      "type": "string",
+      "enum": [
+       "alta",
+       "media",
+       "baja"
+      ]
+     },
+     "pregunta": {
+      "type": "string"
+     },
+     "fuente_o_dato_buscado": {
+      "$ref": "#/$defs/texto_o_null"
+     },
+     "impacto_en_conclusion": {
+      "$ref": "#/$defs/texto_o_null"
+     }
+    },
+    "required": [
+     "afirmacion_ids",
+     "prioridad",
+     "pregunta",
+     "fuente_o_dato_buscado",
+     "impacto_en_conclusion"
+    ],
+    "additionalProperties": false
+   }
+  },
+  "evidencias": {
+   "type": "array",
+   "items": {
+    "type": "object",
+    "properties": {
+     "id": {
+      "type": "string"
+     },
+     "video_id": {
+      "$ref": "#/$defs/texto_o_null"
+     },
+     "origen": {
+      "type": "string",
+      "enum": [
+       "transcripcion",
+       "titulo",
+       "descripcion",
+       "audio",
+       "miniatura",
+       "fotograma"
+      ]
+     },
+     "cita": {
+      "$ref": "#/$defs/texto_o_null"
+     },
+     "observacion": {
+      "$ref": "#/$defs/texto_o_null"
+     },
+     "inicio_s": {
+      "$ref": "#/$defs/numero_o_null"
+     },
+     "fin_s": {
+      "$ref": "#/$defs/numero_o_null"
+     },
+     "localizador": {
+      "$ref": "#/$defs/texto_o_null"
+     }
+    },
+    "required": [
+     "id",
+     "video_id",
+     "origen",
+     "cita",
+     "observacion",
+     "inicio_s",
+     "fin_s",
+     "localizador"
+    ],
+    "additionalProperties": false
+   }
+  },
+  "fuentes_externas": {
+   "type": "array",
+   "items": {
+    "type": "object",
+    "properties": {
+     "id": {
+      "type": "string"
+     },
+     "autor_entidad": {
+      "$ref": "#/$defs/texto_o_null"
+     },
+     "titulo": {
+      "$ref": "#/$defs/texto_o_null"
+     },
+     "url": {
+      "$ref": "#/$defs/texto_o_null"
+     },
+     "publicado_en": {
+      "$ref": "#/$defs/texto_o_null"
+     },
+     "consultado_en": {
+      "$ref": "#/$defs/texto_o_null"
+     },
+     "relacion_con_afirmaciones": {
+      "type": "array",
+      "items": {
+       "type": "object",
+       "properties": {
+        "afirmacion_id": {
+         "type": "string"
+        },
+        "relacion": {
+         "type": "string",
+         "enum": [
+          "apoya",
+          "contradice",
+          "contextualiza"
+         ]
+        },
+        "explicacion": {
+         "$ref": "#/$defs/texto_o_null"
+        }
+       },
+       "required": [
+        "afirmacion_id",
+        "relacion",
+        "explicacion"
+       ],
+       "additionalProperties": false
+      }
+     },
+     "limitaciones": {
+      "$ref": "#/$defs/lista_texto"
+     },
+     "posterior_al_video": {
+      "$ref": "#/$defs/booleano_o_null"
+     }
+    },
+    "required": [
+     "id",
+     "autor_entidad",
+     "titulo",
+     "url",
+     "publicado_en",
+     "consultado_en",
+     "relacion_con_afirmaciones",
+     "limitaciones",
+     "posterior_al_video"
+    ],
+    "additionalProperties": false
+   }
+  }
+ },
+ "required": [
+  "prompt_version",
+  "estado",
+  "video",
+  "alcance",
+  "resumen",
+  "cadena_narrativa",
+  "afirmaciones",
+  "ocho_aspectos",
+  "tecnicas_narrativas",
+  "escenarios",
+  "seguimiento",
+  "historial",
+  "verificaciones_pendientes",
+  "evidencias",
+  "fuentes_externas"
+ ],
+ "additionalProperties": false
+}

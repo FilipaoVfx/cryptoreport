@@ -2,7 +2,55 @@
 
 El [system prompt de análisis](prompts/narrative-analysis.system.md) define el rol de **analista especulativo** de CryptoReport. Reconstruye la tesis del creador, analiza sus recursos persuasivos, contrasta las afirmaciones cuando hay fuentes y propone escenarios con condiciones observables e invalidación.
 
-Estado: prompt v1.0.0 preparado para integración. Este directorio todavía no contiene un cliente LLM ni un proceso automático de análisis; la web conserva sus ejemplos manuales. El contrato de salida está descrito en el prompt y aún no tiene un JSON Schema ejecutable ni un validador en el servicio.
+Estado: integración lista, pendiente de clave y evaluación.
+
+- **Integrado:** prompt v1.0.0, [JSON Schema ejecutable](schema/narrative-analysis.schema.json), cliente de la API de Claude (`cranalysis/`), validador semántico y CLI.
+- **Pendiente:** todavía no se ha llamado al modelo, porque no hay `ANTHROPIC_API_KEY`. Tampoco está conectado al timer: primero hay que pasar los casos de evaluación de abajo. Mientras tanto, la web conserva sus ejemplos manuales.
+
+## Integración
+
+```sh
+cd services/analysis
+python3 -m venv .venv && .venv/bin/pip install -r requirements.txt
+cp .env.example .env && chmod 600 .env          # añadir ANTHROPIC_API_KEY
+.venv/bin/python -m cranalysis dry-run OwrAjFdTQ4s   # arma la petición y muestra tamaños, sin llamar a la API
+.venv/bin/python -m cranalysis run OwrAjFdTQ4s       # analiza, valida y guarda
+.venv/bin/python -m cranalysis run --pending --limit 3
+.venv/bin/python -m cranalysis validate /var/lib/cryptoreport-transcripts/analysis/nacho/2026-10-09_OwrAjFdTQ4s.json
+.venv/bin/python -m unittest discover -s tests -t .  # pruebas sin red
+```
+
+**Petición.**
+- **Modelo:** `claude-opus-5-5` con razonamiento adaptativo y `effort: high`, configurable.
+- **System:** el prompt, con `cache_control`, porque es el prefijo estable.
+- **Mensaje de usuario:** el documento de transcripción original en JSON compacto.
+- **Salida estructurada:** `output_config.format` con el schema, que obliga a la API a devolver JSON que lo cumpla.
+- **Rechazos:** `fallbacks: "default"`, que reintenta en otro modelo si un clasificador de seguridad rechaza la petición.
+- **Streaming:** con `max_tokens` de 64.000.
+- Si la respuesta se trunca o se rechaza, no se guarda como análisis.
+
+**Validación.** El schema garantiza la forma. `cranalysis/validate.py` comprueba lo que el prompt exige y el schema no puede expresar:
+- que cada cita exista literalmente en los segmentos indicados y que `inicio_s` coincida con el inicio de un segmento;
+- que las citas de título y descripción estén en esos campos;
+- que todas las referencias A/E/F resuelvan;
+- que ninguna afirmación figure como respaldada sin fuente;
+- que no haya fuentes que no se aportaron en la entrada (esta integración no habilita búsqueda);
+- que ninguna probabilidad aparezca sin método y que no se evalúe el historial si no se recibió.
+
+Un análisis con errores se guarda como `rechazado` y no se publica.
+
+**Salida.** `/var/lib/cryptoreport-transcripts/analysis/<canal>/<fecha>_<id>.json`, con `meta` y `analysis`.
+- `meta` registra el modelo realmente usado, el hash del prompt y del schema, el uso de tokens, el costo estimado, si hubo fallback y el resultado de la validación.
+- `analysis` contiene el objeto del contrato.
+
+**Adaptaciones del contrato al schema.** La salida estructurada exige objetos cerrados y todas las claves presentes, así que:
+- `escenarios[].metodo_probabilidad` y `evidencias[].observacion` siempre existen y valen `null` cuando no aplican;
+- `evidencias[].origen` usa `transcripcion | titulo | descripcion | audio | miniatura | fotograma`;
+- `escenarios[].plausibilidad` usa `limitada | plausible | bien_sustentada | null`, y `origen_horizonte` usa `creador | analista | null`.
+
+Si el prompt cambia de versión, hay que actualizar el schema y `PROMPT_VERSION`.
+
+**Costo estimado** (sin medir todavía). Un video largo de unos 18 min supone ~6.300 tokens de prompt cacheado más ~11.000 de transcripción de entrada. La salida, con razonamiento incluido, se estima en 10–20 mil tokens. Con Opus 5.5 ($4 entrada / $20 salida / $0,20 lectura de caché por millón) sale a **~$0,25–0,45 por video largo** y unos céntimos por short. Las primeras ejecuciones darán el dato real en `meta.usage`.
 
 ## Uso
 
