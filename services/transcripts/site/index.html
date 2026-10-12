@@ -43,6 +43,8 @@
   }
   h1, h2, h3 { text-wrap: balance; }
   .num { font-variant-numeric: tabular-nums; }
+  /* Las utilidades de Tailwind (.grid, .flex) ganan al [hidden] del navegador: sin esto, ocultar pestañas no oculta nada. */
+  [hidden] { display: none !important; }
   /* Los hijos de una rejilla no deben ensancharla: el código, las tablas y el SVG se desplazan dentro de su caja. */
   .grid > * { min-width: 0; }
   .eyebrow { font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); font-weight: 600; }
@@ -99,6 +101,20 @@
   .action:hover { border-color: var(--accent); color: var(--accent); text-decoration: none; }
   .action.primary { background: var(--accent); border-color: var(--accent); color: var(--surface); }
   .action.primary:hover { color: var(--surface); filter: brightness(1.08); }
+  .tab { padding: 9px 12px; font-weight: 600; font-size: 14px; color: var(--muted); background: transparent; border: 0; border-bottom: 2px solid transparent; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; }
+  .tab[aria-selected="true"] { color: var(--ink); border-bottom-color: var(--accent); }
+  .tab:focus-visible, .link-btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 4px; }
+  .link-btn { background: none; border: 0; padding: 0; color: var(--accent); cursor: pointer; font: inherit; text-decoration: underline; text-underline-offset: 3px; }
+  .claim { border: 1px solid var(--line); border-radius: 10px; padding: 12px 14px; display: grid; gap: 8px; background: var(--surface); }
+  .evq { margin: 0; border-left: 3px solid var(--line); padding: 2px 0 2px 10px; font-size: 14px; }
+  .mk { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 6px 14px; font-size: 13.5px; margin: 0; }
+  .mk dt { color: var(--muted); font-size: 11px; text-transform: uppercase; letter-spacing: .06em; }
+  .mk dd { margin: 0; }
+  .asp { border: 1px solid var(--line); border-radius: 10px; padding: 10px 14px; background: var(--surface); }
+  .asp > summary { cursor: pointer; display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+  .an-h { font-family: Archivo, "Arial Narrow", Arial, sans-serif; font-weight: 700; font-size: 18px; }
+  .flash { background: var(--accent-soft); border-radius: 6px; }
+  @media (prefers-reduced-motion: no-preference) { #tv-body p { transition: background-color 1.2s ease; } }
   mark { background: var(--cond-soft); color: var(--ink); border-radius: 3px; padding: 0 2px; box-shadow: inset 0 -2px 0 var(--cond); }
   @media (prefers-reduced-motion: no-preference) {
     .lift { transition: transform .15s ease, border-color .15s ease; }
@@ -113,7 +129,8 @@
   <div class="mx-auto max-w-[1120px] px-4 sm:px-6 h-14 flex items-center gap-2">
     <a href="#inicio" class="font-display font-extrabold text-ink text-[17px] mr-auto no-underline hover:no-underline">Crypto Report</a>
     <a href="#inicio" class="navlink hidden sm:inline-flex">Pipeline</a>
-    <a href="#insights" class="navlink hidden md:inline-flex">Insights</a>
+    <a href="#analisis" class="navlink hidden md:inline-flex">Análisis</a>
+    <a href="#insights" class="navlink hidden lg:inline-flex">Insights</a>
     <div class="relative">
       <button id="nav-json-btn" type="button" class="navlink" aria-expanded="false" aria-controls="nav-json-panel">
         Transcripciones <span class="count" id="nav-count">17</span>
@@ -145,8 +162,8 @@
     <h1 class="font-display font-extrabold tracking-tight text-[clamp(2rem,5vw,3.4rem)] leading-[1.02]">Del video a la señal</h1>
     <p class="prose-w text-[17px] text-muted">
       El recorrido de cada video de Nacho IC y KManuS88, de la publicación al insight. Detección, transcripción y almacenamiento ya corren solos en el servidor.
-      Normalización, análisis e insights se muestran con un <strong class="text-ink font-semibold">ejemplo hecho a mano</strong>
-      sobre transcripciones reales, siguiendo el esquema de <span class="ts">docs/plan-extraccion-datos.md</span>.
+      El análisis de cada video ya es automático y validado cita a cita; normalización e insights entre videos siguen siendo un
+      <strong class="text-ink font-semibold">ejemplo hecho a mano</strong> sobre transcripciones reales.
     </p>
     <p class="ts text-muted">Datos: <span id="snapshot">cargando…</span> · fuente: <span class="text-ink">/var/lib/cryptoreport-transcripts</span> y journal de systemd · <a href="#transcripciones">leer las transcripciones</a></p>
 
@@ -156,7 +173,7 @@
       <a href="#video" class="lift block rounded-lg border border-line bg-surface p-3 no-underline hover:no-underline"><span class="ts text-muted">02</span><span class="block font-semibold text-ink">Video</span><span class="chip chip-prod mt-2">En producción</span></a>
       <a href="#transcripcion" class="lift block rounded-lg border border-line bg-surface p-3 no-underline hover:no-underline"><span class="ts text-muted">03</span><span class="block font-semibold text-ink">Transcripción</span><span class="chip chip-prod mt-2">En producción</span></a>
       <a href="#normalizacion" class="lift block rounded-lg border border-line bg-surface p-3 no-underline hover:no-underline"><span class="ts text-muted">04</span><span class="block font-semibold text-ink">Normalización</span><span class="chip chip-manual mt-2">Ejemplo manual</span></a>
-      <a href="#analisis" class="lift block rounded-lg border border-line bg-surface p-3 no-underline hover:no-underline"><span class="ts text-muted">05</span><span class="block font-semibold text-ink">Análisis</span><span class="chip chip-manual mt-2">Ejemplo manual</span></a>
+      <a href="#analisis" class="lift block rounded-lg border border-line bg-surface p-3 no-underline hover:no-underline"><span class="ts text-muted">05</span><span class="block font-semibold text-ink">Análisis</span><span class="chip chip-prod mt-2">Automático</span></a>
       <a href="#insights" class="lift block rounded-lg border border-line bg-surface p-3 no-underline hover:no-underline"><span class="ts text-muted">06</span><span class="block font-semibold text-ink">Insights</span><span class="chip chip-manual mt-2">Ejemplo manual</span></a>
       <a href="#evaluacion" class="lift block rounded-lg border border-line bg-surface p-3 no-underline hover:no-underline col-span-2 sm:col-span-1"><span class="ts text-muted">07</span><span class="block font-semibold text-ink">Evaluación</span><span class="chip chip-todo mt-2">Pendiente</span></a>
     </nav>
@@ -290,8 +307,8 @@
         <details class="rounded-lg border border-line bg-surface" open>
           <summary class="cursor-pointer px-4 py-3 font-semibold">Todas las transcripciones guardadas <span class="text-muted font-normal" id="table-sub">· 17 videos</span></summary>
           <div class="overflow-x-auto border-t border-line">
-            <table class="text-[13.5px] min-w-[920px]">
-              <thead><tr><th>Publicado (UTC)</th><th>Canal</th><th>Título</th><th>Proveedor</th><th class="text-right">Segm.</th><th class="text-right">Duración</th><th class="text-right">Cobertura</th><th class="text-right">Latencia</th><th>Archivo</th></tr></thead>
+            <table class="text-[13.5px] min-w-[1000px]">
+              <thead><tr><th>Publicado (UTC)</th><th>Canal</th><th>Título</th><th>Proveedor</th><th class="text-right">Segm.</th><th class="text-right">Duración</th><th class="text-right">Cobertura</th><th class="text-right">Latencia</th><th>Análisis</th><th>Archivo</th></tr></thead>
               <tbody id="videos-body"></tbody>
             </table>
           </div>
@@ -329,62 +346,14 @@
 
     <!-- 05 -->
     <section id="analisis" class="flex gap-4 sm:gap-6">
-      <span class="stage-n manual">05</span>
+      <span class="stage-n prod">05</span>
       <div class="min-w-0 flex-1 grid gap-4">
         <div class="flex flex-wrap items-center gap-x-3 gap-y-1">
-          <h2 class="font-display font-bold text-2xl">Análisis: afirmaciones con evidencia</h2><span class="chip chip-manual">Ejemplo manual</span>
+          <h2 class="font-display font-bold text-2xl">Análisis: afirmaciones con evidencia</h2><span class="chip chip-prod">Automático · bajo demanda</span>
         </div>
-        <p class="prose-w text-muted">Cada afirmación lleva el activo, la postura, el horizonte, los niveles y la condición que dijo el creador, con su cita y el segundo exacto del video. No se rellena nada que el creador no haya dicho. Extraídas por Claude leyendo la transcripción del ejemplo; la etapa automática todavía no existe.</p>
-
-        <div class="overflow-x-auto rounded-lg border border-line bg-surface">
-          <table class="text-[14px] min-w-[900px]">
-            <thead><tr><th>Activo</th><th>Postura</th><th>Horizonte</th><th>Niveles y condición</th><th>Cita</th><th>Minuto</th></tr></thead>
-            <tbody>
-              <tr><td class="font-semibold">BTC</td><td><span class="stance s-cond">alcista si aguanta</span></td><td>corto</td><td class="num">Mirar arriba si no pierde 80.400. Invalida un cierre bajo 81.300 → 76.000–75.000. Liquidez por encima: 82.860–83.790.</td><td class="italic">“si no perdemos el mínimo de ayer de 80,400, podemos empezar a mirar hacia arriba”</td><td><a class="ts" href="https://youtu.be/OwrAjFdTQ4s?t=171" target="_blank" rel="noopener">02:51</a></td></tr>
-              <tr><td class="font-semibold">BTC</td><td><span class="stance s-bull">alcista</span></td><td>medio · desde 28 oct</td><td>Catalizador: liquidez global; suelo hasta el 28 oct, sube hasta el 9 dic.</td><td class="italic">“A partir del 28 me espero petardazo arriba.”</td><td><a class="ts" href="https://youtu.be/OwrAjFdTQ4s?t=363" target="_blank" rel="noopener">06:03</a></td></tr>
-              <tr><td class="font-semibold">BTC</td><td><span class="stance s-bull">alcista</span></td><td>largo</td><td>Sobre la EMA 200 (76.300): mercado alcista que recién empieza.</td><td class="italic">“estamos en bull market, pero empezando el bull market. Quedan 3 años”</td><td><a class="ts" href="https://youtu.be/OwrAjFdTQ4s?t=415" target="_blank" rel="noopener">06:55</a></td></tr>
-              <tr><td class="font-semibold">DXY</td><td><span class="stance s-bear">bajista</span></td><td>medio · hasta nov 2026</td><td>Ciclo de 4 años del dólar; en zona de techo.</td><td class="italic">“Está acabando ya su bull market el dólar.”</td><td><a class="ts" href="https://youtu.be/OwrAjFdTQ4s?t=497" target="_blank" rel="noopener">08:17</a></td></tr>
-              <tr><td class="font-semibold">DOT</td><td><span class="stance s-bear">venta</span></td><td>corto</td><td>Vuelve a la zona que marca como de venta.</td><td class="italic">“vuelve otra vez a la zona, que para mí es para vender”</td><td><a class="ts" href="https://youtu.be/OwrAjFdTQ4s?t=799" target="_blank" rel="noopener">13:19</a></td></tr>
-              <tr><td class="font-semibold">HYPE</td><td><span class="stance s-neutral">largos cancelados</span></td><td>corto</td><td>Hasta que recupere la estructura de corto plazo.</td><td class="italic">“de momento cancelamos largos en hype hasta que recuperemos estructura”</td><td><a class="ts" href="https://youtu.be/OwrAjFdTQ4s?t=811" target="_blank" rel="noopener">13:31</a></td></tr>
-              <tr><td class="font-semibold">ATOM</td><td><span class="stance s-cond">alcista si rompe</span></td><td>corto</td><td>Condición: romper el bloque de corto plazo que hizo de techo.</td><td class="italic">“si rompe eh yo he encantado de rectificar y estar en largo”</td><td><a class="ts" href="https://youtu.be/OwrAjFdTQ4s?t=853" target="_blank" rel="noopener">14:13</a></td></tr>
-              <tr><td class="font-semibold">TSM · AVGO</td><td><span class="stance s-bull">alcista</span></td><td>sin horizonte</td><td>Caída del 8 oct recuperada en la preapertura.</td><td class="italic">“sinceramente creo que es para seguir subiendo”</td><td><a class="ts" href="https://youtu.be/OwrAjFdTQ4s?t=867" target="_blank" rel="noopener">14:27</a></td></tr>
-              <tr><td class="font-semibold">JEPI <span class="text-muted font-normal">(prob.)</span></td><td><span class="stance s-bull">compra en rango</span></td><td>corto</td><td class="num">Comprar entre 55 y 56.</td><td class="italic">“cualquier oportunidad entre 55 y 56 es para comprar”</td><td><a class="ts" href="https://youtu.be/OwrAjFdTQ4s?t=944" target="_blank" rel="noopener">15:44</a></td></tr>
-              <tr><td class="font-semibold">LCID</td><td><span class="stance s-bear">no comprar</span></td><td>sin horizonte</td><td>Empresa con pérdidas crecientes y dilución.</td><td class="italic">“No os metáis en estas historias.”</td><td><a class="ts" href="https://youtu.be/OwrAjFdTQ4s?t=992" target="_blank" rel="noopener">16:32</a></td></tr>
-            </tbody>
-          </table>
-        </div>
-
-        <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-3">
-          <div class="rounded-lg border border-line bg-surface p-4 grid gap-2 content-start">
-            <p class="eyebrow">Operativa propia</p>
-            <p class="text-[14px]">Pasa de cortos a largos en BTC. <a class="ts" href="https://youtu.be/OwrAjFdTQ4s?t=34" target="_blank" rel="noopener">00:34</a></p>
-            <p class="text-[13px] text-muted italic">“He dejado de hacer cortos para empezar a construir largos.”</p>
-          </div>
-          <div class="rounded-lg border border-line bg-surface p-4 grid gap-2 content-start">
-            <p class="eyebrow">Conflicto de interés</p>
-            <p class="text-[14px]">Código de referido de Quantfury y comunidad privada de pago. <a class="ts" href="https://youtu.be/OwrAjFdTQ4s?t=712" target="_blank" rel="noopener">11:52</a> · <a class="ts" href="https://youtu.be/OwrAjFdTQ4s?t=921" target="_blank" rel="noopener">15:21</a></p>
-            <p class="text-[13px] text-muted italic">“en estas recompensas escribes Nacho y aplicas”</p>
-          </div>
-          <div class="rounded-lg border border-line bg-surface p-4 grid gap-2 content-start">
-            <p class="eyebrow">Título frente a contenido</p>
-            <p class="text-[14px]">El título promete <strong>$90.000</strong>; la cifra no aparece en los 18 minutos hablados.</p>
-            <p class="text-[13px] text-muted">El contenido es alcista de medio plazo con condición de corto.</p>
-          </div>
-          <div class="rounded-lg border border-line bg-surface p-4 grid gap-2 content-start">
-            <p class="eyebrow">Indicador propio</p>
-            <p class="text-[14px]"><span class="num font-semibold">62/100</span> en su método FRELDI: “no es la mejor zona de compra”. <a class="ts" href="https://youtu.be/OwrAjFdTQ4s?t=582" target="_blank" rel="noopener">09:42</a></p>
-            <p class="text-[13px] text-muted num">Fear &amp; Greed 56 · EMA 200 en 76.300 · interés 22/100</p>
-          </div>
-        </div>
-
-        <div class="rounded-lg border border-line bg-surface p-4 grid gap-3">
-          <div class="flex flex-wrap items-baseline justify-between gap-2"><h3 class="font-semibold">El mismo análisis sobre KManuS88</h3><a class="ts" href="https://youtu.be/NbqOk_ZHXf8" target="_blank" rel="noopener">La mayor rentabilidad para éste momento de las altcoins · 14:28</a></div>
-          <ul class="grid gap-2 text-[14px]">
-            <li class="flex flex-wrap gap-x-3 gap-y-1"><span class="font-semibold w-16">LIT</span><span class="stance s-bull">alcista</span><span>Bot de grilla en rango 4–6 USD, apalancamiento x3, 2.000 USD.</span><span class="italic text-muted">“Lighter es una de mis grandes apuestas para este bull market.”</span><a class="ts" href="https://youtu.be/NbqOk_ZHXf8?t=606" target="_blank" rel="noopener">10:06</a></li>
-            <li class="flex flex-wrap gap-x-3 gap-y-1"><span class="font-semibold w-16">Altcoins</span><span class="stance s-bull">alcista</span><span>Contexto de ciclo.</span><span class="italic text-muted">“estamos en un prebull y las altcoins empiezan a volar”</span><a class="ts" href="https://youtu.be/NbqOk_ZHXf8?t=23" target="_blank" rel="noopener">00:23</a></li>
-            <li class="flex flex-wrap gap-x-3 gap-y-1"><span class="font-semibold w-16">Afiliado</span><span class="stance s-neutral">Pionex</span><span>Pide abrir cuenta con su enlace antes de copiar los bots.</span><span class="italic text-muted">“créense la cuenta con el link que les dejo abajo”</span><a class="ts" href="https://youtu.be/NbqOk_ZHXf8?t=202" target="_blank" rel="noopener">03:22</a></li>
-          </ul>
-        </div>
+        <p class="prose-w text-muted">Cada video analizado pasa por el prompt de analista especulativo v1.0.0 con salida JSON estricta. Separa lo que el creador dijo de lo que está demostrado, conserva condiciones y horizontes, y no inventa fuentes ni probabilidades. Antes de publicarse, un validador comprueba que cada cita exista literal en la transcripción, con su segundo real. Hoy se ejecuta a mano, video a video; no está en el timer.</p>
+        <div id="latest-analysis" class="grid gap-3"><p class="text-muted">Cargando el último análisis…</p></div>
+        <p class="text-[13px] text-muted" id="analysis-count"></p>
       </div>
     </section>
 
@@ -517,8 +486,8 @@
     <div class="flex flex-wrap items-end justify-between gap-3">
       <div class="grid gap-1">
         <p class="eyebrow">Salida del servicio</p>
-        <h2 id="tx-heading" class="font-display font-extrabold text-3xl">Transcripciones</h2>
-        <p class="text-muted prose-w">Los mismos JSON que guarda el servicio, con los segmentos originales y sus tiempos. Cada minuto abre el video en ese punto.</p>
+        <h2 id="tx-heading" class="font-display font-extrabold text-3xl">Transcripciones y análisis</h2>
+        <p class="text-muted prose-w">Los mismos JSON que guarda el servicio, con los segmentos originales y sus tiempos, y el análisis de cada video cuando existe. Cada minuto abre el video en ese punto.</p>
       </div>
       <p class="ts text-muted" id="tx-count"></p>
     </div>
@@ -531,6 +500,7 @@
             <button type="button" class="seg-btn" data-ch="nacho" aria-pressed="false">Nacho IC</button>
             <button type="button" class="seg-btn" data-ch="kmanu" aria-pressed="false">KManuS88</button>
             <button type="button" class="seg-btn" data-kind="video" aria-pressed="false">Solo largos</button>
+            <button type="button" class="seg-btn" data-an="1" aria-pressed="false">Con análisis</button>
           </div>
           <label for="tx-filter" class="sr-only">Buscar por título</label>
           <input id="tx-filter" class="field" type="search" placeholder="Buscar por título" autocomplete="off">
@@ -543,6 +513,7 @@
           <p class="eyebrow" id="tv-channel">—</p>
           <h3 class="font-display font-bold text-xl leading-tight" id="tv-title">Elige una transcripción</h3>
           <dl class="flex flex-wrap gap-x-5 gap-y-1 text-[13px]" id="tv-meta"></dl>
+          <div id="tx-controls" class="grid gap-3">
           <div class="flex flex-wrap gap-2">
             <a class="action primary" id="tv-json" href="#" target="_blank" rel="noopener">Abrir JSON</a>
             <button type="button" class="action" id="tv-copy">Copiar JSON</button>
@@ -557,17 +528,23 @@
             <input id="tv-search" class="field" type="search" placeholder="Buscar en el texto: 81.300, liquidez, Ethereum…" autocomplete="off">
             <span class="ts text-muted" id="tv-hits"></span>
           </div>
+          </div>
+          <div class="flex gap-1 -mb-px" role="tablist" aria-label="Contenido del video">
+            <button type="button" role="tab" class="tab" data-tab="tx" aria-selected="true" aria-controls="tv-body">Transcripción</button>
+            <button type="button" role="tab" class="tab" data-tab="an" aria-selected="false" aria-controls="an-body">Análisis <span class="count" id="tab-an-badge">—</span></button>
+          </div>
         </header>
-        <div id="tv-body" class="p-4 sm:p-5 grid gap-3 text-[15px] max-h-[70vh] overflow-y-auto">
+        <div id="tv-body" role="tabpanel" class="p-4 sm:p-5 grid gap-3 text-[15px] max-h-[70vh] overflow-y-auto">
           <p class="text-muted">Cargando…</p>
         </div>
+        <div id="an-body" role="tabpanel" hidden class="p-4 sm:p-5 grid gap-5 text-[15px] max-h-[78vh] overflow-y-auto"></div>
       </article>
     </div>
   </section>
 
   <footer class="mt-14 pt-6 border-t border-line grid gap-2 text-[13px] text-muted prose-w">
-    <p>Las etapas 1 a 3 corren en <span class="ts">services/transcripts</span> (repo <span class="ts">FilipaoVfx/cryptoreport</span>, rama <span class="ts">ccr-054ca714-2ds4wh</span>). Las etapas 4 a 6 son un ejemplo: Claude leyó las transcripciones el 10 oct y extrajo afirmaciones con el esquema del plan. La siguiente pieza es automatizarlas con la API de Claude y salida estructurada.</p>
-    <p>Transcripciones, ciclos y cifras se regeneran al final de cada ciclo del servicio (cada 15 min) y la página los vuelve a leer cada 5 min. Las etapas 4 a 6 son un análisis fijo del 10 oct.</p>
+    <p>Las etapas 1 a 3 corren en <span class="ts">services/transcripts</span> y el análisis (etapa 5) en <span class="ts">services/analysis</span> (repo <span class="ts">FilipaoVfx/cryptoreport</span>, rama <span class="ts">ccr-054ca714-2ds4wh</span>). Las etapas 4 y 6 son un ejemplo fijo hecho por Claude el 10 oct.</p>
+    <p>Transcripciones, análisis, ciclos y cifras se regeneran al final de cada ciclo del servicio (cada 15 min) y la página los vuelve a leer cada 5 min. Solo se publican los análisis que pasan la validación.</p>
     <p>Nada de esta página es una recomendación de inversión. Registra lo que dijeron los creadores, con su cita y su minuto.</p>
   </footer>
 </div>
@@ -613,6 +590,7 @@
       <td class="ts text-right">${fmtDur(v.dur)}</td>
       <td class="ts text-right">${es(v.cov * 100)} %</td>
       <td class="ts text-right ${v.lat === null ? "text-muted" : ""}">${v.lat === null ? "carga inicial" : es(v.lat) + " min"}</td>
+      <td class="whitespace-nowrap">${v.analysis ? `<a href="#transcripciones" data-open-analysis="${v.id}">${v.analysis.claims} afirmaciones</a>` : '<span class="text-muted">—</span>'}</td>
       <td class="ts whitespace-nowrap"><a href="${v.file}" target="_blank" rel="noopener">JSON</a></td>
     </tr>`).join("");
   }
@@ -627,7 +605,7 @@
     const fb = DATA.cycles.reduce((a, c) => a + DATA.channels.filter(ch => c.ok[ch.slug] === "fb").length, 0);
     set("k-videos", vs.length);
     set("k-videos-sub", DATA.channels.map(ch => `${vs.filter(v => v.ch === ch.slug).length} ${ch.name}`).join(" · ")
-      + (DATA.pending ? ` · ${DATA.pending} en espera` : ""));
+      + (DATA.pending ? ` · ${DATA.pending} en espera` : "") + ` · ${vs.filter(v => v.analysis).length} analizados`);
     set("k-audio", `${Math.floor(secs / 3600)} h ${Math.round(secs % 3600 / 60)} min`);
     set("k-audio-sub", `${segs.toLocaleString("es-ES")} segmentos con tiempo`);
     set("k-cov", vs.length ? `${es(Math.min(...vs.map(v => v.cov)) * 100)} %` : "—");
@@ -661,8 +639,9 @@
     </div>`).join("");
 
   // ---- Visor de transcripciones y menú de la barra ------------------------------------------------------------
-  const state = { ch: "all", onlyLong: false, id: null, view: "blocks", doc: null, raw: "", search: "" };
-  const cache = new Map();
+  const state = { ch: "all", onlyLong: false, onlyAnalyzed: false, id: null, view: "blocks", doc: null, raw: "", search: "",
+                  tab: "tx", claimFilter: "all" };
+  const cache = new Map(), anCache = new Map();
   const byId = id => DATA.videos.find(v => v.id === id);
   // Búsqueda sin tildes ni mayúsculas; "81.300" encuentra "81,300" (el subtitulado usa coma de miles).
   const normChar = c => c.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase().replace(".", ",");
@@ -700,10 +679,10 @@
     if (!DATA) return;
     const q = norm($("tx-filter").value.trim());
     const list = DATA.videos.filter(v => (state.ch === "all" || v.ch === state.ch) && (!state.onlyLong || !v.short)
-      && (!q || norm(`${v.title} ${v.id} ${chName(v.ch)}`).includes(q)));
+      && (!state.onlyAnalyzed || v.analysis) && (!q || norm(`${v.title} ${v.id} ${chName(v.ch)}`).includes(q)));
     $("tx-list").innerHTML = list.length ? list.map(v => `
       <button type="button" class="tx-item" data-open="${v.id}" aria-current="${v.id === state.id}">
-        <span class="flex items-center justify-between gap-2 text-[12px] text-muted"><span class="ts">${v.pub} · ${chName(v.ch)}</span><span class="ts">${fmtDur(v.dur)}${v.short ? " · short" : ""}</span></span>
+        <span class="flex items-center justify-between gap-2 text-[12px] text-muted"><span class="ts">${v.pub} · ${chName(v.ch)}</span><span class="flex items-center gap-1.5">${v.analysis ? '<span class="stance s-bull">análisis</span>' : ""}<span class="ts">${fmtDur(v.dur)}${v.short ? " · short" : ""}</span></span></span>
         <span class="text-[14px] font-medium leading-snug">${esc(v.title)}</span>
       </button>`).join("") : '<p class="p-4 text-muted text-[14px]">Ningún video coincide con el filtro.</p>';
   }
@@ -717,7 +696,7 @@
       return `<p class="eyebrow px-2 pt-2 pb-1">${chName(ch)} · ${vs.length}</p>` + vs.map(v => `
         <div class="menu-item" role="button" tabindex="0" data-open="${v.id}">
           <span class="min-w-0"><span class="block truncate text-[14px] font-medium">${esc(v.title)}</span>
-            <span class="ts text-[12px] text-muted">${v.pub} · ${fmtDur(v.dur)}${v.short ? " · short" : ""} · ${v.segs} segm.</span></span>
+            <span class="ts text-[12px] text-muted">${v.pub} · ${fmtDur(v.dur)}${v.short ? " · short" : ""} · ${v.segs} segm.${v.analysis ? " · análisis" : ""}</span></span>
           <a class="ts text-[12.5px] self-center" href="${v.file}" target="_blank" rel="noopener" data-raw>JSON</a>
         </div>`).join("");
     }).join("");
@@ -734,14 +713,15 @@
     $("tv-body").innerHTML = shown.length ? shown.map(it => {
       const t = `<a class="ts" href="https://youtu.be/${state.id}?t=${Math.floor(it.start)}" target="_blank" rel="noopener">${clock(it.start)}</a>`;
       return state.view === "blocks"
-        ? `<p>${t} ${highlight(it.text, q)}</p>`
-        : `<p class="grid grid-cols-[64px_1fr] gap-3">${t}<span>${highlight(it.text, q)}</span></p>`;
+        ? `<p data-start="${it.start}">${t} ${highlight(it.text, q)}</p>`
+        : `<p data-start="${it.start}" class="grid grid-cols-[64px_1fr] gap-3">${t}<span>${highlight(it.text, q)}</span></p>`;
     }).join("") : `<p class="text-muted">Sin coincidencias para “${esc(state.search)}”.</p>`;
   }
 
-  async function openTranscript(id, scroll = true) {
+  async function openTranscript(id, scroll = true, tab = null) {
     const v = byId(id); if (!v) return;
     state.id = id; state.doc = null; state.raw = "";
+    $("tab-an-badge").textContent = v.analysis ? v.analysis.claims : "—";
     renderList();
     $("tv-channel").textContent = `${chName(v.ch)} · ${v.short ? "short" : "video largo"}`;
     $("tv-title").textContent = v.title;
@@ -751,8 +731,8 @@
     $("tv-json").href = v.file;
     $("tv-yt").href = `https://www.youtube.com/watch?v=${id}`;
     $("tv-body").innerHTML = '<p class="text-muted">Cargando…</p>';
+    setTab(tab || state.tab);
     if (scroll) $("transcripciones").scrollIntoView({ behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" });
-    try { history.replaceState(null, "", "#t-" + id); } catch (e) { /* el marco puede no permitirlo */ }
     try {
       let entry = cache.get(id);
       if (!entry) {
@@ -767,6 +747,188 @@
       renderBody();
     } catch (err) {
       $("tv-body").innerHTML = `<p class="text-bear">No se pudo cargar ${esc(v.file)} (${esc(err.message)}). Prueba con “Abrir JSON”.</p>`;
+    }
+  }
+
+
+  // ---- Análisis (services/analysis): pestaña del visor y último análisis de la etapa 05 ---------------------------
+  const TIPO = { hecho_verificable: "hecho verificable", opinion: "opinión", hipotesis: "hipótesis", prediccion: "predicción",
+                 insinuacion: "insinuación" };
+  const VERIF = { respaldada: ["respaldada", "s-bull"], parcialmente_respaldada: ["parcialmente respaldada", "s-cond"],
+                  contradicha: ["contradicha", "s-bear"], no_verificada: ["no verificada", "s-neutral"],
+                  no_verificable: ["no verificable", "s-neutral"] };
+  const ESTADO = { completo: "s-bull", parcial: "s-cond", insuficiente: "s-bear" };
+  const PLAUS = { limitada: "s-bear", plausible: "s-cond", bien_sustentada: "s-bull" };
+  const ASPECTOS = { intencion: "Intención comunicativa", lenguaje: "Lenguaje y encuadre", emociones: "Emociones convocadas",
+                     pruebas: "Calidad de las pruebas", saltos_logicos: "Saltos lógicos", omisiones: "Información ausente",
+                     audiovisual: "Título y presentación", incentivos: "Incentivos e intereses" };
+  const MERCADO = [["Activo", m => m.activo_normalizado || m.activo_literal], ["Postura", m => m.postura],
+                   ["Horizonte", m => m.horizonte_literal], ["Condición", m => m.condicion], ["Entrada", m => m.entrada],
+                   ["Objetivo", m => m.objetivo], ["Invalidación", m => m.invalidacion], ["Catalizador", m => m.catalizador]];
+  const tx = t => (t === null || t === undefined) ? "" : esc(String(t));
+  const nice = t => tx(String(t || "").replaceAll("_", " "));
+  const bullets = (title, items) => items && items.length
+    ? `<div class="grid gap-1"><p class="eyebrow">${title}</p><ul class="list-disc pl-5 grid gap-1 text-[14px]">${items.map(i => `<li>${tx(i)}</li>`).join("")}</ul></div>` : "";
+
+  async function loadAnalysisDoc(v) {
+    if (anCache.has(v.id)) return anCache.get(v.id);
+    const r = await fetch(v.analysis.file, { cache: "no-store" });
+    if (!r.ok) throw new Error("HTTP " + r.status);
+    const doc = await r.json();
+    anCache.set(v.id, doc);
+    return doc;
+  }
+
+  function evidenceHtml(ids, evs, videoId) {
+    return (ids || []).map(id => evs[id]).filter(Boolean).map(e => {
+      const where = e.inicio_s !== null && e.inicio_s !== undefined
+        ? `<a class="ts" href="https://youtu.be/${videoId}?t=${Math.floor(e.inicio_s)}" target="_blank" rel="noopener">${clock(e.inicio_s)}</a> · <button type="button" class="link-btn" data-goto="${e.inicio_s}">ver en la transcripción</button>`
+        : `<span class="text-muted">${nice(e.origen)}</span>`;
+      return `<blockquote class="evq"><span class="italic">${e.cita ? `«${tx(e.cita)}»` : tx(e.observacion)}</span><span class="block text-[12.5px] mt-1">${where}</span></blockquote>`;
+    }).join("");
+  }
+
+  function claimHtml(c, evs, videoId) {
+    const [label, cls] = VERIF[c.estado_verificacion] || [nice(c.estado_verificacion), "s-neutral"];
+    const m = c.mercado;
+    const market = m ? `<dl class="mk">${MERCADO.map(([k, f]) => f(m) ? `<div><dt>${k}</dt><dd>${tx(f(m))}</dd></div>` : "").join("")}${m.operacion_propia_declarada ? "<div><dt>Operación propia</dt><dd>declarada</dd></div>" : ""}</dl>` : "";
+    return `<article class="claim" data-claim-kind="${m ? "mercado " : ""}${tx(c.tipo)}">
+      <div class="flex flex-wrap items-center gap-1.5 text-[12px]"><span class="ts text-muted">${tx(c.id)}</span><span class="stance s-neutral">${TIPO[c.tipo] || nice(c.tipo)}</span><span class="stance ${cls}">${label}</span>${c.conviccion_creador ? `<span class="text-muted">convicción del creador: ${tx(c.conviccion_creador)}</span>` : ""}</div>
+      <p class="font-semibold leading-snug">${tx(c.enunciado)}</p>${market}${evidenceHtml(c.evidencia_ids, evs, videoId)}
+      ${c.justificacion_verificacion ? `<p class="text-[13px] text-muted">${tx(c.justificacion_verificacion)}</p>` : ""}
+    </article>`;
+  }
+
+  function analysisHtml(doc, v) {
+    const a = doc.analysis, meta = doc.meta, r = a.resumen || {};
+    const evs = Object.fromEntries((a.evidencias || []).map(e => [e.id, e]));
+    const claims = a.afirmaciones || [], marketCount = claims.filter(c => c.mercado).length;
+    const when = (meta.analyzed_at || "").slice(0, 16).replace("T", " ");
+    const aspects = Object.entries(ASPECTOS).map(([k, name]) => {
+      const x = (a.ocho_aspectos || {})[k]; if (!x) return "";
+      const cls = { evaluado: "s-bull", parcial: "s-cond", no_evaluable: "s-neutral" }[x.estado] || "s-neutral";
+      return `<details class="asp"><summary><span class="font-semibold">${name}</span><span class="stance ${cls}">${nice(x.estado)}</span><span class="text-muted text-[12px]">${x.hallazgos.length} hallazgo(s)</span></summary>
+        <div class="grid gap-2 mt-2">${x.hallazgos.map(h => `<div class="text-[14px] grid gap-0.5"><p>${tx(h.observacion)}</p>${h.interpretacion ? `<p class="text-muted">${tx(h.interpretacion)}</p>` : ""}${h.limite ? `<p class="text-[12.5px] text-muted">Límite: ${tx(h.limite)}</p>` : ""}</div>`).join("") || '<p class="text-muted text-[14px]">Sin hallazgos.</p>'}
+        ${x.limitaciones.length ? `<p class="text-[12.5px] text-muted">${x.limitaciones.map(tx).join(" · ")}</p>` : ""}</div></details>`;
+    }).join("");
+    const scenarios = (a.escenarios || []).map(sc => `<article class="claim">
+      <div class="flex flex-wrap items-center gap-1.5 text-[12px]"><span class="ts text-muted">${tx(sc.id)}</span><span class="stance s-neutral">propuesto por el ${tx(sc.origen)}</span>${sc.plausibilidad ? `<span class="stance ${PLAUS[sc.plausibilidad] || "s-neutral"}">plausibilidad ${nice(sc.plausibilidad)}</span>` : ""}${sc.horizonte ? `<span class="text-muted">horizonte: ${tx(sc.horizonte)}</span>` : ""}</div>
+      <p class="font-semibold">${tx(sc.nombre)}</p>${sc.mecanismo ? `<p class="text-[14px]">${tx(sc.mecanismo)}</p>` : ""}
+      <div class="grid sm:grid-cols-2 gap-3">${bullets("Supuestos", sc.supuestos)}${bullets("Catalizadores", sc.catalizadores)}${bullets("Señales a favor", sc.senales_a_favor)}${bullets("Señales en contra", sc.senales_en_contra)}</div>
+      ${sc.invalidacion ? `<p class="text-[14px]"><span class="font-semibold">Lo invalidaría:</span> ${tx(sc.invalidacion)}</p>` : ""}${bullets("Evidencia que falta", sc.evidencia_faltante)}
+    </article>`).join("");
+    const techniques = (a.tecnicas_narrativas || []).map(t => `<li><span class="font-semibold">${tx(t.tecnica)}</span> <span class="text-muted text-[12px]">(confianza ${tx(t.confianza)})</span>: ${tx(t.mecanismo)}${t.explicacion_alternativa ? ` <span class="text-muted">Alternativa: ${tx(t.explicacion_alternativa)}</span>` : ""}</li>`).join("");
+    const follow = (a.seguimiento || []).map(f => `<li>${tx(f.que_observar)}${f.criterio ? ` <span class="text-muted">· criterio (${tx(f.origen_criterio)}): ${tx(f.criterio)}</span>` : ""}${f.plazo ? ` <span class="text-muted">· plazo: ${tx(f.plazo)}</span>` : ""}</li>`).join("");
+    const pending = (a.verificaciones_pendientes || []).map(q => `<li><span class="stance ${({ alta: "s-bear", media: "s-cond", baja: "s-neutral" })[q.prioridad] || "s-neutral"}">${tx(q.prioridad)}</span> ${tx(q.pregunta)}${q.fuente_o_dato_buscado ? ` <span class="text-muted">· ${tx(q.fuente_o_dato_buscado)}</span>` : ""}</li>`).join("");
+    const scope = a.alcance || {};
+    return `
+      <div class="flex flex-wrap items-center gap-2 text-[13px]"><span class="stance ${ESTADO[a.estado] || "s-neutral"}">análisis ${tx(a.estado)}</span><span class="stance s-bull">citas validadas</span><span class="text-muted">${tx(meta.model)} · ${tx(when)} UTC · $${tx(meta.cost_usd_estimate)}</span><a class="ts ml-auto" href="${v.analysis.file}" target="_blank" rel="noopener">JSON del análisis</a></div>
+      <p class="text-[13px] text-muted">Análisis automático del texto del video. Separa lo que el creador dijo de lo que está demostrado: sin fuentes externas, nada figura como verificado. No es una recomendación de inversión.</p>
+      <div class="grid gap-2"><p class="eyebrow">Tesis principal</p><p class="text-[17px] leading-snug font-semibold">${tx(r.tesis_principal)}</p></div>
+      <dl class="grid md:grid-cols-2 gap-3 text-[14.5px]">
+        ${[["Mensaje explícito", r.mensaje_explicito], ["Narrativa sugerida", r.narrativa_sugerida], ["Respaldo demostrable", r.respaldo_demostrable], ["Conclusión provisional", r.conclusion_provisional]].map(([k, val]) => val ? `<div class="grid gap-1 content-start"><dt class="eyebrow">${k}</dt><dd>${tx(val)}</dd></div>` : "").join("")}
+      </dl>
+      <div class="grid gap-3">
+        <div class="flex flex-wrap items-center justify-between gap-2"><h4 class="an-h">Afirmaciones <span class="count">${claims.length}</span></h4>
+          <span class="flex flex-wrap gap-1" role="group" aria-label="Filtrar afirmaciones">
+            <button type="button" class="seg-btn" data-cf="all" aria-pressed="${state.claimFilter === "all"}">Todas</button>
+            <button type="button" class="seg-btn" data-cf="mercado" aria-pressed="${state.claimFilter === "mercado"}">De mercado (${marketCount})</button>
+            <button type="button" class="seg-btn" data-cf="prediccion" aria-pressed="${state.claimFilter === "prediccion"}">Predicciones</button>
+          </span></div>
+        <div class="grid gap-2" id="claims-list">${claims.map(c => claimHtml(c, evs, v.id)).join("")}</div>
+      </div>
+      <div class="grid gap-2"><h4 class="an-h">Cómo está construida la narrativa</h4>${aspects}</div>
+      ${techniques ? `<div class="grid gap-2"><h4 class="an-h">Técnicas narrativas</h4><ul class="list-disc pl-5 grid gap-1.5 text-[14px]">${techniques}</ul></div>` : ""}
+      ${scenarios ? `<div class="grid gap-2"><h4 class="an-h">Escenarios</h4>${scenarios}</div>` : ""}
+      ${follow ? `<div class="grid gap-2"><h4 class="an-h">Qué seguir</h4><ul class="list-disc pl-5 grid gap-1.5 text-[14px]">${follow}</ul></div>` : ""}
+      ${pending ? `<div class="grid gap-2"><h4 class="an-h">Verificaciones pendientes</h4><ul class="grid gap-1.5 text-[14px]">${pending}</ul></div>` : ""}
+      <details class="asp"><summary><span class="font-semibold">Alcance y limitaciones</span><span class="text-muted text-[12px]">verificación externa: ${nice(scope.verificacion_externa)}</span></summary>
+        <div class="grid gap-2 mt-2 text-[14px]">${bullets("Material recibido", scope.material_recibido)}${bullets("Limitaciones", scope.limitaciones)}${scope.alcance_verificacion ? `<p class="text-muted">${tx(scope.alcance_verificacion)}</p>` : ""}</div></details>`;
+  }
+
+  function filterClaims(kind) {
+    state.claimFilter = kind;
+    document.querySelectorAll("[data-cf]").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.cf === kind)));
+    document.querySelectorAll("#claims-list .claim").forEach(el => {
+      el.hidden = kind !== "all" && !el.dataset.claimKind.split(" ").includes(kind);
+    });
+  }
+
+  async function renderAnalysisTab() {
+    const v = byId(state.id), body = $("an-body");
+    if (!v) return;
+    if (!v.analysis) {
+      body.innerHTML = '<p class="text-muted">Este video todavía no tiene análisis. Se generan con <span class="ts">services/analysis</span> y solo se publican los que pasan la validación.</p>';
+      return;
+    }
+    body.innerHTML = '<p class="text-muted">Cargando análisis…</p>';
+    try {
+      const doc = await loadAnalysisDoc(v);
+      if (state.id !== v.id || state.tab !== "an") return;
+      body.innerHTML = analysisHtml(doc, v);
+      filterClaims(state.claimFilter);
+    } catch (err) {
+      body.innerHTML = `<p class="text-bear">No se pudo cargar el análisis (${esc(err.message)}).</p>`;
+    }
+  }
+
+  function setTab(tab) {
+    state.tab = tab;
+    document.querySelectorAll("[data-tab]").forEach(b => b.setAttribute("aria-selected", String(b.dataset.tab === tab)));
+    $("tv-body").hidden = tab !== "tx"; $("tx-controls").hidden = tab !== "tx"; $("an-body").hidden = tab !== "an";
+    if (tab === "an") renderAnalysisTab();
+    try { history.replaceState(null, "", (tab === "an" ? "#a-" : "#t-") + state.id); } catch (e) { /* el marco puede no permitirlo */ }
+  }
+
+  // Desde una cita del análisis al bloque de la transcripción que la contiene
+  function goToTime(t) {
+    setTab("tx");
+    if (state.search) { state.search = ""; $("tv-search").value = ""; }
+    renderBody();
+    const blocks = [...$("tv-body").querySelectorAll("[data-start]")];
+    const target = blocks.filter(b => Number(b.dataset.start) <= t + 0.01).pop() || blocks[0];
+    if (!target) return;
+    target.scrollIntoView({ block: "center", behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" });
+    target.classList.add("flash");
+    setTimeout(() => target.classList.remove("flash"), 2400);
+  }
+
+  async function renderLatestAnalysis() {
+    const box = $("latest-analysis");
+    if (!box || !DATA) return;
+    const analyzed = DATA.videos.filter(v => v.analysis);
+    const total = analyzed.reduce((sum, v) => sum + (v.analysis.cost || 0), 0);
+    set("analysis-count", analyzed.length
+      ? `${analyzed.length} de ${DATA.videos.length} videos analizados · costo estimado acumulado $${es(total, 2)}` : "");
+    const v = byId(DATA.latestAnalysis);
+    if (!v) {
+      box.innerHTML = '<p class="text-muted">Todavía no hay análisis publicados. Se generan con <span class="ts">python -m cranalysis run</span>.</p>';
+      return;
+    }
+    const key = `${v.id}|${v.analysis.at}|${analyzed.length}`;
+    if (box.dataset.key === key) return;
+    try {
+      const doc = await loadAnalysisDoc(v), a = doc.analysis;
+      const evs = Object.fromEntries((a.evidencias || []).map(e => [e.id, e]));
+      const market = (a.afirmaciones || []).filter(c => c.mercado).slice(0, 5);
+      const others = analyzed.filter(o => o.id !== v.id);
+      box.innerHTML = `
+        <article class="rounded-lg border border-line bg-surface p-4 sm:p-5 grid gap-3">
+          <p class="eyebrow">Último análisis · ${esc(chName(v.ch))} · ${v.pub}</p>
+          <h3 class="font-display font-bold text-xl leading-tight">${esc(v.title)}</h3>
+          <p class="text-[16px] leading-snug"><span class="font-semibold">Tesis:</span> ${tx(a.resumen.tesis_principal)}</p>
+          <p class="text-muted text-[14px]">${tx(a.resumen.conclusion_provisional)}</p>
+          <ul class="grid gap-2">${market.map(c => {
+            const e = evs[(c.evidencia_ids || [])[0]];
+            const when = e && e.inicio_s !== null ? ` <a class="ts" href="https://youtu.be/${v.id}?t=${Math.floor(e.inicio_s)}" target="_blank" rel="noopener">${clock(e.inicio_s)}</a>` : "";
+            return `<li class="text-[14px] grid grid-cols-[auto_1fr] sm:grid-cols-[auto_1fr_auto] gap-x-3 gap-y-0.5 items-baseline"><span class="stance s-neutral">${tx(c.mercado.activo_normalizado || c.mercado.activo_literal)}</span><span>${tx(c.enunciado)}</span><span class="col-start-2 sm:col-start-auto">${when}</span></li>`;
+          }).join("")}</ul>
+          <div class="flex flex-wrap items-center gap-3"><button type="button" class="action primary" data-open-analysis="${v.id}">Abrir el análisis completo</button><span class="text-muted text-[13px]">${a.afirmaciones.length} afirmaciones · ${(a.afirmaciones || []).filter(c => c.mercado).length} de mercado · ${tx(doc.meta.model)}</span></div>
+        </article>
+        ${others.length ? `<div class="flex flex-wrap items-center gap-2 text-[13.5px]"><span class="text-muted">Otros análisis:</span>${others.map(o => `<button type="button" class="action" data-open-analysis="${o.id}">${esc(o.title.length > 48 ? o.title.slice(0, 46) + "…" : o.title)}</button>`).join("")}</div>` : ""}`;
+      box.dataset.key = key;
+    } catch (err) {
+      box.innerHTML = `<p class="text-bear">No se pudo cargar el último análisis (${esc(err.message)}).</p>`;
     }
   }
 
@@ -786,6 +948,14 @@
   document.addEventListener("click", e => {
     if (!navPanel.hidden && !navPanel.contains(e.target) && !navBtn.contains(e.target)) setNav(false);
     if (e.target.closest("[data-raw]")) return;  // el enlace "JSON" abre el archivo, no el visor
+    const analysisOpener = e.target.closest("[data-open-analysis]");
+    if (analysisOpener) { e.preventDefault(); setNav(false); openTranscript(analysisOpener.dataset.openAnalysis, true, "an"); return; }
+    const goto = e.target.closest("[data-goto]");
+    if (goto) { goToTime(Number(goto.dataset.goto)); return; }
+    const tabButton = e.target.closest("[data-tab]");
+    if (tabButton) { setTab(tabButton.dataset.tab); return; }
+    const claimFilter = e.target.closest("[data-cf]");
+    if (claimFilter) { filterClaims(claimFilter.dataset.cf); return; }
     const opener = e.target.closest("[data-open]");
     if (opener) { e.preventDefault(); setNav(false); openTranscript(opener.dataset.open); }
   });
@@ -798,6 +968,9 @@
   }));
   document.querySelector("[data-kind]").addEventListener("click", e => {
     state.onlyLong = !state.onlyLong; e.currentTarget.setAttribute("aria-pressed", String(state.onlyLong)); renderList();
+  });
+  document.querySelector("[data-an]").addEventListener("click", e => {
+    state.onlyAnalyzed = !state.onlyAnalyzed; e.currentTarget.setAttribute("aria-pressed", String(state.onlyAnalyzed)); renderList();
   });
   $("tx-filter").addEventListener("input", renderList);
   document.querySelectorAll("[data-view]").forEach(b => b.addEventListener("click", () => {
@@ -820,7 +993,10 @@
     if (!r.ok) throw new Error("HTTP " + r.status);
     DATA = await r.json();
   }
-  function renderAll() { renderCycles(); renderKpis(); renderTable(); renderList(); if (!navPanel.hidden) renderNav(); }
+  function renderAll() {
+    renderCycles(); renderKpis(); renderTable(); renderList(); renderLatestAnalysis();
+    if (!navPanel.hidden) renderNav();
+  }
   (async () => {
     try { await loadData(); } catch (err) {
       set("snapshot", `no se pudo leer data.json (${err.message})`);
@@ -828,10 +1004,11 @@
       return;
     }
     renderAll();
-    const fromHash = location.hash.startsWith("#t-") ? location.hash.slice(3) : null;
-    const valid = Boolean(fromHash && byId(fromHash));
-    const first = valid ? fromHash : (DATA.videos.find(v => !v.short) || DATA.videos[0] || {}).id;
-    if (first) openTranscript(first, valid);
+    // #t-<id> abre la transcripción y #a-<id> el análisis de ese video
+    const hash = location.hash.match(/^#([ta])-(.+)$/);
+    const valid = Boolean(hash && byId(hash[2]));
+    const first = valid ? hash[2] : (DATA.videos.find(v => !v.short) || DATA.videos[0] || {}).id;
+    if (first) openTranscript(first, valid, valid && hash[1] === "a" ? "an" : "tx");
     setInterval(async () => { try { await loadData(); renderAll(); } catch (e) { /* se reintenta en 5 min */ } }, 5 * 60 * 1000);
     setInterval(updateAge, 30 * 1000);
   })();

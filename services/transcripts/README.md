@@ -61,6 +61,9 @@ La configuración está en `.env` (ver `.env.example`, `chmod 600`, no se versio
 
 - **Se actualiza solo.** Al final de cada ciclo, `run` escribe `data.json` en `/var/www/cryptoreport` (`CR_SITE_DIR`), y la página lo vuelve a leer cada 5 min.
 - **Los JSON se sirven directamente** desde `/var/lib/cryptoreport-transcripts/transcripts/` mediante un `alias` de nginx, sin copias. El listado está en `/transcripts/`.
+- **Análisis** (de `services/analysis`). Cada ciclo copia a `/var/www/cryptoreport/analysis/` solo los que pasaron la validación; los de `_rechazados/` nunca se publican y los que dejan de ser válidos se retiran. `data.json` lleva por video un resumen: estado, afirmaciones, modelo, costo y tesis.
+  - En la web, el visor tiene las pestañas **Transcripción | Análisis**. La de análisis muestra tesis, afirmaciones con filtros y citas que enlazan al minuto en YouTube y a su bloque en la transcripción, los ocho aspectos, los escenarios, el seguimiento y las verificaciones pendientes.
+  - La etapa 05 muestra el último análisis. El enlace `#a-<video_id>` abre directamente el análisis de un video.
 - **El historial de ciclos** se guarda en la tabla `runs` de `state.sqlite`.
 - **Código:** `site/index.html`. Tailwind se compila en local, sin CDN, con `site/tailwind.config.js`.
 - **nginx:** `ops/nginx-cryptoreport.conf`, con contraseña, HTTPS de Let's Encrypt y cabeceras CSP y `noindex`.

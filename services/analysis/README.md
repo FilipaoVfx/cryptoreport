@@ -6,7 +6,8 @@ Estado: integración probada con OpenAI (`gpt-6.1-sol`), sin conectar todavía a
 
 - **Integrado:** prompt v1.0.0, [JSON Schema ejecutable](schema/narrative-analysis.schema.json), dos proveedores (OpenAI por defecto, Claude como alternativa), validador semántico y CLI.
 - **Probado el 12 oct:** la entrada sintética de este README dio el resultado esperado y el video largo `agFTCuv80XE` pasó la validación.
-- **Pendiente:** ejecutar el resto de casos de evaluación de abajo antes de automatizarlo. Mientras tanto, la web conserva sus ejemplos manuales.
+- **En la web:** los análisis válidos aparecen en la pestaña **Análisis** del visor y en la etapa 05; los publica el ciclo del servicio de transcripciones, en un máximo de 15 min.
+- **Pendiente:** ejecutar el resto de casos de evaluación de abajo antes de conectarlo al timer.
 
 ## Integración
 

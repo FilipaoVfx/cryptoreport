@@ -53,6 +53,7 @@ class Config:
     supadata_generate_after_hours: float
     supadata_monthly_credits: int
     site_dir: str
+    analysis_dir: Path | None = None  # None: <data_dir>/analysis (lo escribe services/analysis)
 
     @property
     def db_path(self) -> Path:
@@ -100,4 +101,5 @@ def load_config() -> Config:
         supadata_generate_after_hours=float(os.environ.get("CR_SUPADATA_GENERATE_AFTER_HOURS", "6")),
         supadata_monthly_credits=int(os.environ.get("CR_SUPADATA_MONTHLY_CREDITS", "100")),
         site_dir=os.environ.get("CR_SITE_DIR", ""),  # vacío: no se exporta data.json
+        analysis_dir=Path(os.environ["CR_ANALYSIS_DIR"]) if os.environ.get("CR_ANALYSIS_DIR") else None,
     )
