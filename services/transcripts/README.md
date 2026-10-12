@@ -20,7 +20,7 @@ RSS de cada canal ──► videos nuevos (ventana 72 h) ──► 1. Scraper.Te
   - el costo cabe en el tope mensual (`CR_SUPADATA_MONTHLY_CREDITS`) y en el saldo real que da `/me`.
 
   Si el trabajo sigue en curso, se guarda su `jobId` y se consulta gratis en el siguiente ciclo, sin volver a pagar. Un resultado en otro idioma se descarta y no se repite.
-- **Validación:** `video.php` aporta la duración para calcular la cobertura, es decir, hasta dónde llegan los subtítulos. Con cobertura menor del 85 % el video queda marcado para revisión.
+- **Validación:** `video.php` aporta la duración para calcular la cobertura, es decir, hasta dónde llegan los subtítulos. Con cobertura menor del 85 % el video queda marcado para revisión. Justo después de publicarse, `video.php` a veces no trae la duración (ocurrió el 12 oct). Si falta, cada ciclo la vuelve a pedir para los videos de los últimos 7 días, con un máximo de 3 por ciclo y dos intentos, y reescribe el JSON y el Markdown con la cobertura correcta.
 - **Reintentos:** si los subtítulos aún no existen, se reintenta a los 15 min, 30 min, 1 h, 2 h y 4 h, y después cada 6 h. A las 72 h el video pasa a `no_captions` y se avisa. Con errores del proveedor, a los 8 intentos pasa a `failed`.
 - **RSS inestable y respaldo.** El 9 de octubre falló el 52 % de las peticiones sueltas, y el 10 de octubre estuvo caído más de una hora seguida. Cada canal se reintenta hasta 6 veces, durante aproximadamente 1 minuto.
   - Si el RSS sigue caído, se leen las páginas **/videos, /streams y /shorts** del canal (`channel_pages.py`), que sí responden desde el VPS. Se piden en español porque con otro idioma YouTube traduce los títulos.

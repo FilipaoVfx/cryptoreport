@@ -1,11 +1,15 @@
-"""Llamada a la API de Claude con streaming (la salida puede ser larga) y salida estructurada."""
+"""Tipos comunes y proveedor Claude (streaming + salida estructurada). OpenAI está en openai_client.py."""
 from __future__ import annotations
 
 import json
 from dataclasses import dataclass, field
 
-# $/MTok (precios de la API a oct 2026). La lectura de caché cuesta 0,1x y la escritura de 5 min 1,25x la entrada.
+# $/MTok (precios publicados a oct 2026). La escritura de caché cuesta 1,25x la entrada en ambos proveedores.
 PRICES = {
+    "gpt-6.1-sol": {"input": 2.00, "output": 10.00, "cache_read": 0.10},
+    "gpt-6-sol": {"input": 2.00, "output": 10.00, "cache_read": 0.20},
+    "gpt-6-luna": {"input": 0.10, "output": 0.50, "cache_read": 0.01},
+    "gpt-6-astra": {"input": 10.00, "output": 50.00, "cache_read": 1.00},
     "claude-opus-5-5": {"input": 4.00, "output": 20.00, "cache_read": 0.20},
     "claude-sonnet-5-5": {"input": 2.00, "output": 10.00, "cache_read": 0.20},
     "claude-haiku-5-5": {"input": 0.10, "output": 0.50, "cache_read": 0.01},
@@ -27,13 +31,14 @@ class AnalysisResult:
 
 
 def estimate_cost(model: str, usage: dict) -> float | None:
-    price = PRICES.get(model)
+    # La API devuelve a veces el id con fecha (p. ej. "gpt-6.1-sol-2026-09-30"): se busca por prefijo.
+    price = PRICES.get(model) or next((p for name, p in PRICES.items() if model.startswith(name + "-")), None)
     if not price:
         return None
     uncached = usage.get("input_tokens", 0)
     written = usage.get("cache_creation_input_tokens", 0)
     read = usage.get("cache_read_input_tokens", 0)
-    output = usage.get("output_tokens", 0)  # incluye el razonamiento (thinking)
+    output = usage.get("output_tokens", 0)  # incluye el razonamiento
     return round((uncached * price["input"] + written * price["input"] * 1.25 + read * price["cache_read"]
                   + output * price["output"]) / 1_000_000, 4)
 

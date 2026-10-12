@@ -10,8 +10,9 @@ from types import SimpleNamespace
 
 from cranalysis.client import AnalysisError, estimate_cost, run_analysis
 from cranalysis.config import Config
+from cranalysis.openai_client import build_openai_request, openai_schema, run_openai
 from cranalysis.request import FALLBACK_BETA, build_payload, build_request, load_prompt, load_schema
-from cranalysis.store import output_path, pending, save
+from cranalysis.store import output_path, pending, rejected_path, save
 from cranalysis.validate import validate
 
 FIXTURES = Path(__file__).parent / "fixtures"
@@ -24,7 +25,7 @@ def fixture(name):
 
 
 def config(**overrides):
-    base = dict(model="claude-opus-5-5", effort="high", max_tokens=64000, fallbacks=True,
+    base = dict(provider="anthropic", model="claude-opus-5-5", effort="high", max_tokens=64000, fallbacks=True,
                 transcripts_dir=Path("/nonexistent"), output_dir=Path("/nonexistent"), include_shorts=True)
     return Config(**(base | overrides))
 
@@ -133,6 +134,25 @@ class Validation(unittest.TestCase):
         errors = self.errors_after(lambda a: a["historial"].update(estado="evaluado"))
         self.assertTrue(any("historial evaluado" in e for e in errors))
 
+    def quote_payload(self):
+        payload = copy.deepcopy(self.payload)
+        payload["documento"]["transcript"]["segments"] = [
+            {"start": 0, "dur": 2, "text": "Hola a todos."}, {"start": 2, "dur": 2, "text": "el móvil lo pone ahí y tradeas. Después"},
+            {"start": 4, "dur": 2, "text": "de poner el código Nacho, tradeas una"}, {"start": 6, "dur": 2, "text": "vez en la cuenta."}]
+        return payload
+
+    def quote_errors(self, quote, start, end):
+        bad = copy.deepcopy(self.good)
+        bad["evidencias"][0].update(cita=quote, inicio_s=start, fin_s=end)
+        return [e for e in validate(bad, self.quote_payload(), self.schema) if "cita" in e]
+
+    def test_quote_may_start_in_previous_segment(self):
+        # Caso real del 12 oct (agFTCuv80XE, E21): la frase empieza al final del segmento anterior.
+        self.assertEqual(self.quote_errors("Después de poner el código Nacho, tradeas una vez en la cuenta.", 4, 6), [])
+
+    def test_quote_two_segments_away_still_rejected(self):
+        self.assertTrue(self.quote_errors("Hola a todos.", 4, 6))
+
     def test_title_quote_checked_against_title(self):
         errors = self.errors_after(lambda a: a["evidencias"][1].update(cita="¿Llega el colapso?"))
         self.assertTrue(any("no está en el título" in e for e in errors))
@@ -191,6 +211,74 @@ class Client(unittest.TestCase):
         self.assertIsNone(estimate_cost("modelo-desconocido", usage))
 
 
+def fake_openai(status="completed", text=None, refusal=None, reason=None):
+    parts = [SimpleNamespace(type="refusal", refusal=refusal)] if refusal else [SimpleNamespace(type="output_text", text=text)]
+    usage = SimpleNamespace(input_tokens=17500, output_tokens=15000,
+                            input_tokens_details=SimpleNamespace(cached_tokens=6000, cache_write_tokens=0),
+                            output_tokens_details=SimpleNamespace(reasoning_tokens=7000))
+    response = SimpleNamespace(status=status, incomplete_details=SimpleNamespace(reason=reason), model="gpt-6.1-sol",
+                               output=[SimpleNamespace(type="message", content=parts)], output_text=text or "",
+                               usage=usage, id="resp_1")
+    captured = {}
+
+    def create(**kwargs):
+        captured.update(kwargs)
+        return response
+    return SimpleNamespace(responses=SimpleNamespace(create=create)), captured
+
+
+class OpenAIProvider(unittest.TestCase):
+    def setUp(self):
+        self.request = build_openai_request(config(provider="openai", model="gpt-6.1-sol"), load_prompt(), load_schema(),
+                                            fixture("entrada-sintetica.json"))
+
+    def test_request_shape(self):
+        self.assertEqual(self.request["instructions"], load_prompt())  # instrucciones fijas = prefijo cacheable
+        self.assertNotIn("Los bancos están comprando oro", self.request["instructions"])
+        self.assertEqual(json.loads(self.request["input"])["documento"]["video"]["video_id"], "ejemplo-sintetico")
+        fmt = self.request["text"]["format"]
+        self.assertEqual((fmt["type"], fmt["strict"], fmt["name"]), ("json_schema", True, "narrative_analysis"))
+        self.assertEqual(self.request["reasoning"], {"effort": "high"})
+        self.assertIs(self.request["store"], False)
+
+    def test_strict_schema_has_no_const_and_keeps_version(self):
+        schema = openai_schema(load_schema())
+        self.assertNotIn('"const"', json.dumps(schema))
+        self.assertEqual(schema["properties"]["prompt_version"]["enum"], ["1.0.0"])
+
+    def depth(self, node, level=0):
+        if isinstance(node, dict):
+            here = level + (1 if node.get("type") in ("object", "array") else 0)
+            return max([here] + [self.depth(v, here) for v in node.values()])
+        if isinstance(node, list):
+            return max([level] + [self.depth(v, level) for v in node])
+        return level
+
+    def test_within_openai_limits(self):
+        schema = openai_schema(load_schema())
+        self.assertLessEqual(self.depth(schema), 10)  # máximo de anidamiento en modo estricto
+        self.assertFalse({"allOf", "not", "if", "then", "else"} & set(json.dumps(schema).replace('"', " ").split()))
+
+    def test_parses_completed_response(self):
+        good = (FIXTURES / "salida-sintetica-valida.json").read_text(encoding="utf-8")
+        client, captured = fake_openai(text=good)
+        result = run_openai(client, self.request)
+        self.assertEqual(result.analysis["prompt_version"], "1.0.0")
+        self.assertEqual(result.usage, {"input_tokens": 11500, "cache_read_input_tokens": 6000,
+                                        "cache_creation_input_tokens": 0, "output_tokens": 15000, "reasoning_tokens": 7000})
+        self.assertEqual(captured["prompt_cache_key"], "cryptoreport-narrative-analysis")
+        # 11,5k × $2 + 6k × $0,10 + 15k × $10, por millón
+        self.assertEqual(estimate_cost("gpt-6.1-sol-2026-09-30", result.usage), round((23000 + 600 + 150000) / 1e6, 4))
+
+    def test_refusal_and_incomplete_are_errors(self):
+        for kwargs, message in ((dict(refusal="No puedo"), "rechazado"),
+                                (dict(status="incomplete", reason="max_output_tokens"), "incompleta"),
+                                (dict(text="no es json"), "JSON ilegible")):
+            client, _ = fake_openai(**kwargs)
+            with self.assertRaisesRegex(AnalysisError, message):
+                run_openai(client, self.request)
+
+
 class Store(unittest.TestCase):
     def test_pending_and_save(self):
         with tempfile.TemporaryDirectory() as tmp:
@@ -207,6 +295,8 @@ class Store(unittest.TestCase):
             target = save(output_path(odir, tdir / "nacho" / "2026-10-12_B.json"), {"status": "ok"}, {"x": 1})
             self.assertEqual(json.loads(target.read_text(encoding="utf-8"))["meta"]["status"], "ok")
             self.assertEqual([p.name for p in pending(tdir, odir)], ["2026-10-12_a.json"])
+            save(rejected_path(odir, tdir / "nacho" / "2026-10-12_a.json"), {"status": "rechazado"}, {})
+            self.assertEqual(pending(tdir, odir), [])  # un rechazado espera revisión: no se reintenta solo
 
 
 if __name__ == "__main__":

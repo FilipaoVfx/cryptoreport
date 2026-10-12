@@ -4,6 +4,7 @@ from __future__ import annotations
 import json
 import time
 from datetime import datetime, timedelta
+from pathlib import Path
 
 from . import channel_pages, feeds
 from .providers import (OK, PENDING, PROVIDER_DOWN, QUOTA, RUNNING, UNAVAILABLE, ScraperTech, Supadata,
@@ -58,6 +59,46 @@ def _available(providers: list, down: dict, kind):
     return next((p for p in providers if isinstance(p, kind) and p.name not in down), None)
 
 
+def _meta_detail(meta: dict) -> str:
+    """Sin duración no se puede medir la cobertura: no se registra como "ok" aunque lleguen otros campos."""
+    return "ok" if meta.get("duration_s") else ("sin duración" if meta else "sin datos")
+
+
+REPAIR_PER_RUN = 3
+REPAIR_WINDOW = timedelta(days=7)
+
+
+def repair_durations(config, store: Store, providers: list, down: dict, summary: dict) -> None:
+    """Justo después de publicarse, video.php a veces aún no trae la duración (visto el 12 oct con agFTCuv80XE,
+    analizado 8 min tras publicarse). Se reintenta en ciclos posteriores y se reescribe el JSON con la cobertura."""
+    scraper = _available(providers, down, ScraperTech)
+    if not scraper:
+        return
+    since = iso(now_utc() - REPAIR_WINDOW)
+    rows = store.db.execute("SELECT * FROM videos WHERE status = 'ok' AND duration_s IS NULL AND published_at >= ?"
+                            " ORDER BY published_at DESC LIMIT ?", (since, REPAIR_PER_RUN)).fetchall()
+    for row in rows:
+        for _ in range(2):  # video.php omite la duración de forma intermitente: un segundo intento inmediato
+            meta = scraper.metadata(row["video_id"])
+            store.log_attempt(row["video_id"], scraper.name, "metadata", f"reparación: {_meta_detail(meta)}", 1, 0)
+            if meta.get("duration_s"):
+                break
+        duration = meta.get("duration_s")
+        if not duration or not row["transcript_path"]:
+            continue
+        doc = json.loads(Path(row["transcript_path"]).read_text(encoding="utf-8"))
+        channel = next(c for c in config.channels if c.slug == row["channel_slug"])
+        transcript = doc["transcript"]
+        write_transcript(config.transcripts_dir, channel=channel, video_id=row["video_id"], title=row["title"],
+                         published_at=row["published_at"], is_short=doc["video"].get("is_short"), duration_s=duration,
+                         provider=transcript["provider"], language=transcript["language"],
+                         track_kind=transcript["track_kind"], segments=transcript["segments"],
+                         fetched_at=transcript["fetched_at"])
+        last_end = max(seg["start"] + seg["dur"] for seg in transcript["segments"])
+        store.update(row["video_id"], duration_s=duration, coverage=round(min(last_end / duration, 1.0), 3))
+        summary.setdefault("repaired", []).append(row["video_id"])
+
+
 def save_success(row, name: str, outcome, config, store: Store, providers: list, down: dict, summary: dict,
                  attempts: int, meta: dict | None = None) -> str:
     video_id = row["video_id"]
@@ -67,7 +108,7 @@ def save_success(row, name: str, outcome, config, store: Store, providers: list,
         scraper = _available(providers, down, ScraperTech)
         if scraper:
             meta = scraper.metadata(video_id)
-            store.log_attempt(video_id, scraper.name, "metadata", "ok" if meta else "sin datos", 1, 0)
+            store.log_attempt(video_id, scraper.name, "metadata", _meta_detail(meta), 1, 0)
     channel = next(c for c in config.channels if c.slug == row["channel_slug"])
     is_short = None if row["is_short"] is None else bool(row["is_short"])
     duration = meta.get("duration_s")
@@ -140,7 +181,7 @@ def try_generate(row, config, store: Store, providers: list, down: dict, summary
     scraper = _available(providers, down, ScraperTech)
     meta = scraper.metadata(video_id) if scraper else {}
     if scraper:
-        store.log_attempt(video_id, scraper.name, "metadata", "ok" if meta else "sin datos", 1, 0)
+        store.log_attempt(video_id, scraper.name, "metadata", _meta_detail(meta), 1, 0)
     if not meta.get("duration_s"):
         return None, "generate en espera: duración desconocida (¿directo en curso?)"
     tracks = meta.get("audio_tracks") or []
@@ -300,6 +341,8 @@ def run(config, notifier, only_video: str | None = None) -> dict:
         down: dict[str, str] = {}
         for row in rows:
             process_video(row, config, store, providers, down, summary)
+        if only_video is None:
+            repair_durations(config, store, providers, down, summary)
         summary["providers_down"] = dict(down)
         month_start = now_utc().replace(day=1, hour=0, minute=0, second=0)
         summary["scrapertech_requests_month"] = store.requests_since(month_start, "scrapertech")

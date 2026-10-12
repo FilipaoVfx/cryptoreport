@@ -2,10 +2,11 @@
 
 El [system prompt de análisis](prompts/narrative-analysis.system.md) define el rol de **analista especulativo** de CryptoReport. Reconstruye la tesis del creador, analiza sus recursos persuasivos, contrasta las afirmaciones cuando hay fuentes y propone escenarios con condiciones observables e invalidación.
 
-Estado: integración lista, pendiente de clave y evaluación.
+Estado: integración probada con OpenAI (`gpt-6.1-sol`), sin conectar todavía al timer.
 
-- **Integrado:** prompt v1.0.0, [JSON Schema ejecutable](schema/narrative-analysis.schema.json), cliente de la API de Claude (`cranalysis/`), validador semántico y CLI.
-- **Pendiente:** todavía no se ha llamado al modelo, porque no hay `ANTHROPIC_API_KEY`. Tampoco está conectado al timer: primero hay que pasar los casos de evaluación de abajo. Mientras tanto, la web conserva sus ejemplos manuales.
+- **Integrado:** prompt v1.0.0, [JSON Schema ejecutable](schema/narrative-analysis.schema.json), dos proveedores (OpenAI por defecto, Claude como alternativa), validador semántico y CLI.
+- **Probado el 12 oct:** la entrada sintética de este README dio el resultado esperado y el video largo `agFTCuv80XE` pasó la validación.
+- **Pendiente:** ejecutar el resto de casos de evaluación de abajo antes de automatizarlo. Mientras tanto, la web conserva sus ejemplos manuales.
 
 ## Integración
 
@@ -20,7 +21,15 @@ cp .env.example .env && chmod 600 .env          # añadir ANTHROPIC_API_KEY
 .venv/bin/python -m unittest discover -s tests -t .  # pruebas sin red
 ```
 
-**Petición.**
+**Proveedor OpenAI (predeterminado, `CRA_PROVIDER=openai`).**
+- Responses API con `gpt-6.1-sol` (balance entre costo e inteligencia; $2 entrada / $10 salida / $0,10 entrada cacheada por millón).
+- `reasoning.effort: high`, que admite `low`–`max`.
+- El prompt va en `instructions`, que es el prefijo cacheado automáticamente desde 1.024 tokens. El documento va en `input`.
+- `text.format` con el schema en modo `strict`. En la versión enviada a OpenAI, `const` se convierte en un `enum` de un solo valor, porque OpenAI no lo garantiza en modo estricto.
+- `store: false`, para que OpenAI no guarde la conversación.
+- Una respuesta `incomplete` o un rechazo no se guardan como análisis.
+
+**Proveedor Claude (`CRA_PROVIDER=anthropic`).**
 - **Modelo:** `claude-opus-5-5` con razonamiento adaptativo y `effort: high`, configurable.
 - **System:** el prompt, con `cache_control`, porque es el prefijo estable.
 - **Mensaje de usuario:** el documento de transcripción original en JSON compacto.
@@ -50,7 +59,13 @@ Un análisis con errores se guarda como `rechazado` y no se publica.
 
 Si el prompt cambia de versión, hay que actualizar el schema y `PROMPT_VERSION`.
 
-**Costo estimado** (sin medir todavía). Un video largo de unos 18 min supone ~6.300 tokens de prompt cacheado más ~11.000 de transcripción de entrada. La salida, con razonamiento incluido, se estima en 10–20 mil tokens. Con Opus 5.5 ($4 entrada / $20 salida / $0,20 lectura de caché por millón) sale a **~$0,25–0,45 por video largo** y unos céntimos por short. Las primeras ejecuciones darán el dato real en `meta.usage`.
+**Costo medido con `gpt-6.1-sol`, effort `high`.**
+- **Entrada sintética:** $0,07 en 100 s.
+- **Video largo de 18 min** (`agFTCuv80XE`, 26 afirmaciones y 38 evidencias): **$0,29** en 7 min 22 s. Usó ~20.300 tokens de entrada, 7.400 de ellos ya cacheados, y 25.700 de salida, de los que 6.100 eran razonamiento.
+- **Al mes**, para ~55 videos largos y ~90 shorts, saldrían unos $20–25.
+- **Con Batch o Flex** ($1 / $5 por millón en `gpt-6.1-sol`) sería la mitad, a cambio de más espera.
+
+Con Claude Opus 5.5 se estima aproximadamente el doble.
 
 ## Uso
 

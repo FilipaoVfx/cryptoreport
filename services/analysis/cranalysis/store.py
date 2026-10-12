@@ -22,15 +22,24 @@ def find_transcript(transcripts_dir: Path, ref: str) -> Path:
     return matches[-1]
 
 
+REJECTED_DIR = "_rechazados"
+
+
 def output_path(output_dir: Path, transcript: Path) -> Path:
     return output_dir / transcript.parent.name / transcript.name
+
+
+def rejected_path(output_dir: Path, transcript: Path) -> Path:
+    """Los análisis que no pasan la validación van aparte: nunca reemplazan a uno válido ni se publican."""
+    return output_dir / REJECTED_DIR / transcript.parent.name / transcript.name
 
 
 def pending(transcripts_dir: Path, output_dir: Path, include_shorts: bool = True) -> list[Path]:
     """Transcripciones sin análisis guardado, de la más nueva a la más vieja por fecha de publicación."""
     result = []
     for transcript in transcripts_dir.glob("*/*.json"):
-        if output_path(output_dir, transcript).exists():
+        # Un rechazado espera revisión manual: reintentarlo sin más volvería a costar dinero con el mismo resultado.
+        if output_path(output_dir, transcript).exists() or rejected_path(output_dir, transcript).exists():
             continue
         video = json.loads(transcript.read_text(encoding="utf-8"))["video"]
         if include_shorts or not video.get("is_short"):

@@ -23,8 +23,12 @@ def load_dotenv(path: Path) -> None:
             os.environ.setdefault(key.strip(), value.strip().strip('"').strip("'"))
 
 
+DEFAULT_MODELS = {"openai": "gpt-6.1-sol", "anthropic": "claude-opus-5-5"}
+
+
 @dataclass(frozen=True)
 class Config:
+    provider: str
     model: str
     effort: str
     max_tokens: int
@@ -35,13 +39,17 @@ class Config:
 
 
 def load_config() -> Config:
-    load_dotenv(SERVICE_DIR / ".env")  # ANTHROPIC_API_KEY lo lee el SDK directamente del entorno
+    load_dotenv(SERVICE_DIR / ".env")  # OPENAI_API_KEY / ANTHROPIC_API_KEY las lee cada SDK del entorno
+    provider = os.environ.get("CRA_PROVIDER", "openai")
+    if provider not in DEFAULT_MODELS:
+        raise ValueError(f"CRA_PROVIDER debe ser uno de {tuple(DEFAULT_MODELS)}, no {provider!r}")
     effort = os.environ.get("CRA_EFFORT", "high")
     if effort not in EFFORTS:
         raise ValueError(f"CRA_EFFORT debe ser uno de {EFFORTS}, no {effort!r}")
     data = Path(os.environ.get("CRA_DATA_DIR", "/var/lib/cryptoreport-transcripts"))
     return Config(
-        model=os.environ.get("CRA_MODEL", "claude-opus-5-5"),
+        provider=provider,
+        model=os.environ.get("CRA_MODEL") or DEFAULT_MODELS[provider],
         effort=effort,
         # Con streaming no hay riesgo de timeout HTTP; el contrato es grande y el razonamiento cuenta como salida.
         max_tokens=int(os.environ.get("CRA_MAX_TOKENS", "64000")),

@@ -59,8 +59,12 @@ def _check_quote(ev: dict, payload: dict) -> str | None:
     if not any(abs(seg["start"] - start) <= TIME_TOLERANCE_S for seg in segments):
         return f"evidencia {ev['id']}: inicio_s={start} no coincide con el inicio de ningún segmento"
     end = end if end is not None else start
-    window = " ".join(seg["text"] for seg in segments
-                      if seg["start"] >= start - TIME_TOLERANCE_S and seg["start"] <= end + TIME_TOLERANCE_S)
+    # Un segmento de margen a cada lado: el subtitulado corta frases a mitad ("…Después" | "de poner el código…")
+    # y el prompt admite que la marca sea la del segmento, no la de la palabra exacta. La cita sigue siendo literal.
+    inside = [i for i, seg in enumerate(segments)
+              if seg["start"] >= start - TIME_TOLERANCE_S and seg["start"] <= end + TIME_TOLERANCE_S]
+    first, last = max(min(inside) - 1, 0), min(max(inside) + 1, len(segments) - 1)
+    window = " ".join(seg["text"] for seg in segments[first:last + 1])
     if _norm(quote) not in _norm(window):
         return f"evidencia {ev['id']}: la cita no aparece literal en los segmentos {start}–{end} s"
     return None

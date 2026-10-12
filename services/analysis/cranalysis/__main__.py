@@ -18,7 +18,7 @@ from pathlib import Path
 
 from .config import PROMPT_VERSION, load_config
 from .request import api_schema, build_payload, build_request, load_prompt, load_schema, sha256
-from .store import find_transcript, now_iso, output_path, pending, save
+from .store import find_transcript, now_iso, output_path, pending, rejected_path, save
 from .validate import validate
 
 
@@ -26,17 +26,35 @@ def _prepare(config, transcript: Path):
     prompt, schema = load_prompt(), load_schema()
     document = json.loads(transcript.read_text(encoding="utf-8"))
     payload = build_payload(document, now_iso())
+    if config.provider == "openai":
+        from .openai_client import build_openai_request
+        return prompt, schema, document, payload, build_openai_request(config, prompt, schema, payload)
     return prompt, schema, document, payload, build_request(config, prompt, schema, payload)
+
+
+def _client_and_runner(config):
+    if config.provider == "openai":
+        from openai import OpenAI
+
+        from .openai_client import run_openai
+        # Un análisis largo con razonamiento alto puede tardar minutos: margen de 15 min por petición.
+        return OpenAI(timeout=900.0, max_retries=2), run_openai
+    import anthropic
+
+    from .client import run_analysis
+    return anthropic.Anthropic(), run_analysis
 
 
 def cmd_dry_run(config, ref: str) -> int:
     transcript = find_transcript(config.transcripts_dir, ref)
     prompt, schema, document, payload, request = _prepare(config, transcript)
-    user = request["messages"][0]["content"]
+    if config.provider == "openai":
+        user, effort, limit = request["input"], request["reasoning"]["effort"], request["max_output_tokens"]
+    else:
+        user, effort, limit = request["messages"][0]["content"], request["output_config"]["effort"], request["max_tokens"]
     schema_text = json.dumps(api_schema(schema), ensure_ascii=False)
     print(f"transcripción: {transcript}")
-    print(f"modelo: {request['model']} · effort: {request['output_config']['effort']} · max_tokens: {request['max_tokens']}"
-          f" · fallbacks: {request.get('fallbacks', 'no')}")
+    print(f"proveedor: {config.provider} · modelo: {request['model']} · effort: {effort} · límite de salida: {limit}")
     # Aproximación de ~3,5 caracteres por token en español; para el número exacto, count_tokens con la API.
     for name, text in (("system (cacheado)", prompt), ("mensaje de usuario", user), ("schema", schema_text)):
         print(f"  {name:<20} {len(text):>8} caracteres  ≈ {len(text) / 3.5:>7.0f} tokens")
@@ -44,8 +62,8 @@ def cmd_dry_run(config, ref: str) -> int:
     return 0
 
 
-def analyze_one(config, client, transcript: Path, force: bool = False) -> str:
-    from .client import AnalysisError, estimate_cost, run_analysis
+def analyze_one(config, client, runner, transcript: Path, force: bool = False) -> str:
+    from .client import AnalysisError, estimate_cost
 
     target = output_path(config.output_dir, transcript)
     if target.exists() and not force:
@@ -54,10 +72,11 @@ def analyze_one(config, client, transcript: Path, force: bool = False) -> str:
     prompt, schema, document, payload, request = _prepare(config, transcript)
     meta = {"video_id": document["video"]["video_id"], "channel": document["video"]["channel"]["slug"],
             "transcript_file": str(transcript), "prompt_version": PROMPT_VERSION, "prompt_sha256": sha256(prompt),
-            "schema_sha256": sha256(json.dumps(schema, sort_keys=True)), "model_requested": config.model,
+            "schema_sha256": sha256(json.dumps(schema, sort_keys=True)), "provider": config.provider,
+            "model_requested": config.model,
             "effort": config.effort, "analyzed_at": payload["analizado_en"]}
     try:
-        result = run_analysis(client, request)
+        result = runner(client, request)
     except AnalysisError as err:
         print(f"ERROR {meta['video_id']}: {err}", file=sys.stderr)
         return "error"
@@ -65,6 +84,8 @@ def analyze_one(config, client, transcript: Path, force: bool = False) -> str:
     meta |= {"model": result.model, "request_id": result.request_id, "fallback_used": result.fallback_used,
              "usage": result.usage, "cost_usd_estimate": estimate_cost(result.model, result.usage),
              "validation": {"ok": not errors, "errors": errors}, "status": "ok" if not errors else "rechazado"}
+    if errors:
+        target = rejected_path(config.output_dir, transcript)  # el válido anterior, si existe, se conserva
     save(target, meta, result.analysis)
     print(f"{meta['status'].upper()} {meta['video_id']} · {result.model} · ${meta['cost_usd_estimate']} · {target}")
     for err in errors[:10]:
@@ -73,25 +94,36 @@ def analyze_one(config, client, transcript: Path, force: bool = False) -> str:
 
 
 def cmd_run(config, args) -> int:
-    import anthropic
-
-    client = anthropic.Anthropic()
+    client, runner = _client_and_runner(config)
     targets = (pending(config.transcripts_dir, config.output_dir, config.include_shorts)[: args.limit] if args.pending
                else [find_transcript(config.transcripts_dir, args.ref)])
     if not targets:
         print("No hay transcripciones pendientes de análisis.")
         return 0
-    statuses = [analyze_one(config, client, t, args.force) for t in targets]
+    statuses = [analyze_one(config, client, runner, t, args.force) for t in targets]
     return 0 if all(s in ("ok", "skipped") for s in statuses) else 1
 
 
 def cmd_validate(config, path: str) -> int:
-    stored = json.loads(Path(path).read_text(encoding="utf-8"))
-    document = json.loads(Path(stored["meta"]["transcript_file"]).read_text(encoding="utf-8"))
+    """Revalida un análisis guardado. Si estaba rechazado y ahora pasa (p. ej. tras corregir el validador),
+    se promueve a la carpeta de válidos sin volver a llamar al modelo."""
+    source = Path(path)
+    stored = json.loads(source.read_text(encoding="utf-8"))
+    transcript = Path(stored["meta"]["transcript_file"])
+    document = json.loads(transcript.read_text(encoding="utf-8"))
     payload = build_payload(document, stored["meta"]["analyzed_at"])
     errors = validate(stored["analysis"], payload, load_schema())
-    print("válido" if not errors else "\n".join(errors))
-    return 0 if not errors else 1
+    if errors:
+        print("\n".join(errors))
+        return 1
+    print("válido")
+    if stored["meta"].get("status") == "rechazado":
+        stored["meta"] |= {"status": "ok", "validation": {"ok": True, "errors": [], "revalidated_at": now_iso()}}
+        target = save(output_path(config.output_dir, transcript), stored["meta"], stored["analysis"])
+        if source.resolve() != target.resolve():
+            source.unlink()
+        print(f"promovido a {target}")
+    return 0
 
 
 def main(argv: list[str] | None = None) -> int:

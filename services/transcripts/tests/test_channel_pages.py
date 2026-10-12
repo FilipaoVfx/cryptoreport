@@ -10,7 +10,7 @@ from pathlib import Path
 from crtranscripts import channel_pages, feeds
 from crtranscripts.channel_pages import extract_initial_data, new_shorts, parse_lockups, parse_relative_es, parse_shorts
 from crtranscripts.config import Channel, Config
-from crtranscripts.pipeline import discover, save_success
+from crtranscripts.pipeline import discover, repair_durations, save_success
 from crtranscripts.providers import OK, Outcome, ScraperTech
 from crtranscripts.store import Store, iso
 
@@ -125,6 +125,31 @@ class Fallback(unittest.TestCase):
         self.assertEqual(row["published_at"], iso(exact))
         doc = json.loads(Path(row["transcript_path"]).read_text(encoding="utf-8"))
         self.assertEqual(doc["video"]["published_at"], iso(exact))
+
+
+class DurationRepair(unittest.TestCase):
+    setUp, tearDown = Fallback.setUp, Fallback.tearDown
+
+    def test_missing_duration_is_repaired_later(self):
+        published = datetime.now(timezone.utc) - timedelta(hours=1)
+        self.store.upsert_seen("vid", "nacho", "t", published, False)
+        outcome = Outcome(OK, segments=[{"start": 0.0, "dur": 1000.0, "text": "hola"}], language="es")
+        save_success(self.store.get("vid"), "scrapertech", outcome, self.config, self.store, [], {}, {"transcribed": []}, 1,
+                     meta={"is_live": False})  # video.php sin duración, como justo tras publicarse
+        self.assertIsNone(self.store.get("vid")["duration_s"])
+
+        class LateScraper(ScraperTech):
+            def metadata(self, video_id):
+                return {"is_live": False, "duration_s": 1088.0}
+        summary = {}
+        repair_durations(self.config, self.store, [LateScraper("k")], {}, summary)
+        row = self.store.get("vid")
+        self.assertEqual((row["duration_s"], row["coverage"]), (1088.0, round(1000 / 1088, 3)))
+        doc = json.loads(Path(row["transcript_path"]).read_text(encoding="utf-8"))
+        self.assertEqual((doc["video"]["duration_s"], doc["transcript"]["coverage"]), (1088.0, round(1000 / 1088, 3)))
+        self.assertEqual(summary["repaired"], ["vid"])
+        repair_durations(self.config, self.store, [LateScraper("k")], {}, {})  # ya reparado: no vuelve a consultar
+        self.assertEqual(self.store.db.execute("select count(*) from attempts where detail like 'reparación%'").fetchone()[0], 1)
 
 
 if __name__ == "__main__":
