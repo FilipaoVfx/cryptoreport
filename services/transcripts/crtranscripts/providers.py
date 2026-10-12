@@ -11,6 +11,7 @@ import tempfile
 import time
 import urllib.parse
 from dataclasses import dataclass, field
+from datetime import datetime, timezone
 from pathlib import Path
 
 from . import http
@@ -147,6 +148,11 @@ class ScraperTech:
         meta = {"is_live": bool(data.get("isLiveContent"))}
         if data.get("durationMs"):
             meta["duration_s"] = round(float(data["durationMs"]) / 1000, 3)
+        if data.get("uploadDate"):  # p. ej. "2026-10-08T09:30:12-07:00"; corrige la fecha aproximada del respaldo
+            try:
+                meta["published_at"] = datetime.fromisoformat(data["uploadDate"]).astimezone(timezone.utc)
+            except ValueError:
+                pass
         # Con doblaje automático hay varias pistas (p. ej. "es-US.4" original, "en-US.10" por defecto, "ar.10").
         formats = ((data.get("streamingData") or {}).get("adaptiveFormats") or []) + (data.get("formats") or [])
         tracks = {f["audioTrack"].get("id") for f in formats if isinstance(f.get("audioTrack"), dict)}

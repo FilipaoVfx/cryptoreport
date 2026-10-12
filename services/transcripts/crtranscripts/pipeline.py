@@ -5,12 +5,13 @@ import json
 import time
 from datetime import datetime, timedelta
 
-from . import feeds
+from . import channel_pages, feeds
 from .providers import (OK, PENDING, PROVIDER_DOWN, QUOTA, RUNNING, UNAVAILABLE, ScraperTech, Supadata,
                         build_providers, generation_cost, timed)
 from .store import Store, fmt_ts, iso, now_utc, write_transcript
 
 FEED_ALERT_AFTER = 3
+PAGES_FALLBACK = "vía páginas del canal"  # marca en summary['feeds'] cuando el RSS cayó y se usó el respaldo
 BACKOFF_BASE = timedelta(minutes=15)
 BACKOFF_CAP = timedelta(hours=6)
 
@@ -25,17 +26,24 @@ def discover(config, store: Store, summary: dict) -> None:
     for channel in config.channels:
         try:
             entries = feeds.fetch_feed(channel.channel_id)
-        except feeds.FeedError as err:
-            summary["feeds"][channel.slug] = f"error: {err}"
-            continue
-        summary["feeds"][channel.slug] = f"ok ({len(entries)} entradas)"
+            summary["feeds"][channel.slug] = f"ok ({len(entries)} entradas)"
+        except feeds.FeedError as rss_err:
+            # Respaldo: las páginas del canal siguen respondiendo cuando el RSS cae (ver channel_pages.py).
+            try:
+                entries, tab_errors = channel_pages.fetch_channel_pages(channel.channel_id, store.known)
+            except feeds.FeedError as page_err:
+                summary["feeds"][channel.slug] = f"error: RSS {rss_err}; páginas del canal: {page_err}"
+                continue
+            partial = f"; pestañas con fallo: {', '.join(tab_errors)}" if tab_errors else ""
+            summary["feeds"][channel.slug] = f"ok {PAGES_FALLBACK} ({len(entries)} entradas; RSS: {rss_err}{partial})"
         for entry in entries:
             if store.known(entry.video_id):
-                store.upsert_seen(entry.video_id, channel.slug, entry.title, entry.published_at, None)
+                if not entry.approximate:  # la página da fecha aproximada y títulos en prueba: no pisan al RSS
+                    store.upsert_seen(entry.video_id, channel.slug, entry.title, entry.published_at, None)
                 continue
             if entry.published_at < cutoff:
                 continue  # fuera de la ventana: el histórico se carga aparte, no en cada ciclo
-            short = feeds.is_short(entry.video_id)
+            short = entry.is_short if entry.is_short is not None else feeds.is_short(entry.video_id)
             store.upsert_seen(entry.video_id, channel.slug, entry.title, entry.published_at, short)
             if short and not config.include_shorts:
                 store.update(entry.video_id, status="skipped", last_error="short excluido por CR_INCLUDE_SHORTS")
@@ -63,8 +71,12 @@ def save_success(row, name: str, outcome, config, store: Store, providers: list,
     channel = next(c for c in config.channels if c.slug == row["channel_slug"])
     is_short = None if row["is_short"] is None else bool(row["is_short"])
     duration = meta.get("duration_s")
+    published_at = row["published_at"]
+    if meta.get("published_at") and iso(meta["published_at"]) != published_at:
+        published_at = iso(meta["published_at"])  # la fecha de la página del canal era aproximada
+        store.update(video_id, published_at=published_at)
     path = write_transcript(config.transcripts_dir, channel=channel, video_id=video_id, title=row["title"],
-                            published_at=row["published_at"], is_short=is_short, duration_s=duration, provider=name,
+                            published_at=published_at, is_short=is_short, duration_s=duration, provider=name,
                             language=outcome.language, track_kind=outcome.track_kind, segments=outcome.segments,
                             fetched_at=iso(now))
     last_end = max(s["start"] + s["dur"] for s in outcome.segments)
@@ -297,6 +309,7 @@ def run(config, notifier, only_video: str | None = None) -> dict:
             alert(config, store, summary, notifier, config.scrapertech_monthly_quota)
             (config.data_dir / "last-run.json").write_text(json.dumps(summary, ensure_ascii=False, indent=1) + "\n",
                                                            encoding="utf-8")
+            store.record_run(summary)
         return summary
     finally:
         store.close()

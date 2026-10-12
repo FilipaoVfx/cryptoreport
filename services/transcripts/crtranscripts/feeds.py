@@ -19,6 +19,8 @@ class FeedEntry:
     video_id: str
     title: str
     published_at: datetime
+    is_short: bool | None = None  # None: hay que averiguarlo con /shorts/<id>
+    approximate: bool = False     # fecha estimada desde la página del canal (ver channel_pages.py)
 
 
 class FeedError(Exception):

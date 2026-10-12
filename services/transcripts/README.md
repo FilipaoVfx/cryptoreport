@@ -22,7 +22,12 @@ RSS de cada canal ──► videos nuevos (ventana 72 h) ──► 1. Scraper.Te
   Si el trabajo sigue en curso, se guarda su `jobId` y se consulta gratis en el siguiente ciclo, sin volver a pagar. Un resultado en otro idioma se descarta y no se repite.
 - **Validación:** `video.php` aporta la duración para calcular la cobertura, es decir, hasta dónde llegan los subtítulos. Con cobertura menor del 85 % el video queda marcado para revisión.
 - **Reintentos:** si los subtítulos aún no existen, se reintenta a los 15 min, 30 min, 1 h, 2 h y 4 h, y después cada 6 h. A las 72 h el video pasa a `no_captions` y se avisa. Con errores del proveedor, a los 8 intentos pasa a `failed`.
-- **RSS inestable.** El 9 de octubre falló el 52 % de las peticiones sueltas, con rachas de hasta unos 30 s de errores seguidos. Por eso cada canal se reintenta hasta 6 veces con pausas crecientes, que cubren aproximadamente 1 minuto. Se avisa solo si un canal lleva 3 ciclos seguidos sin RSS.
+- **RSS inestable y respaldo.** El 9 de octubre falló el 52 % de las peticiones sueltas, y el 10 de octubre estuvo caído más de una hora seguida. Cada canal se reintenta hasta 6 veces, durante aproximadamente 1 minuto.
+  - Si el RSS sigue caído, se leen las páginas **/videos, /streams y /shorts** del canal (`channel_pages.py`), que sí responden desde el VPS. Se piden en español porque con otro idioma YouTube traduce los títulos.
+  - Videos y directos traen fecha relativa ("hace 18 h"); entran si están dentro de la ventana de 72 h.
+  - Los shorts no traen fecha: solo cuentan los que aparecen por encima del primer short ya conocido.
+  - La fecha exacta se corrige con `video.php` al transcribir, o con el RSS cuando vuelva.
+  - En la web, esos ciclos salen en ámbar. Se avisa solo si un canal lleva 3 ciclos seguidos sin RSS.
 - **Avisos:** se envían en las transiciones (nueva transcripción, fallo definitivo, proveedor caído o recuperado, 80 % de la cuota de Scraper.Tech, falta de saldo en Supadata), no en cada ciclo.
 
 ## Salida
@@ -49,6 +54,18 @@ sudo ops/install.sh                                      # instalar o actualizar
 ```
 
 La configuración está en `.env` (ver `.env.example`, `chmod 600`, no se versiona). La única obligatoria es `SCRAPER_TECH_KEY`, que debe estar suscrita a la **YouTube API general** de Scraper.Tech. Para recibir avisos en Telegram hay que definir `CR_TELEGRAM_BOT_TOKEN` y `CR_TELEGRAM_CHAT_ID`; sin ellas, los avisos quedan en el journal.
+
+## Sitio web
+
+`https://cryptoreport.2-25-233-186.sslip.io` (usuario `crypto`, contraseña en `/root/.cryptoreport-site-password`) muestra el pipeline, los ciclos del RSS y un visor de todas las transcripciones con búsqueda.
+
+- **Se actualiza solo.** Al final de cada ciclo, `run` escribe `data.json` en `/var/www/cryptoreport` (`CR_SITE_DIR`), y la página lo vuelve a leer cada 5 min.
+- **Los JSON se sirven directamente** desde `/var/lib/cryptoreport-transcripts/transcripts/` mediante un `alias` de nginx, sin copias. El listado está en `/transcripts/`.
+- **El historial de ciclos** se guarda en la tabla `runs` de `state.sqlite`.
+- **Código:** `site/index.html`. Tailwind se compila en local, sin CDN, con `site/tailwind.config.js`.
+- **nginx:** `ops/nginx-cryptoreport.conf`, con contraseña, HTTPS de Let's Encrypt y cabeceras CSP y `noindex`.
+- **Instalar o actualizar:** `sudo ops/install-site.sh`. Si certbot ya añadió HTTPS, no lo pisa.
+- **Regenerar `data.json` a mano:** `.venv/bin/python -m crtranscripts site`.
 
 ## Costo
 

@@ -163,7 +163,7 @@ class Pipeline(unittest.TestCase):
                              ytdlp_bin="", ytdlp_proxy="", ytdlp_cookies="", telegram_token="",
                              telegram_chat_id="", notify_success=True, scrapertech_monthly_quota=1000,
                              supadata_key="", supadata_generate=True, supadata_generate_after_hours=6,
-                             supadata_monthly_credits=100)
+                             supadata_monthly_credits=100, site_dir="")
         self.store = Store(self.config.db_path)
         self.summary = {"transcribed": [], "pending": [], "errors": [], "final": []}
 

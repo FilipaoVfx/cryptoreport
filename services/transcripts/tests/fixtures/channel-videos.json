@@ -1,0 +1,166 @@
+{
+ "contents": {
+  "twoColumnBrowseResultsRenderer": {
+   "tabs": [
+    {
+     "tabRenderer": {
+      "content": {
+       "richGridRenderer": {
+        "contents": [
+         {
+          "richItemRenderer": {
+           "content": {
+            "lockupViewModel": {
+             "contentId": "OwrAjFdTQ4s",
+             "contentType": "LOCKUP_CONTENT_TYPE_VIDEO",
+             "metadata": {
+              "lockupMetadataViewModel": {
+               "title": {
+                "content": "¿Ya están TODOS Bajistas? Bitcoin Va a Hacer ESTO antes de los $90.000"
+               },
+               "metadata": {
+                "contentMetadataViewModel": {
+                 "metadataRows": [
+                  {
+                   "metadataParts": [
+                    {
+                     "text": {
+                      "content": "30 K"
+                     }
+                    },
+                    {
+                     "text": {
+                      "content": "hace 18 h"
+                     }
+                    }
+                   ]
+                  }
+                 ]
+                }
+               }
+              }
+             }
+            }
+           }
+          }
+         },
+         {
+          "richItemRenderer": {
+           "content": {
+            "lockupViewModel": {
+             "contentId": "32XPhWxkeEQ",
+             "contentType": "LOCKUP_CONTENT_TYPE_VIDEO",
+             "metadata": {
+              "lockupMetadataViewModel": {
+               "title": {
+                "content": "TODOS Bajistas en Bitcoin | Te Muestro mis Zonas Potenciales antes de los $100.000"
+               },
+               "metadata": {
+                "contentMetadataViewModel": {
+                 "metadataRows": [
+                  {
+                   "metadataParts": [
+                    {
+                     "text": {
+                      "content": "34 K"
+                     }
+                    },
+                    {
+                     "text": {
+                      "content": "hace 1 d"
+                     }
+                    }
+                   ]
+                  }
+                 ]
+                }
+               }
+              }
+             }
+            }
+           }
+          }
+         },
+         {
+          "richItemRenderer": {
+           "content": {
+            "lockupViewModel": {
+             "contentId": "fqEUmB6EBNA",
+             "contentType": "LOCKUP_CONTENT_TYPE_VIDEO",
+             "metadata": {
+              "lockupMetadataViewModel": {
+               "title": {
+                "content": "Así Será la Última TRAMPA en BITCOIN antes de seguir RALLY 2027"
+               },
+               "metadata": {
+                "contentMetadataViewModel": {
+                 "metadataRows": [
+                  {
+                   "metadataParts": [
+                    {
+                     "text": {
+                      "content": "30 K"
+                     }
+                    },
+                    {
+                     "text": {
+                      "content": "hace 2 d"
+                     }
+                    }
+                   ]
+                  }
+                 ]
+                }
+               }
+              }
+             }
+            }
+           }
+          }
+         },
+         {
+          "richItemRenderer": {
+           "content": {
+            "lockupViewModel": {
+             "contentId": "NfhMz7gYzsQ",
+             "contentType": "LOCKUP_CONTENT_TYPE_VIDEO",
+             "metadata": {
+              "lockupMetadataViewModel": {
+               "title": {
+                "content": "🔴 ÚLTIMA HORA: Bitcoin LIQUIDANDO... ¿Hasta dónde?"
+               },
+               "metadata": {
+                "contentMetadataViewModel": {
+                 "metadataRows": [
+                  {
+                   "metadataParts": [
+                    {
+                     "text": {
+                      "content": "23 K"
+                     }
+                    },
+                    {
+                     "text": {
+                      "content": "Emitido hace 2 d"
+                     }
+                    }
+                   ]
+                  }
+                 ]
+                }
+               }
+              }
+             }
+            }
+           }
+          }
+         }
+        ]
+       }
+      }
+     }
+    }
+   ]
+  }
+ }
+}

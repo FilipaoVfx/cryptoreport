@@ -43,6 +43,15 @@ CREATE TABLE IF NOT EXISTS attempts (
     at         TEXT NOT NULL
 );
 CREATE TABLE IF NOT EXISTS kv (key TEXT PRIMARY KEY, value TEXT NOT NULL);
+CREATE TABLE IF NOT EXISTS runs (
+    id          INTEGER PRIMARY KEY,
+    started_at  TEXT NOT NULL,
+    finished_at TEXT,
+    feeds       TEXT NOT NULL,          -- {"nacho": "ok (15 entradas)", "kmanu": "error: HTTP 404 ..."}
+    transcribed INTEGER NOT NULL DEFAULT 0,
+    pending     INTEGER NOT NULL DEFAULT 0,
+    errors      INTEGER NOT NULL DEFAULT 0
+);
 """
 
 # Estados de un video: queued → ok | pending (reintenta con espera creciente) → no_captions | unavailable | failed
@@ -84,7 +93,9 @@ class Store:
             (video_id, channel_slug, title, iso(published_at), stamp, None if is_short is None else int(is_short),
              stamp, stamp))
         if cur.rowcount == 0:
-            self.db.execute("UPDATE videos SET title = ? WHERE video_id = ? AND title != ?", (title, video_id, title))
+            # El RSS manda: corrige título (los creadores lo cambian) y la fecha aproximada que dejó el respaldo de páginas.
+            self.db.execute("UPDATE videos SET title = ?, published_at = ? WHERE video_id = ? AND (title != ? OR published_at != ?)",
+                            (title, iso(published_at), video_id, title, iso(published_at)))
         self.db.commit()
         return cur.rowcount == 1
 
@@ -118,6 +129,17 @@ class Store:
         row = self.db.execute("SELECT COALESCE(SUM(requests), 0) FROM attempts WHERE (provider = ? OR provider LIKE ?)"
                               " AND at >= ?", (provider, f"{provider}-%", iso(since))).fetchone()
         return int(row[0])
+
+    def record_run(self, summary: dict) -> None:
+        self.db.execute("INSERT INTO runs (started_at, finished_at, feeds, transcribed, pending, errors)"
+                        " VALUES (?, ?, ?, ?, ?, ?)",
+                        (summary["started_at"], summary.get("finished_at"), json.dumps(summary["feeds"], ensure_ascii=False),
+                         len(summary["transcribed"]), len(summary["pending"]), len(summary["errors"])))
+        self.db.commit()
+
+    def recent_runs(self, limit: int) -> list[sqlite3.Row]:
+        rows = self.db.execute("SELECT * FROM runs ORDER BY started_at DESC LIMIT ?", (limit,)).fetchall()
+        return rows[::-1]
 
     def recent(self, limit: int = 30) -> list[sqlite3.Row]:
         return self.db.execute("SELECT * FROM videos ORDER BY published_at DESC LIMIT ?", (limit,)).fetchall()

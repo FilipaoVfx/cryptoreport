@@ -1,0 +1,840 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>Pipeline Crypto Report</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;800&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+  /* Layout: una columna de etapas encadenadas por un riel numerado (el orden es el del pipeline real);
+     resumen y estado arriba, evidencia y detalle debajo. Papel de gráfico frío, tinta azul marino, cobalto como acento;
+     verde/rojo/ámbar solo como semántica de postura (alcista, bajista, condicional). */
+  :root {
+    --bg: #f2f4f8; --surface: #ffffff; --ink: #131b27; --muted: #5b6678; --line: #d8dee8; --chip: #eaeef4;
+    --accent: #2447c6; --accent-soft: #e5ebfb;
+    --bull: #12784a; --bull-soft: #e2f3e9; --bear: #b93229; --bear-soft: #fbe6e3; --cond: #9a5b00; --cond-soft: #faefd9;
+    --code-bg: #0f1724; --code-fg: #d3dff2; --grid: #e6eaf1;
+    color-scheme: light;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #0c1118; --surface: #131a24; --ink: #e5ebf3; --muted: #93a0b3; --line: #253042; --chip: #1c2533;
+      --accent: #8aa6ff; --accent-soft: #1a2546;
+      --bull: #52c48d; --bull-soft: #0f2a1e; --bear: #ff8173; --bear-soft: #34191a; --cond: #f0b14d; --cond-soft: #2e2311;
+      --code-bg: #090d13; --code-fg: #cdd9ec; --grid: #1a2230;
+      color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #0c1118; --surface: #131a24; --ink: #e5ebf3; --muted: #93a0b3; --line: #253042; --chip: #1c2533;
+    --accent: #8aa6ff; --accent-soft: #1a2546;
+    --bull: #52c48d; --bull-soft: #0f2a1e; --bear: #ff8173; --bear-soft: #34191a; --cond: #f0b14d; --cond-soft: #2e2311;
+    --code-bg: #090d13; --code-fg: #cdd9ec; --grid: #1a2230;
+    color-scheme: dark;
+  }
+  body {
+    background: var(--bg); color: var(--ink);
+    font-family: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif; font-size: 15px; line-height: 1.55;
+    background-image: linear-gradient(var(--grid) 1px, transparent 1px), linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+    background-size: 32px 32px; background-attachment: fixed;
+  }
+  h1, h2, h3 { text-wrap: balance; }
+  .num { font-variant-numeric: tabular-nums; }
+  /* Los hijos de una rejilla no deben ensancharla: el código, las tablas y el SVG se desplazan dentro de su caja. */
+  .grid > * { min-width: 0; }
+  .eyebrow { font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); font-weight: 600; }
+  .prose-w { max-width: 68ch; }
+  a { color: var(--accent); text-underline-offset: 3px; }
+  a:hover { text-decoration: underline; }
+  a:focus-visible, button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 4px; }
+  .rail { position: relative; }
+  .rail::before { content: ""; position: absolute; left: 19px; top: 8px; bottom: 8px; width: 2px; background: var(--line); }
+  .stage-n {
+    position: relative; z-index: 1; flex: none; width: 40px; height: 40px; border-radius: 999px; display: grid; place-items: center;
+    font-family: "IBM Plex Mono", ui-monospace, monospace; font-size: 13px; font-weight: 500;
+    background: var(--surface); border: 2px solid var(--line); color: var(--muted);
+  }
+  .stage-n.prod { border-color: var(--bull); color: var(--bull); }
+  .stage-n.manual { border-color: var(--cond); color: var(--cond); }
+  .chip { display: inline-flex; align-items: center; gap: 6px; border-radius: 999px; padding: 2px 10px; font-size: 12px; font-weight: 500; white-space: nowrap; }
+  .chip::before { content: ""; width: 7px; height: 7px; border-radius: 999px; background: currentColor; }
+  .chip-prod { background: var(--bull-soft); color: var(--bull); }
+  .chip-manual { background: var(--cond-soft); color: var(--cond); }
+  .chip-todo { background: var(--chip); color: var(--muted); }
+  .stance { display: inline-block; border-radius: 6px; padding: 1px 8px; font-size: 12px; font-weight: 600; white-space: nowrap; }
+  .s-bull { background: var(--bull-soft); color: var(--bull); }
+  .s-bear { background: var(--bear-soft); color: var(--bear); }
+  .s-cond { background: var(--cond-soft); color: var(--cond); }
+  .s-neutral { background: var(--chip); color: var(--muted); }
+  .ts { font-family: "IBM Plex Mono", ui-monospace, monospace; font-size: 12.5px; }
+  table { border-collapse: collapse; width: 100%; }
+  th { text-align: left; font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); font-weight: 600; padding: 8px 10px; border-bottom: 1px solid var(--line); white-space: nowrap; }
+  td { padding: 9px 10px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  tr:last-child td { border-bottom: 0; }
+  .cycle { width: 9px; height: 14px; border-radius: 2px; }
+  .cycle.ok { background: var(--bull); }
+  .cycle.ko { background: var(--bear); }
+  .cycle.fb { background: var(--cond); }
+  .bar { height: 10px; border-radius: 3px; background: var(--accent); }
+  pre { white-space: pre; }
+  html { scroll-padding-top: calc(64px + env(safe-area-inset-top, 0px)); }
+  .topnav { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 40; background: var(--surface); border-bottom: 1px solid var(--line); }
+  .navlink { display: inline-flex; align-items: center; gap: 6px; padding: 6px 10px; border-radius: 6px; color: var(--ink); font-weight: 500; font-size: 14px; background: transparent; border: 0; cursor: pointer; text-decoration: none; }
+  .navlink:hover { background: var(--chip); text-decoration: none; }
+  .navlink[aria-expanded="true"] { background: var(--accent-soft); color: var(--accent); }
+  .count { font-family: "IBM Plex Mono", ui-monospace, monospace; font-size: 11.5px; padding: 0 6px; border-radius: 999px; background: var(--chip); color: var(--muted); }
+  .menu-item { display: grid; grid-template-columns: 1fr auto; gap: 2px 10px; padding: 8px 10px; border-radius: 6px; cursor: pointer; text-align: left; width: 100%; background: transparent; border: 0; color: var(--ink); }
+  .menu-item:hover, .menu-item:focus-visible { background: var(--chip); }
+  .field { width: 100%; border: 1px solid var(--line); background: var(--bg); color: var(--ink); border-radius: 6px; padding: 7px 10px; font-size: 14px; }
+  .field::placeholder { color: var(--muted); }
+  .seg-btn { padding: 4px 10px; border-radius: 6px; font-size: 13px; font-weight: 500; border: 1px solid var(--line); background: var(--surface); color: var(--ink); cursor: pointer; }
+  .seg-btn[aria-pressed="true"] { background: var(--ink); color: var(--surface); border-color: var(--ink); }
+  .tx-item { display: grid; gap: 2px; padding: 10px 12px; width: 100%; text-align: left; background: transparent; border: 0; border-left: 3px solid transparent; color: var(--ink); cursor: pointer; }
+  .tx-item:hover { background: var(--chip); }
+  .tx-item[aria-current="true"] { background: var(--accent-soft); border-left-color: var(--accent); }
+  .action { display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; border-radius: 6px; font-size: 13px; font-weight: 500; border: 1px solid var(--line); background: var(--surface); color: var(--ink); cursor: pointer; text-decoration: none; }
+  .action:hover { border-color: var(--accent); color: var(--accent); text-decoration: none; }
+  .action.primary { background: var(--accent); border-color: var(--accent); color: var(--surface); }
+  .action.primary:hover { color: var(--surface); filter: brightness(1.08); }
+  mark { background: var(--cond-soft); color: var(--ink); border-radius: 3px; padding: 0 2px; box-shadow: inset 0 -2px 0 var(--cond); }
+  @media (prefers-reduced-motion: no-preference) {
+    .lift { transition: transform .15s ease, border-color .15s ease; }
+    .lift:hover { transform: translateY(-1px); border-color: var(--accent); }
+  }
+</style>
+<link rel="stylesheet" href="site.css">
+</head>
+<body>
+
+<nav class="topnav" aria-label="Navegación principal">
+  <div class="mx-auto max-w-[1120px] px-4 sm:px-6 h-14 flex items-center gap-2">
+    <a href="#inicio" class="font-display font-extrabold text-ink text-[17px] mr-auto no-underline hover:no-underline">Crypto Report</a>
+    <a href="#inicio" class="navlink hidden sm:inline-flex">Pipeline</a>
+    <a href="#insights" class="navlink hidden md:inline-flex">Insights</a>
+    <div class="relative">
+      <button id="nav-json-btn" type="button" class="navlink" aria-expanded="false" aria-controls="nav-json-panel">
+        Transcripciones <span class="count" id="nav-count">17</span>
+        <svg width="10" height="10" viewBox="0 0 10 10" aria-hidden="true"><path d="M1 3 L5 7 L9 3" fill="none" stroke="currentColor" stroke-width="1.6"/></svg>
+      </button>
+      <div id="nav-json-panel" hidden class="absolute right-0 mt-2 w-[min(calc(100vw-32px),480px)] rounded-lg border border-line bg-surface shadow-xl overflow-hidden">
+        <div class="p-3 border-b border-line grid gap-2">
+          <label for="nav-filter" class="eyebrow">Todos los JSON</label>
+          <input id="nav-filter" class="field" type="search" placeholder="Filtrar por título, canal o ID" autocomplete="off">
+        </div>
+        <div id="nav-json-list" class="max-h-[60vh] overflow-y-auto p-2 grid gap-1"></div>
+        <div class="p-3 border-t border-line flex items-center justify-between gap-2 text-[13px]">
+          <span class="text-muted">Clic para leer · “JSON” abre el archivo</span>
+          <a href="#transcripciones" class="font-semibold" id="nav-open-viewer">Ir al visor</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<div class="mx-auto max-w-[1120px] px-4 sm:px-6 py-10 sm:py-14">
+
+  <!-- Cabecera -->
+  <header id="inicio" class="grid gap-6">
+    <div class="flex flex-wrap items-center gap-3">
+      <span class="eyebrow">Crypto Report</span>
+      <span class="chip chip-prod">Servicio activo · timer cada 15 min</span>
+    </div>
+    <h1 class="font-display font-extrabold tracking-tight text-[clamp(2rem,5vw,3.4rem)] leading-[1.02]">Del video a la señal</h1>
+    <p class="prose-w text-[17px] text-muted">
+      El recorrido de cada video de Nacho IC y KManuS88, de la publicación al insight. Detección, transcripción y almacenamiento ya corren solos en el servidor.
+      Normalización, análisis e insights se muestran con un <strong class="text-ink font-semibold">ejemplo hecho a mano</strong>
+      sobre transcripciones reales, siguiendo el esquema de <span class="ts">docs/plan-extraccion-datos.md</span>.
+    </p>
+    <p class="ts text-muted">Datos: <span id="snapshot">cargando…</span> · fuente: <span class="text-ink">/var/lib/cryptoreport-transcripts</span> y journal de systemd · <a href="#transcripciones">leer las transcripciones</a></p>
+
+    <!-- Mapa de etapas -->
+    <nav aria-label="Etapas del pipeline" class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-2">
+      <a href="#descubrimiento" class="lift block rounded-lg border border-line bg-surface p-3 no-underline hover:no-underline"><span class="ts text-muted">01</span><span class="block font-semibold text-ink">Descubrimiento</span><span class="chip chip-prod mt-2">En producción</span></a>
+      <a href="#video" class="lift block rounded-lg border border-line bg-surface p-3 no-underline hover:no-underline"><span class="ts text-muted">02</span><span class="block font-semibold text-ink">Video</span><span class="chip chip-prod mt-2">En producción</span></a>
+      <a href="#transcripcion" class="lift block rounded-lg border border-line bg-surface p-3 no-underline hover:no-underline"><span class="ts text-muted">03</span><span class="block font-semibold text-ink">Transcripción</span><span class="chip chip-prod mt-2">En producción</span></a>
+      <a href="#normalizacion" class="lift block rounded-lg border border-line bg-surface p-3 no-underline hover:no-underline"><span class="ts text-muted">04</span><span class="block font-semibold text-ink">Normalización</span><span class="chip chip-manual mt-2">Ejemplo manual</span></a>
+      <a href="#analisis" class="lift block rounded-lg border border-line bg-surface p-3 no-underline hover:no-underline"><span class="ts text-muted">05</span><span class="block font-semibold text-ink">Análisis</span><span class="chip chip-manual mt-2">Ejemplo manual</span></a>
+      <a href="#insights" class="lift block rounded-lg border border-line bg-surface p-3 no-underline hover:no-underline"><span class="ts text-muted">06</span><span class="block font-semibold text-ink">Insights</span><span class="chip chip-manual mt-2">Ejemplo manual</span></a>
+      <a href="#evaluacion" class="lift block rounded-lg border border-line bg-surface p-3 no-underline hover:no-underline col-span-2 sm:col-span-1"><span class="ts text-muted">07</span><span class="block font-semibold text-ink">Evaluación</span><span class="chip chip-todo mt-2">Pendiente</span></a>
+    </nav>
+
+    <!-- Cifras del servicio -->
+    <dl class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 border border-line rounded-lg bg-surface overflow-hidden">
+      <div class="p-4 border-b lg:border-b-0 border-r border-line"><dt class="eyebrow">Videos transcritos</dt><dd class="num font-display font-extrabold text-3xl mt-1" id="k-videos">—</dd><dd class="text-[13px] text-muted" id="k-videos-sub">13 Nacho · 4 KManu</dd></div>
+      <div class="p-4 border-b lg:border-b-0 md:border-r border-line"><dt class="eyebrow">Audio cubierto</dt><dd class="num font-display font-extrabold text-3xl mt-1" id="k-audio">—</dd><dd class="text-[13px] text-muted num" id="k-audio-sub">4.216 segmentos con tiempo</dd></div>
+      <div class="p-4 border-b lg:border-b-0 border-r border-line"><dt class="eyebrow">Cobertura mínima</dt><dd class="num font-display font-extrabold text-3xl mt-1" id="k-cov">—</dd><dd class="text-[13px] text-muted">del final de cada video</dd></div>
+      <div class="p-4 border-b md:border-b-0 md:border-r border-line"><dt class="eyebrow">Latencia mediana</dt><dd class="num font-display font-extrabold text-3xl mt-1" id="k-lat">—</dd><dd class="text-[13px] text-muted num" id="k-lat-sub">publicación → texto · 4 videos en vivo</dd></div>
+      <div class="p-4 border-r border-line"><dt class="eyebrow">RSS respondió</dt><dd class="num font-display font-extrabold text-3xl mt-1" id="k-rss">—</dd><dd class="text-[13px] text-muted num" id="k-rss-sub">162 de 188 lecturas</dd></div>
+      <div class="p-4"><dt class="eyebrow">Gasto del mes</dt><dd class="num font-display font-extrabold text-3xl mt-1">$0</dd><dd class="text-[13px] text-muted num" id="k-spend">Scraper.Tech 42/1.000 · Supadata 11/100</dd></div>
+    </dl>
+  </header>
+
+  <!-- Etapas -->
+  <main class="rail mt-12 grid gap-10">
+
+    <!-- 01 -->
+    <section id="descubrimiento" class="flex gap-4 sm:gap-6">
+      <span class="stage-n prod">01</span>
+      <div class="min-w-0 flex-1 grid gap-4">
+        <div class="flex flex-wrap items-center gap-x-3 gap-y-1">
+          <h2 class="font-display font-bold text-2xl">Descubrimiento</h2><span class="chip chip-prod">En producción</span>
+        </div>
+        <p class="prose-w text-muted">Cada 15 minutos el servicio lee el RSS público de los dos canales (últimas 15 publicaciones), encola lo publicado en las últimas 72 h y detecta los shorts con una consulta gratuita a <span class="ts">/shorts/&lt;id&gt;</span>. El RSS de YouTube falla en rachas y a veces durante horas: cada canal se reintenta hasta 6 veces en un minuto y, si sigue caído, se leen las páginas /videos, /streams y /shorts del canal. Solo se avisa si un canal lleva 3 ciclos seguidos sin ninguna fuente.</p>
+        <div class="rounded-lg border border-line bg-surface p-4 grid gap-3">
+          <div class="flex flex-wrap items-baseline justify-between gap-2">
+            <h3 class="font-semibold">Lecturas del RSS por ciclo</h3>
+            <span class="ts text-muted" id="cycle-range"></span>
+          </div>
+          <div class="grid gap-2" id="cycle-rows"></div>
+          <p class="text-[13px] text-muted flex flex-wrap gap-x-4 gap-y-1">
+            <span class="inline-flex items-center gap-2"><span class="cycle ok inline-block"></span>RSS leído</span>
+            <span class="inline-flex items-center gap-2"><span class="cycle fb inline-block"></span>RSS caído; videos leídos desde las páginas del canal</span>
+            <span class="inline-flex items-center gap-2"><span class="cycle ko inline-block"></span>sin respuesta de ninguna fuente (se recoge en el ciclo siguiente)</span>
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 02 -->
+    <section id="video" class="flex gap-4 sm:gap-6">
+      <span class="stage-n prod">02</span>
+      <div class="min-w-0 flex-1 grid gap-4">
+        <div class="flex flex-wrap items-center gap-x-3 gap-y-1">
+          <h2 class="font-display font-bold text-2xl">Entrada: el video</h2><span class="chip chip-prod">En producción</span>
+        </div>
+        <p class="prose-w text-muted">El ejemplo que sigue de punta a punta es el video largo más reciente de Nacho IC. Lo detectó el ciclo de las 10:31 UTC, 11 minutos después de publicarse.</p>
+        <article class="rounded-lg border border-line bg-surface overflow-hidden grid md:grid-cols-[260px_1fr]">
+          <a href="https://www.youtube.com/watch?v=OwrAjFdTQ4s" target="_blank" rel="noopener" class="no-underline hover:no-underline grid place-items-center p-6 bg-code text-code-ink min-h-[150px]" aria-label="Abrir el video en YouTube">
+            <span class="grid place-items-center gap-2 text-center">
+              <svg width="54" height="38" viewBox="0 0 54 38" aria-hidden="true"><rect width="54" height="38" rx="9" fill="#e5463b"/><path d="M22 11 L36 19 L22 27 Z" fill="#ffffff"/></svg>
+              <span class="ts">youtu.be/OwrAjFdTQ4s</span>
+            </span>
+          </a>
+          <div class="p-5 grid gap-3 min-w-0">
+            <p class="eyebrow">Nacho IC · video largo</p>
+            <h3 class="font-display font-bold text-xl leading-tight">¿Ya están TODOS Bajistas? Bitcoin Va a Hacer ESTO antes de los $90.000</h3>
+            <dl class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-[13px]">
+              <div><dt class="text-muted">Publicado</dt><dd class="ts text-ink">09 oct 10:20 UTC</dd></div>
+              <div><dt class="text-muted">Duración</dt><dd class="ts text-ink">17:59</dd></div>
+              <div><dt class="text-muted">Detectado</dt><dd class="ts text-ink">10:31 UTC</dd></div>
+              <div><dt class="text-muted">Idioma pedido</dt><dd class="ts text-ink">es (original)</dd></div>
+            </dl>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <!-- 03 -->
+    <section id="transcripcion" class="flex gap-4 sm:gap-6">
+      <span class="stage-n prod">03</span>
+      <div class="min-w-0 flex-1 grid gap-4">
+        <div class="flex flex-wrap items-center gap-x-3 gap-y-1">
+          <h2 class="font-display font-bold text-2xl">Transcripción</h2><span class="chip chip-prod">En producción</span>
+        </div>
+        <p class="prose-w text-muted">Los proveedores se consultan en orden y el primero que entrega texto gana. Supadata cobra, así que solo entra si fallan los gratuitos. Esta es la traza real de este video:</p>
+
+        <ol class="rounded-lg border border-line bg-surface divide-y divide-[var(--line)]">
+          <li class="grid grid-cols-[72px_1fr] sm:grid-cols-[88px_150px_1fr_auto] gap-x-4 gap-y-1 p-4 items-baseline">
+            <span class="ts text-muted">10:31:37</span><span class="font-semibold">Scraper.Tech</span>
+            <span class="col-start-2 sm:col-start-auto text-[14px] text-muted">2 consultas, 35,9 s · respondió sin segmentos (fallo transitorio)</span>
+            <span class="col-start-2 sm:col-start-auto"><span class="stance s-bear">error</span></span>
+          </li>
+          <li class="grid grid-cols-[72px_1fr] sm:grid-cols-[88px_150px_1fr_auto] gap-x-4 gap-y-1 p-4 items-baseline">
+            <span class="ts text-muted">10:31:38</span><span class="font-semibold">yt-dlp local</span>
+            <span class="col-start-2 sm:col-start-auto text-[14px] text-muted">1,5 s · YouTube pide iniciar sesión a la IP del servidor</span>
+            <span class="col-start-2 sm:col-start-auto"><span class="stance s-neutral">bloqueado</span></span>
+          </li>
+          <li class="grid grid-cols-[72px_1fr] sm:grid-cols-[88px_150px_1fr_auto] gap-x-4 gap-y-1 p-4 items-baseline">
+            <span class="ts text-muted">10:31:43</span><span class="font-semibold">Supadata</span>
+            <span class="col-start-2 sm:col-start-auto text-[14px] text-muted">4,9 s · 1 crédito · pista original en español</span>
+            <span class="col-start-2 sm:col-start-auto"><span class="stance s-bull">ok</span></span>
+          </li>
+          <li class="grid grid-cols-[72px_1fr] sm:grid-cols-[88px_150px_1fr_auto] gap-x-4 gap-y-1 p-4 items-baseline">
+            <span class="ts text-muted">10:31:50</span><span class="font-semibold">Metadatos</span>
+            <span class="col-start-2 sm:col-start-auto text-[14px] text-muted">Scraper.Tech <span class="ts">video.php</span> · duración 17:59 para medir la cobertura</span>
+            <span class="col-start-2 sm:col-start-auto"><span class="stance s-bull">ok</span></span>
+          </li>
+        </ol>
+
+        <div class="grid lg:grid-cols-2 gap-4">
+          <div class="min-w-0 rounded-lg border border-line overflow-hidden">
+            <div class="flex items-center justify-between gap-2 px-4 py-2 bg-surface border-b border-line"><span class="text-[13px] font-semibold">Salida para máquinas · JSON</span><span class="ts text-muted">499 segmentos</span></div>
+            <pre class="bg-code text-code-ink ts p-4 overflow-x-auto leading-6">{
+ "transcript": {
+  "provider": "supadata", "language": "es",
+  "segment_count": 499, "coverage": 1.0,
+  "segments": [
+   {"start": 0.04, "dur": 3.48,
+    "text": "Muy buenos días. Estamos a viernes y"},
+   {"start": 1.48, "dur": 3.839,
+    "text": "Bitcoin ha tenido una semana bajista. No"},
+   {"start": 3.52, "dur": 4.2,
+    "text": "se puede decir de otra manera, pero está"},
+   …
+  ]
+ }
+}</pre>
+          </div>
+          <div class="min-w-0 rounded-lg border border-line bg-surface overflow-hidden">
+            <div class="flex items-center justify-between gap-2 px-4 py-2 border-b border-line"><span class="text-[13px] font-semibold">Salida para personas · bloques de ~30 s</span><span class="ts text-muted">hasta 18:00 (100 %)</span></div>
+            <div class="p-4 grid gap-3 text-[14px]">
+              <p><a class="ts" href="https://youtu.be/OwrAjFdTQ4s?t=0" target="_blank" rel="noopener">00:00</a> Muy buenos días. Estamos a viernes y Bitcoin ha tenido una semana bajista. No se puede decir de otra manera, pero está al límite. Al límite. Fíjate en esta foto. Estamos comprobando que está justamente en esa zona que te dije que no se puede perder ese mínimo que va de 81,300 a 82,500…</p>
+              <p><a class="ts" href="https://youtu.be/OwrAjFdTQ4s?t=49" target="_blank" rel="noopener">00:49</a> Y con esto no me refiero a que esté unas horas por ahí liquidando y luego hacia arriba, que es lo que hizo el día de ayer y hoy de madrugada. No me refiero a que cierre por debajo de 81,300…</p>
+            </div>
+          </div>
+        </div>
+
+        <details class="rounded-lg border border-line bg-surface" open>
+          <summary class="cursor-pointer px-4 py-3 font-semibold">Todas las transcripciones guardadas <span class="text-muted font-normal" id="table-sub">· 17 videos</span></summary>
+          <div class="overflow-x-auto border-t border-line">
+            <table class="text-[13.5px] min-w-[920px]">
+              <thead><tr><th>Publicado (UTC)</th><th>Canal</th><th>Título</th><th>Proveedor</th><th class="text-right">Segm.</th><th class="text-right">Duración</th><th class="text-right">Cobertura</th><th class="text-right">Latencia</th><th>Archivo</th></tr></thead>
+              <tbody id="videos-body"></tbody>
+            </table>
+          </div>
+          <p class="px-4 py-3 text-[13px] text-muted border-t border-line">La latencia se mide solo en los videos que el servicio detectó en vivo; los demás llegaron en la carga inicial del 9 oct.</p>
+        </details>
+      </div>
+    </section>
+
+    <!-- 04 -->
+    <section id="normalizacion" class="flex gap-4 sm:gap-6">
+      <span class="stage-n manual">04</span>
+      <div class="min-w-0 flex-1 grid gap-4">
+        <div class="flex flex-wrap items-center gap-x-3 gap-y-1">
+          <h2 class="font-display font-bold text-2xl">Normalización de entidades</h2><span class="chip chip-manual">Ejemplo manual</span>
+        </div>
+        <p class="prose-w text-muted">Los subtítulos automáticos deforman tickers y nombres propios. Antes de extraer afirmaciones hay que llevarlos a su forma canónica con un glosario por canal. Estos casos salen de las dos transcripciones analizadas:</p>
+        <div class="overflow-x-auto rounded-lg border border-line bg-surface">
+          <table class="text-[14px] min-w-[620px]">
+            <thead><tr><th>Lo que oyó el subtitulado</th><th>Entidad</th><th>Tipo</th><th>Minuto</th></tr></thead>
+            <tbody>
+              <tr><td class="ts">“Hiperliqu…”, “el token de Hype”</td><td class="font-semibold">HYPE (Hyperliquid)</td><td>cripto</td><td><a class="ts" href="https://youtu.be/OwrAjFdTQ4s?t=811" target="_blank" rel="noopener">13:31</a></td></tr>
+              <tr><td class="ts">“Polcadot”</td><td class="font-semibold">DOT</td><td>cripto</td><td><a class="ts" href="https://youtu.be/OwrAjFdTQ4s?t=799" target="_blank" rel="noopener">13:19</a></td></tr>
+              <tr><td class="ts">“ABGO”</td><td class="font-semibold">AVGO (Broadcom)</td><td>acción</td><td><a class="ts" href="https://youtu.be/OwrAjFdTQ4s?t=867" target="_blank" rel="noopener">14:27</a></td></tr>
+              <tr><td class="ts">“Happy”, dividendo de casi 9 %</td><td class="font-semibold">JEPI <span class="stance s-cond ml-1">probable</span></td><td>ETF</td><td><a class="ts" href="https://youtu.be/OwrAjFdTQ4s?t=944" target="_blank" rel="noopener">15:44</a></td></tr>
+              <tr><td class="ts">“Far and Griff Index”</td><td class="font-semibold">Fear &amp; Greed Index</td><td>indicador</td><td><a class="ts" href="https://youtu.be/OwrAjFdTQ4s?t=279" target="_blank" rel="noopener">04:39</a></td></tr>
+              <tr><td class="ts">“move”, “HIG”</td><td class="font-semibold">MOVE, HYG</td><td>indicador / ETF</td><td><a class="ts" href="https://youtu.be/OwrAjFdTQ4s?t=601" target="_blank" rel="noopener">10:01</a></td></tr>
+              <tr><td class="ts">“Quan Fury”</td><td class="font-semibold">Quantfury</td><td>broker (afiliado)</td><td><a class="ts" href="https://youtu.be/OwrAjFdTQ4s?t=712" target="_blank" rel="noopener">11:52</a></td></tr>
+              <tr><td class="ts">“dewave”, “Arwave”, “Airwave”</td><td class="font-semibold">AR (Arweave)</td><td>cripto · KManu</td><td><a class="ts" href="https://youtu.be/NbqOk_ZHXf8?t=0" target="_blank" rel="noopener">00:00</a></td></tr>
+              <tr><td class="ts">“elit”, “delite”, “ladit”</td><td class="font-semibold">LIT (Lighter)</td><td>cripto · KManu</td><td><a class="ts" href="https://youtu.be/NbqOk_ZHXf8?t=606" target="_blank" rel="noopener">10:06</a></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- 05 -->
+    <section id="analisis" class="flex gap-4 sm:gap-6">
+      <span class="stage-n manual">05</span>
+      <div class="min-w-0 flex-1 grid gap-4">
+        <div class="flex flex-wrap items-center gap-x-3 gap-y-1">
+          <h2 class="font-display font-bold text-2xl">Análisis: afirmaciones con evidencia</h2><span class="chip chip-manual">Ejemplo manual</span>
+        </div>
+        <p class="prose-w text-muted">Cada afirmación lleva el activo, la postura, el horizonte, los niveles y la condición que dijo el creador, con su cita y el segundo exacto del video. No se rellena nada que el creador no haya dicho. Extraídas por Claude leyendo la transcripción del ejemplo; la etapa automática todavía no existe.</p>
+
+        <div class="overflow-x-auto rounded-lg border border-line bg-surface">
+          <table class="text-[14px] min-w-[900px]">
+            <thead><tr><th>Activo</th><th>Postura</th><th>Horizonte</th><th>Niveles y condición</th><th>Cita</th><th>Minuto</th></tr></thead>
+            <tbody>
+              <tr><td class="font-semibold">BTC</td><td><span class="stance s-cond">alcista si aguanta</span></td><td>corto</td><td class="num">Mirar arriba si no pierde 80.400. Invalida un cierre bajo 81.300 → 76.000–75.000. Liquidez por encima: 82.860–83.790.</td><td class="italic">“si no perdemos el mínimo de ayer de 80,400, podemos empezar a mirar hacia arriba”</td><td><a class="ts" href="https://youtu.be/OwrAjFdTQ4s?t=171" target="_blank" rel="noopener">02:51</a></td></tr>
+              <tr><td class="font-semibold">BTC</td><td><span class="stance s-bull">alcista</span></td><td>medio · desde 28 oct</td><td>Catalizador: liquidez global; suelo hasta el 28 oct, sube hasta el 9 dic.</td><td class="italic">“A partir del 28 me espero petardazo arriba.”</td><td><a class="ts" href="https://youtu.be/OwrAjFdTQ4s?t=363" target="_blank" rel="noopener">06:03</a></td></tr>
+              <tr><td class="font-semibold">BTC</td><td><span class="stance s-bull">alcista</span></td><td>largo</td><td>Sobre la EMA 200 (76.300): mercado alcista que recién empieza.</td><td class="italic">“estamos en bull market, pero empezando el bull market. Quedan 3 años”</td><td><a class="ts" href="https://youtu.be/OwrAjFdTQ4s?t=415" target="_blank" rel="noopener">06:55</a></td></tr>
+              <tr><td class="font-semibold">DXY</td><td><span class="stance s-bear">bajista</span></td><td>medio · hasta nov 2026</td><td>Ciclo de 4 años del dólar; en zona de techo.</td><td class="italic">“Está acabando ya su bull market el dólar.”</td><td><a class="ts" href="https://youtu.be/OwrAjFdTQ4s?t=497" target="_blank" rel="noopener">08:17</a></td></tr>
+              <tr><td class="font-semibold">DOT</td><td><span class="stance s-bear">venta</span></td><td>corto</td><td>Vuelve a la zona que marca como de venta.</td><td class="italic">“vuelve otra vez a la zona, que para mí es para vender”</td><td><a class="ts" href="https://youtu.be/OwrAjFdTQ4s?t=799" target="_blank" rel="noopener">13:19</a></td></tr>
+              <tr><td class="font-semibold">HYPE</td><td><span class="stance s-neutral">largos cancelados</span></td><td>corto</td><td>Hasta que recupere la estructura de corto plazo.</td><td class="italic">“de momento cancelamos largos en hype hasta que recuperemos estructura”</td><td><a class="ts" href="https://youtu.be/OwrAjFdTQ4s?t=811" target="_blank" rel="noopener">13:31</a></td></tr>
+              <tr><td class="font-semibold">ATOM</td><td><span class="stance s-cond">alcista si rompe</span></td><td>corto</td><td>Condición: romper el bloque de corto plazo que hizo de techo.</td><td class="italic">“si rompe eh yo he encantado de rectificar y estar en largo”</td><td><a class="ts" href="https://youtu.be/OwrAjFdTQ4s?t=853" target="_blank" rel="noopener">14:13</a></td></tr>
+              <tr><td class="font-semibold">TSM · AVGO</td><td><span class="stance s-bull">alcista</span></td><td>sin horizonte</td><td>Caída del 8 oct recuperada en la preapertura.</td><td class="italic">“sinceramente creo que es para seguir subiendo”</td><td><a class="ts" href="https://youtu.be/OwrAjFdTQ4s?t=867" target="_blank" rel="noopener">14:27</a></td></tr>
+              <tr><td class="font-semibold">JEPI <span class="text-muted font-normal">(prob.)</span></td><td><span class="stance s-bull">compra en rango</span></td><td>corto</td><td class="num">Comprar entre 55 y 56.</td><td class="italic">“cualquier oportunidad entre 55 y 56 es para comprar”</td><td><a class="ts" href="https://youtu.be/OwrAjFdTQ4s?t=944" target="_blank" rel="noopener">15:44</a></td></tr>
+              <tr><td class="font-semibold">LCID</td><td><span class="stance s-bear">no comprar</span></td><td>sin horizonte</td><td>Empresa con pérdidas crecientes y dilución.</td><td class="italic">“No os metáis en estas historias.”</td><td><a class="ts" href="https://youtu.be/OwrAjFdTQ4s?t=992" target="_blank" rel="noopener">16:32</a></td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-3">
+          <div class="rounded-lg border border-line bg-surface p-4 grid gap-2 content-start">
+            <p class="eyebrow">Operativa propia</p>
+            <p class="text-[14px]">Pasa de cortos a largos en BTC. <a class="ts" href="https://youtu.be/OwrAjFdTQ4s?t=34" target="_blank" rel="noopener">00:34</a></p>
+            <p class="text-[13px] text-muted italic">“He dejado de hacer cortos para empezar a construir largos.”</p>
+          </div>
+          <div class="rounded-lg border border-line bg-surface p-4 grid gap-2 content-start">
+            <p class="eyebrow">Conflicto de interés</p>
+            <p class="text-[14px]">Código de referido de Quantfury y comunidad privada de pago. <a class="ts" href="https://youtu.be/OwrAjFdTQ4s?t=712" target="_blank" rel="noopener">11:52</a> · <a class="ts" href="https://youtu.be/OwrAjFdTQ4s?t=921" target="_blank" rel="noopener">15:21</a></p>
+            <p class="text-[13px] text-muted italic">“en estas recompensas escribes Nacho y aplicas”</p>
+          </div>
+          <div class="rounded-lg border border-line bg-surface p-4 grid gap-2 content-start">
+            <p class="eyebrow">Título frente a contenido</p>
+            <p class="text-[14px]">El título promete <strong>$90.000</strong>; la cifra no aparece en los 18 minutos hablados.</p>
+            <p class="text-[13px] text-muted">El contenido es alcista de medio plazo con condición de corto.</p>
+          </div>
+          <div class="rounded-lg border border-line bg-surface p-4 grid gap-2 content-start">
+            <p class="eyebrow">Indicador propio</p>
+            <p class="text-[14px]"><span class="num font-semibold">62/100</span> en su método FRELDI: “no es la mejor zona de compra”. <a class="ts" href="https://youtu.be/OwrAjFdTQ4s?t=582" target="_blank" rel="noopener">09:42</a></p>
+            <p class="text-[13px] text-muted num">Fear &amp; Greed 56 · EMA 200 en 76.300 · interés 22/100</p>
+          </div>
+        </div>
+
+        <div class="rounded-lg border border-line bg-surface p-4 grid gap-3">
+          <div class="flex flex-wrap items-baseline justify-between gap-2"><h3 class="font-semibold">El mismo análisis sobre KManuS88</h3><a class="ts" href="https://youtu.be/NbqOk_ZHXf8" target="_blank" rel="noopener">La mayor rentabilidad para éste momento de las altcoins · 14:28</a></div>
+          <ul class="grid gap-2 text-[14px]">
+            <li class="flex flex-wrap gap-x-3 gap-y-1"><span class="font-semibold w-16">LIT</span><span class="stance s-bull">alcista</span><span>Bot de grilla en rango 4–6 USD, apalancamiento x3, 2.000 USD.</span><span class="italic text-muted">“Lighter es una de mis grandes apuestas para este bull market.”</span><a class="ts" href="https://youtu.be/NbqOk_ZHXf8?t=606" target="_blank" rel="noopener">10:06</a></li>
+            <li class="flex flex-wrap gap-x-3 gap-y-1"><span class="font-semibold w-16">Altcoins</span><span class="stance s-bull">alcista</span><span>Contexto de ciclo.</span><span class="italic text-muted">“estamos en un prebull y las altcoins empiezan a volar”</span><a class="ts" href="https://youtu.be/NbqOk_ZHXf8?t=23" target="_blank" rel="noopener">00:23</a></li>
+            <li class="flex flex-wrap gap-x-3 gap-y-1"><span class="font-semibold w-16">Afiliado</span><span class="stance s-neutral">Pionex</span><span>Pide abrir cuenta con su enlace antes de copiar los bots.</span><span class="italic text-muted">“créense la cuenta con el link que les dejo abajo”</span><a class="ts" href="https://youtu.be/NbqOk_ZHXf8?t=202" target="_blank" rel="noopener">03:22</a></li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- 06 -->
+    <section id="insights" class="flex gap-4 sm:gap-6">
+      <span class="stage-n manual">06</span>
+      <div class="min-w-0 flex-1 grid gap-4">
+        <div class="flex flex-wrap items-center gap-x-3 gap-y-1">
+          <h2 class="font-display font-bold text-2xl">Insights entre videos y canales</h2><span class="chip chip-manual">Ejemplo manual</span>
+        </div>
+        <p class="prose-w text-muted">Lo que aparecía al cruzar las 17 transcripciones disponibles el 10 oct. Los conteos son búsquedas de texto sobre todo lo guardado; la lectura la hizo Claude.</p>
+
+        <div class="grid lg:grid-cols-[1.15fr_1fr] gap-4">
+          <!-- Niveles -->
+          <figure class="min-w-0 rounded-lg border border-line bg-surface p-4 grid gap-3">
+            <figcaption class="grid gap-1">
+              <h3 class="font-semibold">Los mismos niveles de BTC en 4 videos (7–9 oct)</h3>
+              <p class="text-[13px] text-muted">81.300 aparece en 4 videos de Nacho y la zona 81.300–82.500 se repite como suelo en cada uno. Escala lineal en USD.</p>
+            </figcaption>
+            <div class="overflow-x-auto">
+              <svg viewBox="0 0 600 420" class="w-full min-w-[520px]" role="img" aria-label="Escalera de niveles de Bitcoin citados por Nacho IC, de 75.000 a 83.790 USD">
+                <g font-family="IBM Plex Mono, ui-monospace, monospace" font-size="11.5">
+                  <!-- banda de liquidez 82.860–83.790 -->
+                  <rect x="96" y="39.8" width="250" height="36" fill="var(--accent-soft)"/>
+                  <!-- zona pivote 81.300–82.500 -->
+                  <rect x="96" y="89.8" width="250" height="46.5" fill="var(--cond-soft)"/>
+                  <!-- muro María + EMA 200 76.000–76.300 -->
+                  <rect x="96" y="330.2" width="250" height="11.6" fill="var(--bear-soft)"/>
+                  <!-- eje -->
+                  <line x1="96" y1="20" x2="96" y2="400" stroke="var(--line)" stroke-width="1.5"/>
+                  <!-- líneas de nivel -->
+                  <line x1="96" y1="39.8" x2="346" y2="39.8" stroke="var(--accent)" stroke-width="1.5"/>
+                  <line x1="96" y1="58.0" x2="346" y2="58.0" stroke="var(--accent)" stroke-width="1" stroke-dasharray="4 3"/>
+                  <line x1="96" y1="89.8" x2="346" y2="89.8" stroke="var(--cond)" stroke-width="1.5"/>
+                  <line x1="96" y1="136.3" x2="346" y2="136.3" stroke="var(--bear)" stroke-width="2.5"/>
+                  <line x1="96" y1="175.1" x2="346" y2="175.1" stroke="var(--muted)" stroke-width="1" stroke-dasharray="2 3"/>
+                  <line x1="96" y1="380.6" x2="346" y2="380.6" stroke="var(--bear)" stroke-width="1" stroke-dasharray="4 3"/>
+                  <!-- precios -->
+                  <g fill="var(--muted)" text-anchor="end">
+                    <text x="88" y="43.8">83.790</text>
+                    <text x="88" y="62">83.320</text>
+                    <text x="88" y="78">82.860</text>
+                    <text x="88" y="93.8">82.500</text>
+                    <text x="88" y="140.3" fill="var(--bear)" font-weight="500">81.300</text>
+                    <text x="88" y="179.1">80.300</text>
+                    <text x="88" y="340">76.000</text>
+                    <text x="88" y="384.6">75.000</text>
+                  </g>
+                  <!-- anotaciones -->
+                  <g fill="var(--ink)" font-family="IBM Plex Sans, system-ui, sans-serif" font-size="12">
+                    <text x="356" y="43.8">punto caliente grande</text>
+                    <text x="356" y="62">punto caliente pequeño</text>
+                    <text x="356" y="78">siguiente a liquidar</text>
+                    <text x="356" y="93.8">techo de la zona pivote</text>
+                    <text x="356" y="117" fill="var(--cond)">zona pivote: su suelo</text>
+                    <text x="356" y="140.3" fill="var(--bear)" font-weight="600">invalidación (cierre diario)</text>
+                    <text x="356" y="179.1">mínimo del 8 oct</text>
+                    <text x="356" y="340">“muro María” + EMA 200</text>
+                    <text x="356" y="384.6" fill="var(--bear)">destino si pierde 81.300</text>
+                  </g>
+                  <!-- flecha de la caída hipotética -->
+                  <path d="M 300 142 L 300 372" stroke="var(--bear)" stroke-width="1.2" fill="none" stroke-dasharray="3 3"/>
+                  <path d="M 295 366 L 300 376 L 305 366 Z" fill="var(--bear)"/>
+                  <text x="292" y="262" text-anchor="end" fill="var(--bear)" font-family="IBM Plex Sans, system-ui, sans-serif" font-size="12">−6.000 / −7.000</text>
+                </g>
+              </svg>
+            </div>
+          </figure>
+
+          <div class="grid gap-4 content-start min-w-0">
+            <!-- Fecha ancla -->
+            <div class="rounded-lg border border-line bg-surface p-4 grid gap-3">
+              <h3 class="font-semibold">Una fecha ancla: el 28 de octubre</h3>
+              <p class="text-[13px] text-muted">22 menciones en 6 videos de Nacho, incluidos sus 5 largos del 6 al 9 oct. Es su punto de giro, ligado a la liquidez global y a la reunión de tipos de la Fed.</p>
+              <div class="grid gap-2 text-[13px]" id="anchor-bars"></div>
+            </div>
+            <!-- Títulos -->
+            <div class="rounded-lg border border-line bg-surface p-4 grid gap-3">
+              <h3 class="font-semibold">Títulos alarmistas, contenido alcista de medio plazo</h3>
+              <ul class="grid gap-1.5 text-[13.5px]">
+                <li class="flex gap-2"><span class="stance s-bear">título</span><span>TODOS Bajistas en Bitcoin… <span class="text-muted">· 8 oct</span></span></li>
+                <li class="flex gap-2"><span class="stance s-bear">título</span><span>🚨 BITCOIN EN PELIGRO <span class="text-muted">· 8 oct</span></span></li>
+                <li class="flex gap-2"><span class="stance s-bear">título</span><span>BITCOIN AL LÍMITE 🚨 ZONA CRÍTICA <span class="text-muted">· 9 oct</span></span></li>
+                <li class="flex gap-2"><span class="stance s-bear">título</span><span>¿Ya están TODOS Bajistas? <span class="text-muted">· 9 oct</span></span></li>
+                <li class="flex gap-2"><span class="stance s-bull">contenido</span><span>“Estoy alcista por la estructura… No estoy alcista de cortísimo plazo.” <a class="ts" href="https://youtu.be/MhcRFGC-w10" target="_blank" rel="noopener">short 8 oct</a></span></li>
+              </ul>
+              <p class="text-[13px] text-muted">Las cifras de los títulos ($90.000 y $100.000) no se pronuncian en ninguno de los dos videos largos.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="grid md:grid-cols-2 gap-4">
+          <div class="rounded-lg border border-line bg-surface p-4 grid gap-3">
+            <h3 class="font-semibold">Entre canales: mismo ciclo, distintos vehículos</h3>
+            <div class="grid grid-cols-2 gap-3 text-[13.5px]">
+              <div class="grid gap-1 content-start"><p class="eyebrow">Nacho IC</p><p>BTC, oro y S&amp;P 500 de medio plazo; cortos tácticos que ahora pasa a largos.</p><p class="text-muted italic">“Quedan 3 años”</p></div>
+              <div class="grid gap-1 content-start"><p class="eyebrow">KManuS88</p><p>Altcoins mediante bots de grilla con apalancamiento x3 (LIT, AR, XRP, SOL, BNB).</p><p class="text-muted italic">“prebull”</p></div>
+            </div>
+            <p class="text-[13px] text-muted">Coinciden en la fase alcista del ciclo. No se contradicen porque hablan de activos y horizontes distintos.</p>
+          </div>
+          <div class="rounded-lg border border-line bg-surface p-4 grid gap-3">
+            <h3 class="font-semibold">Conflictos de interés recurrentes</h3>
+            <ul class="grid gap-2 text-[13.5px]">
+              <li class="flex items-baseline justify-between gap-3"><span>Nacho · Quantfury con código de referido</span><span class="num font-semibold">5 de 5 videos largos</span></li>
+              <li class="flex items-baseline justify-between gap-3"><span>KManu · Pionex y k88deals.com</span><span class="num font-semibold">1 de 1 video largo</span></li>
+            </ul>
+            <p class="text-[13px] text-muted">El panel debe mostrarlo junto a cada afirmación, porque ambos ganan si la audiencia opera en esas plataformas.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 07 -->
+    <section id="evaluacion" class="flex gap-4 sm:gap-6">
+      <span class="stage-n">07</span>
+      <div class="min-w-0 flex-1 grid gap-4">
+        <div class="flex flex-wrap items-center gap-x-3 gap-y-1">
+          <h2 class="font-display font-bold text-2xl">Evaluación contra el precio</h2><span class="chip chip-todo">Pendiente</span>
+        </div>
+        <div class="rounded-lg border border-dashed border-line bg-surface p-4 grid gap-2 text-[14px] prose-w">
+          <p>Con velas de 1 h desde el segundo exacto de cada afirmación, se marcará si tocó primero el objetivo o la invalidación dentro de su horizonte.</p>
+          <p class="text-muted">Reglas del diagnóstico del 8 oct: usar solo datos posteriores a la publicación; si una misma vela toca objetivo e invalidación, el resultado es ambiguo y no un fallo; sin horizonte declarado, la afirmación no es evaluable. Con eso se podrá medir el acierto de cada canal por activo y por horizonte.</p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Visor de transcripciones -->
+  <section id="transcripciones" class="mt-16 grid gap-4" aria-labelledby="tx-heading">
+    <div class="flex flex-wrap items-end justify-between gap-3">
+      <div class="grid gap-1">
+        <p class="eyebrow">Salida del servicio</p>
+        <h2 id="tx-heading" class="font-display font-extrabold text-3xl">Transcripciones</h2>
+        <p class="text-muted prose-w">Los mismos JSON que guarda el servicio, con los segmentos originales y sus tiempos. Cada minuto abre el video en ese punto.</p>
+      </div>
+      <p class="ts text-muted" id="tx-count"></p>
+    </div>
+
+    <div class="grid lg:grid-cols-[330px_1fr] gap-4 items-start">
+      <aside class="min-w-0 rounded-lg border border-line bg-surface overflow-hidden" aria-label="Lista de transcripciones">
+        <div class="p-3 border-b border-line grid gap-2">
+          <div class="flex flex-wrap gap-1" role="group" aria-label="Filtrar por canal">
+            <button type="button" class="seg-btn" data-ch="all" aria-pressed="true">Todos</button>
+            <button type="button" class="seg-btn" data-ch="nacho" aria-pressed="false">Nacho IC</button>
+            <button type="button" class="seg-btn" data-ch="kmanu" aria-pressed="false">KManuS88</button>
+            <button type="button" class="seg-btn" data-kind="video" aria-pressed="false">Solo largos</button>
+          </div>
+          <label for="tx-filter" class="sr-only">Buscar por título</label>
+          <input id="tx-filter" class="field" type="search" placeholder="Buscar por título" autocomplete="off">
+        </div>
+        <div id="tx-list" class="max-h-[340px] lg:max-h-[640px] overflow-y-auto divide-y divide-[var(--line)]"></div>
+      </aside>
+
+      <article id="tx-view" class="min-w-0 rounded-lg border border-line bg-surface overflow-hidden" aria-live="polite">
+        <header class="p-4 sm:p-5 border-b border-line grid gap-3">
+          <p class="eyebrow" id="tv-channel">—</p>
+          <h3 class="font-display font-bold text-xl leading-tight" id="tv-title">Elige una transcripción</h3>
+          <dl class="flex flex-wrap gap-x-5 gap-y-1 text-[13px]" id="tv-meta"></dl>
+          <div class="flex flex-wrap gap-2">
+            <a class="action primary" id="tv-json" href="#" target="_blank" rel="noopener">Abrir JSON</a>
+            <button type="button" class="action" id="tv-copy">Copiar JSON</button>
+            <a class="action" id="tv-yt" href="#" target="_blank" rel="noopener">Ver en YouTube</a>
+            <span class="ml-auto flex gap-1" role="group" aria-label="Vista">
+              <button type="button" class="seg-btn" data-view="blocks" aria-pressed="true">Bloques de 30 s</button>
+              <button type="button" class="seg-btn" data-view="segments" aria-pressed="false">Segmentos</button>
+            </span>
+          </div>
+          <div class="grid sm:grid-cols-[1fr_auto] items-center gap-2">
+            <label for="tv-search" class="sr-only">Buscar en la transcripción</label>
+            <input id="tv-search" class="field" type="search" placeholder="Buscar en el texto: 81.300, liquidez, Ethereum…" autocomplete="off">
+            <span class="ts text-muted" id="tv-hits"></span>
+          </div>
+        </header>
+        <div id="tv-body" class="p-4 sm:p-5 grid gap-3 text-[15px] max-h-[70vh] overflow-y-auto">
+          <p class="text-muted">Cargando…</p>
+        </div>
+      </article>
+    </div>
+  </section>
+
+  <footer class="mt-14 pt-6 border-t border-line grid gap-2 text-[13px] text-muted prose-w">
+    <p>Las etapas 1 a 3 corren en <span class="ts">services/transcripts</span> (repo <span class="ts">FilipaoVfx/cryptoreport</span>, rama <span class="ts">ccr-054ca714-2ds4wh</span>). Las etapas 4 a 6 son un ejemplo: Claude leyó las transcripciones el 10 oct y extrajo afirmaciones con el esquema del plan. La siguiente pieza es automatizarlas con la API de Claude y salida estructurada.</p>
+    <p>Transcripciones, ciclos y cifras se regeneran al final de cada ciclo del servicio (cada 15 min) y la página los vuelve a leer cada 5 min. Las etapas 4 a 6 son un análisis fijo del 10 oct.</p>
+    <p>Nada de esta página es una recomendación de inversión. Registra lo que dijeron los creadores, con su cita y su minuto.</p>
+  </footer>
+</div>
+
+<script>
+  let DATA = null;  // data.json, regenerado por el servicio al final de cada ciclo
+  const $ = id => document.getElementById(id);
+  const fmtDur = s => { s = Math.round(s); const h = Math.floor(s / 3600), m = Math.floor(s % 3600 / 60), r = s % 60;
+    return (h ? h + ":" + String(m).padStart(2, "0") : m) + ":" + String(r).padStart(2, "0"); };
+  const esc = t => String(t).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+  const es = (x, d = 1) => x.toLocaleString("es-ES", { maximumFractionDigits: d });
+  const chName = slug => ((DATA && DATA.channels.find(c => c.slug === slug)) || { name: slug }).name;
+  const set = (id, t) => { const el = $(id); if (el) el.textContent = t; };
+  const MONTHS = ["ene", "feb", "mar", "abr", "may", "jun", "jul", "ago", "sep", "oct", "nov", "dic"];
+
+  function updateAge() {
+    if (!DATA) return;
+    const g = new Date(DATA.generatedAt), mins = Math.max(0, Math.round((Date.now() - g) / 60000));
+    const stamp = `${String(g.getUTCDate()).padStart(2, "0")} ${MONTHS[g.getUTCMonth()]} ${String(g.getUTCHours()).padStart(2, "0")}:${String(g.getUTCMinutes()).padStart(2, "0")} UTC`;
+    set("snapshot", `${stamp} (hace ${mins < 1 ? "menos de 1" : mins} min)`);
+  }
+
+  function renderCycles() {
+    $("cycle-rows").innerHTML = DATA.channels.map(ch => `
+      <div class="grid grid-cols-[72px_1fr] items-center gap-3"><span class="text-[13px] font-medium truncate">${esc(ch.name)}</span>
+        <div class="flex flex-wrap gap-[3px]" aria-label="Ciclos del RSS de ${esc(ch.name)}">${DATA.cycles.map(c => {
+          const v = c.ok[ch.slug], cls = v === "fb" ? "fb" : v ? "ok" : "ko";
+          const label = { ok: "RSS leído", fb: "RSS caído; leído desde las páginas del canal", ko: "sin respuesta" }[cls];
+          return `<span class="cycle ${cls}" title="${esc(ch.name)} · ${c.t} UTC · ${label}"></span>`;
+        }).join("")}</div></div>`).join("");
+    const n = DATA.cycles.length;
+    set("cycle-range", n ? `${n} ciclos · ${DATA.cycles[0].t} → ${DATA.cycles[n - 1].t} UTC (día hora)` : "sin ciclos registrados");
+  }
+
+  function renderTable() {
+    $("videos-body").innerHTML = DATA.videos.map(v => `
+    <tr>
+      <td class="ts whitespace-nowrap">${v.pub}</td>
+      <td class="whitespace-nowrap">${esc(chName(v.ch))}${v.short ? ' <span class="stance s-neutral">short</span>' : ""}</td>
+      <td><a href="#transcripciones" data-open="${v.id}">${esc(v.title)}</a></td>
+      <td class="ts">${esc(v.prov)}</td>
+      <td class="ts text-right">${v.segs.toLocaleString("es-ES")}</td>
+      <td class="ts text-right">${fmtDur(v.dur)}</td>
+      <td class="ts text-right">${es(v.cov * 100)} %</td>
+      <td class="ts text-right ${v.lat === null ? "text-muted" : ""}">${v.lat === null ? "carga inicial" : es(v.lat) + " min"}</td>
+      <td class="ts whitespace-nowrap"><a href="${v.file}" target="_blank" rel="noopener">JSON</a></td>
+    </tr>`).join("");
+  }
+
+  function renderKpis() {
+    const vs = DATA.videos;
+    const secs = vs.reduce((a, v) => a + v.dur, 0), segs = vs.reduce((a, v) => a + v.segs, 0);
+    const lats = vs.filter(v => v.lat !== null).map(v => v.lat).sort((a, b) => a - b);
+    const med = lats.length ? (lats.length % 2 ? lats[(lats.length - 1) / 2] : (lats[lats.length / 2 - 1] + lats[lats.length / 2]) / 2) : null;
+    const reads = DATA.cycles.length * DATA.channels.length;
+    const ok = DATA.cycles.reduce((a, c) => a + DATA.channels.filter(ch => c.ok[ch.slug] === true).length, 0);
+    const fb = DATA.cycles.reduce((a, c) => a + DATA.channels.filter(ch => c.ok[ch.slug] === "fb").length, 0);
+    set("k-videos", vs.length);
+    set("k-videos-sub", DATA.channels.map(ch => `${vs.filter(v => v.ch === ch.slug).length} ${ch.name}`).join(" · ")
+      + (DATA.pending ? ` · ${DATA.pending} en espera` : ""));
+    set("k-audio", `${Math.floor(secs / 3600)} h ${Math.round(secs % 3600 / 60)} min`);
+    set("k-audio-sub", `${segs.toLocaleString("es-ES")} segmentos con tiempo`);
+    set("k-cov", vs.length ? `${es(Math.min(...vs.map(v => v.cov)) * 100)} %` : "—");
+    if (med !== null) { set("k-lat", `${es(med)} min`); set("k-lat-sub", `publicación → texto · ${lats.length} videos en vivo`); }
+    if (reads) {
+      set("k-rss", `${Math.round(ok / reads * 100)} %`);
+      set("k-rss-sub", `${ok} de ${reads} lecturas${fb ? ` · ${fb} cubiertas por las páginas del canal` : ""}`);
+    }
+    const s = DATA.spend;
+    set("k-spend", `Scraper.Tech ${s.scraper}/${s.scraperQuota.toLocaleString("es-ES")} · Supadata ${s.supadata}/${s.supadataMax}`);
+    set("nav-count", vs.length); set("table-sub", `· ${vs.length} videos`);
+    set("tx-count", `${vs.length} archivos JSON · se actualiza cada 15 min`);
+    updateAge();
+  }
+
+  // Menciones del 28 de octubre por video (conteo de texto sobre las transcripciones)
+  const anchors = [
+    ["06 oct", "Bitcoin va a EXPLOTAR y estoy PREPARADO", 2],
+    ["07 oct", "ÚLTIMA HORA: Bitcoin LIQUIDANDO (directo 1 h 08)", 6],
+    ["07 oct", "Así Será la Última TRAMPA en BITCOIN", 5],
+    ["08 oct", "TODOS Bajistas en Bitcoin", 3],
+    ["08 oct", "Estoy Alcista en Bitcoin, PERO… (short)", 2],
+    ["09 oct", "¿Ya están TODOS Bajistas?", 4]
+  ];
+  const max = Math.max(...anchors.map(a => a[2]));
+  document.getElementById("anchor-bars").innerHTML = anchors.map(([d, t, c]) => `
+    <div class="grid grid-cols-[52px_1fr_auto] items-center gap-3">
+      <span class="ts text-muted">${d}</span>
+      <div class="min-w-0"><div class="truncate">${t}</div><div class="bar mt-1" style="width:${(c / max * 100).toFixed(0)}%"></div></div>
+      <span class="ts font-semibold">${c}</span>
+    </div>`).join("");
+
+  // ---- Visor de transcripciones y menú de la barra ------------------------------------------------------------
+  const state = { ch: "all", onlyLong: false, id: null, view: "blocks", doc: null, raw: "", search: "" };
+  const cache = new Map();
+  const byId = id => DATA.videos.find(v => v.id === id);
+  // Búsqueda sin tildes ni mayúsculas; "81.300" encuentra "81,300" (el subtitulado usa coma de miles).
+  const normChar = c => c.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase().replace(".", ",");
+  const norm = t => Array.from(t, normChar).join("");
+  const clock = s => { s = Math.floor(s); const h = Math.floor(s / 3600), m = Math.floor(s % 3600 / 60), r = s % 60;
+    return (h ? h + ":" + String(m).padStart(2, "0") : String(m).padStart(2, "0")) + ":" + String(r).padStart(2, "0"); };
+
+  // Misma agrupación que el servicio (store.group_blocks): ~30 s, cortando en fin de frase; nunca más de 45 s.
+  function groupBlocks(segs, target = 30, max = 45) {
+    const out = []; let cur = [];
+    for (const s of segs) {
+      cur.push(s);
+      const span = s.start - cur[0].start, end = /[.?!…]$/.test(s.text.trim());
+      if ((span >= target && end) || span >= max) { out.push(cur); cur = []; }
+    }
+    if (cur.length) out.push(cur);
+    return out.map(b => ({ start: b[0].start, text: b.map(s => s.text).join(" ") }));
+  }
+
+  function highlight(text, q) {
+    if (!q) return esc(text);
+    let n = ""; const map = [];
+    for (let i = 0; i < text.length; i++) for (const ch of normChar(text[i])) { n += ch; map.push(i); }
+    const out = []; let last = 0, from = 0, idx;
+    while ((idx = n.indexOf(q, from)) !== -1) {
+      const a = map[idx], b = map[idx + q.length - 1] + 1;
+      out.push(esc(text.slice(last, a)), "<mark>", esc(text.slice(a, b)), "</mark>");
+      last = b; from = idx + q.length;
+    }
+    out.push(esc(text.slice(last)));
+    return out.join("");
+  }
+
+  function renderList() {
+    if (!DATA) return;
+    const q = norm($("tx-filter").value.trim());
+    const list = DATA.videos.filter(v => (state.ch === "all" || v.ch === state.ch) && (!state.onlyLong || !v.short)
+      && (!q || norm(`${v.title} ${v.id} ${chName(v.ch)}`).includes(q)));
+    $("tx-list").innerHTML = list.length ? list.map(v => `
+      <button type="button" class="tx-item" data-open="${v.id}" aria-current="${v.id === state.id}">
+        <span class="flex items-center justify-between gap-2 text-[12px] text-muted"><span class="ts">${v.pub} · ${chName(v.ch)}</span><span class="ts">${fmtDur(v.dur)}${v.short ? " · short" : ""}</span></span>
+        <span class="text-[14px] font-medium leading-snug">${esc(v.title)}</span>
+      </button>`).join("") : '<p class="p-4 text-muted text-[14px]">Ningún video coincide con el filtro.</p>';
+  }
+
+  function renderNav() {
+    if (!DATA) return;
+    const q = norm($("nav-filter").value.trim());
+    const html = DATA.channels.map(c => c.slug).map(ch => {
+      const vs = DATA.videos.filter(v => v.ch === ch && (!q || norm(`${v.title} ${v.id} ${chName(ch)}`).includes(q)));
+      if (!vs.length) return "";
+      return `<p class="eyebrow px-2 pt-2 pb-1">${chName(ch)} · ${vs.length}</p>` + vs.map(v => `
+        <div class="menu-item" role="button" tabindex="0" data-open="${v.id}">
+          <span class="min-w-0"><span class="block truncate text-[14px] font-medium">${esc(v.title)}</span>
+            <span class="ts text-[12px] text-muted">${v.pub} · ${fmtDur(v.dur)}${v.short ? " · short" : ""} · ${v.segs} segm.</span></span>
+          <a class="ts text-[12.5px] self-center" href="${v.file}" target="_blank" rel="noopener" data-raw>JSON</a>
+        </div>`).join("");
+    }).join("");
+    $("nav-json-list").innerHTML = html || '<p class="p-3 text-muted text-[14px]">Sin coincidencias.</p>';
+  }
+
+  function renderBody() {
+    if (!state.doc) return;
+    const segs = state.doc.transcript.segments, q = norm(state.search.trim());
+    const items = state.view === "blocks" ? groupBlocks(segs) : segs;
+    const shown = q ? items.filter(it => norm(it.text).includes(q)) : items;
+    const unit = state.view === "blocks" ? "bloques" : "segmentos";
+    $("tv-hits").textContent = q ? `${shown.length} de ${items.length} ${unit}` : `${items.length} ${unit}`;
+    $("tv-body").innerHTML = shown.length ? shown.map(it => {
+      const t = `<a class="ts" href="https://youtu.be/${state.id}?t=${Math.floor(it.start)}" target="_blank" rel="noopener">${clock(it.start)}</a>`;
+      return state.view === "blocks"
+        ? `<p>${t} ${highlight(it.text, q)}</p>`
+        : `<p class="grid grid-cols-[64px_1fr] gap-3">${t}<span>${highlight(it.text, q)}</span></p>`;
+    }).join("") : `<p class="text-muted">Sin coincidencias para “${esc(state.search)}”.</p>`;
+  }
+
+  async function openTranscript(id, scroll = true) {
+    const v = byId(id); if (!v) return;
+    state.id = id; state.doc = null; state.raw = "";
+    renderList();
+    $("tv-channel").textContent = `${chName(v.ch)} · ${v.short ? "short" : "video largo"}`;
+    $("tv-title").textContent = v.title;
+    const meta = [["Publicado", `${v.pub} UTC`], ["Duración", fmtDur(v.dur)], ["Segmentos", v.segs.toLocaleString("es-ES")],
+      ["Cobertura", `${es(v.cov * 100)} %`], ["Proveedor", v.prov], ["Archivo", v.file]];
+    $("tv-meta").innerHTML = meta.map(([k, val]) => `<div class="flex gap-1.5"><dt class="text-muted">${k}</dt><dd class="ts text-ink">${esc(String(val))}</dd></div>`).join("");
+    $("tv-json").href = v.file;
+    $("tv-yt").href = `https://www.youtube.com/watch?v=${id}`;
+    $("tv-body").innerHTML = '<p class="text-muted">Cargando…</p>';
+    if (scroll) $("transcripciones").scrollIntoView({ behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" });
+    try { history.replaceState(null, "", "#t-" + id); } catch (e) { /* el marco puede no permitirlo */ }
+    try {
+      let entry = cache.get(id);
+      if (!entry) {
+        const r = await fetch(v.file);
+        if (!r.ok) throw new Error("HTTP " + r.status);
+        const raw = await r.text();
+        entry = { raw, doc: JSON.parse(raw) };
+        cache.set(id, entry);
+      }
+      if (state.id !== id) return;
+      state.doc = entry.doc; state.raw = entry.raw;
+      renderBody();
+    } catch (err) {
+      $("tv-body").innerHTML = `<p class="text-bear">No se pudo cargar ${esc(v.file)} (${esc(err.message)}). Prueba con “Abrir JSON”.</p>`;
+    }
+  }
+
+  // Menú desplegable de la barra
+  const navBtn = $("nav-json-btn"), navPanel = $("nav-json-panel");
+  const setNav = open => {
+    navPanel.hidden = !open; navBtn.setAttribute("aria-expanded", String(open));
+    if (open) { renderNav(); $("nav-filter").focus(); }
+  };
+  navBtn.addEventListener("click", () => setNav(navPanel.hidden));
+  $("nav-filter").addEventListener("input", renderNav);
+  $("nav-open-viewer").addEventListener("click", () => setNav(false));
+  document.addEventListener("keydown", e => {
+    if (e.key === "Escape" && !navPanel.hidden) { setNav(false); navBtn.focus(); }
+    if ((e.key === "Enter" || e.key === " ") && e.target.matches?.(".menu-item")) { e.preventDefault(); e.target.click(); }
+  });
+  document.addEventListener("click", e => {
+    if (!navPanel.hidden && !navPanel.contains(e.target) && !navBtn.contains(e.target)) setNav(false);
+    if (e.target.closest("[data-raw]")) return;  // el enlace "JSON" abre el archivo, no el visor
+    const opener = e.target.closest("[data-open]");
+    if (opener) { e.preventDefault(); setNav(false); openTranscript(opener.dataset.open); }
+  });
+
+  // Filtros, vista, búsqueda y copia
+  document.querySelectorAll("[data-ch]").forEach(b => b.addEventListener("click", () => {
+    state.ch = b.dataset.ch;
+    document.querySelectorAll("[data-ch]").forEach(o => o.setAttribute("aria-pressed", String(o === b)));
+    renderList();
+  }));
+  document.querySelector("[data-kind]").addEventListener("click", e => {
+    state.onlyLong = !state.onlyLong; e.currentTarget.setAttribute("aria-pressed", String(state.onlyLong)); renderList();
+  });
+  $("tx-filter").addEventListener("input", renderList);
+  document.querySelectorAll("[data-view]").forEach(b => b.addEventListener("click", () => {
+    state.view = b.dataset.view;
+    document.querySelectorAll("[data-view]").forEach(o => o.setAttribute("aria-pressed", String(o === b)));
+    renderBody();
+  }));
+  $("tv-search").addEventListener("input", e => { state.search = e.target.value; renderBody(); });
+  $("tv-copy").addEventListener("click", () => {
+    const btn = $("tv-copy"), done = msg => { btn.textContent = msg; setTimeout(() => { btn.textContent = "Copiar JSON"; }, 2200); };
+    if (!state.raw) return done("Aún cargando…");
+    try {
+      navigator.clipboard.writeText(state.raw).then(() => done("JSON copiado"), () => done("No se pudo copiar; usa Abrir JSON"));
+    } catch (e) { done("No se pudo copiar; usa Abrir JSON"); }
+  });
+
+  // Arranque: leer data.json, pintar y volver a leerlo cada 5 min sin perder la transcripción abierta
+  async function loadData() {
+    const r = await fetch("data.json", { cache: "no-store" });
+    if (!r.ok) throw new Error("HTTP " + r.status);
+    DATA = await r.json();
+  }
+  function renderAll() { renderCycles(); renderKpis(); renderTable(); renderList(); if (!navPanel.hidden) renderNav(); }
+  (async () => {
+    try { await loadData(); } catch (err) {
+      set("snapshot", `no se pudo leer data.json (${err.message})`);
+      $("tv-body").innerHTML = `<p class="text-bear">No se pudo leer data.json (${esc(err.message)}). Recarga la página en unos minutos.</p>`;
+      return;
+    }
+    renderAll();
+    const fromHash = location.hash.startsWith("#t-") ? location.hash.slice(3) : null;
+    const valid = Boolean(fromHash && byId(fromHash));
+    const first = valid ? fromHash : (DATA.videos.find(v => !v.short) || DATA.videos[0] || {}).id;
+    if (first) openTranscript(first, valid);
+    setInterval(async () => { try { await loadData(); renderAll(); } catch (e) { /* se reintenta en 5 min */ } }, 5 * 60 * 1000);
+    setInterval(updateAge, 30 * 1000);
+  })();
+</script>
+</body>
+</html>

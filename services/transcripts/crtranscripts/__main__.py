@@ -3,6 +3,7 @@
     python -m crtranscripts run                 # un ciclo (lo ejecuta el timer de systemd)
     python -m crtranscripts fetch VIDEO_ID --channel nacho [--published 2026-10-08T16:30:12+00:00]
     python -m crtranscripts status [--limit 30]
+    python -m crtranscripts site                # regenera data.json del sitio (CR_SITE_DIR)
 """
 from __future__ import annotations
 
@@ -17,6 +18,7 @@ from .config import load_config
 from .notify import Notifier
 from .pipeline import run
 from .providers import Supadata
+from .site import export_site
 from .store import Store, iso, now_utc
 
 
@@ -31,8 +33,27 @@ def _lock(config):
     return handle
 
 
+def cmd_site(config) -> int:
+    if not config.site_dir:
+        print("CR_SITE_DIR no está definido: no hay sitio que actualizar", file=sys.stderr)
+        return 2
+    print(f"data.json → {export_site(config)}")
+    return 0
+
+
+def _refresh_site(config) -> None:
+    """El sitio es secundario: un fallo al exportar se registra pero no tumba el ciclo."""
+    if not config.site_dir:
+        return
+    try:
+        export_site(config)
+    except Exception as err:  # noqa: BLE001
+        print(f"[sitio] no se pudo exportar data.json: {type(err).__name__}: {err}", file=sys.stderr)
+
+
 def cmd_run(config, notifier) -> int:
     summary = run(config, notifier)
+    _refresh_site(config)
     print(json.dumps({k: summary[k] for k in ("feeds", "new_videos", "pending", "errors", "providers_down",
                                               "scrapertech_requests_month", "supadata_credits_month")}, ensure_ascii=False))
     for item in summary["transcribed"]:
@@ -56,6 +77,7 @@ def cmd_fetch(config, notifier, args) -> int:
     finally:
         store.close()
     summary = run(config, notifier, only_video=args.video_id)
+    _refresh_site(config)
     for item in summary["transcribed"]:
         print(f"OK {item['video_id']} · {item['provider']} · {item['segments']} segm. · {item['duration']} → {item['path']}")
     store = Store(config.db_path)
@@ -99,6 +121,7 @@ def main(argv: list[str] | None = None) -> int:
     fetch.add_argument("--channel", required=True)
     fetch.add_argument("--published", help="fecha ISO de publicación si el video no está en el RSS")
     fetch.add_argument("--title")
+    sub.add_parser("site")
     status = sub.add_parser("status")
     status.add_argument("--limit", type=int, default=30)
     args = parser.parse_args(argv)
@@ -107,6 +130,8 @@ def main(argv: list[str] | None = None) -> int:
     notifier = Notifier(config.telegram_token, config.telegram_chat_id)
     if args.command == "status":
         return cmd_status(config, args)
+    if args.command == "site":
+        return cmd_site(config)
     _handle = _lock(config)
     try:
         if args.command == "run":
