@@ -6,8 +6,7 @@ En ChatGPT Work, conecta Google Drive y selecciona GPT-6.1 Sol / Medium / Standa
 Crea una tarea programada independiente llamada
 «CryptoReport — análisis de narrativas».
 
-Ejecútala diariamente a las 00:00, 04:00, 08:00, 12:00,
-16:00 y 20:00 en America/Bogota. Cada ejecución debe
+Ejecútala diariamente a las 00:00, 06:00, 12:00 y 18:00 en America/Bogota. Cada ejecución debe
 empezar desde el prompt guardado en una conversación nueva.
 Usa Google Drive y la configuración seleccionada:
 GPT-6.1 Sol, razonamiento Medium y velocidad Standard.
@@ -19,7 +18,7 @@ CryptoReport. Separa lo dicho por el creador, lo sugerido
 por su discurso y lo que las pruebas permiten sostener.
 
 Lee íntegramente y aplica scheduled-instructions.md,
-revisión 1.1, en cada ejecución:
+revisión 1.2, en cada ejecución:
 https://drive.google.com/file/d/1XsXFvrKazWDFSjHs5BMTLQn1s3h_ys6f/view
 
 Lee el manifest y el índice ligero de Control. Cuando
@@ -27,8 +26,9 @@ exista un trabajo elegible, lee el system prompt y el
 esquema completos. Si no puedes leerlos o verificar citas
 con código, registra el impedimento; no improvises.
 
-Procesa como máximo UN trabajo por ejecución, incluido
-un intento fallido. Prioriza pendientes antiguos, conserva
+Procesa como máximo DOS trabajos por ejecución; los
+intentos fallidos también cuentan. Guarda y verifica cada
+resultado antes de analizar el siguiente, sin mezclar videos. Prioriza pendientes antiguos, conserva
 los atrasos y comprueba IDs para evitar duplicados.
 Lee solo los archivos necesarios. Si no hay pendientes,
 guarda el comprobante y termina antes de cargar el prompt

@@ -1,10 +1,10 @@
-# CryptoReport: instrucciones de Scheduled, revisión 1.1
+# CryptoReport: instrucciones de Scheduled, revisión 1.2
 
 ## Configuración del piloto
 
-Tarea independiente: «CryptoReport — análisis de narrativas». Cada ejecución empieza desde estas instrucciones, sin reutilizar conversaciones o análisis anteriores. Horarios: 00:00, 04:00, 08:00, 12:00, 16:00 y 20:00 en America/Bogota. Configuración a seleccionar en la tarea: GPT-6.1 Sol, razonamiento Medium y velocidad Standard, si están disponibles. Escribir el nombre del modelo aquí no cambia el selector ni demuestra qué modelo se ejecutó.
+Tarea independiente: «CryptoReport — análisis de narrativas». Cada ejecución empieza desde estas instrucciones, sin reutilizar conversaciones o análisis anteriores. Horarios: 00:00, 06:00, 12:00 y 18:00 en America/Bogota. Configuración a seleccionar en la tarea: GPT-6.1 Sol, razonamiento Medium y velocidad Standard, si están disponibles. Escribir el nombre del modelo aquí no cambia el selector ni demuestra qué modelo se ejecutó.
 
-Procesa como máximo UN trabajo por ejecución, incluido un intento fallido. No aumentes el lote, cambies de modelo, compres créditos ni uses APIs como alternativa. Trabaja con el plugin Google Drive y herramientas locales de lectura de archivos/código de esta ejecución. No llames a APIs de inferencia, no ejecutes `cranalysis run` y no dependas de carpetas locales del VPS.
+Procesa como máximo DOS trabajos por ejecución; los intentos fallidos también cuentan para ese límite. No aumentes el lote, cambies de modelo, compres créditos ni uses APIs como alternativa. Trabaja con el plugin Google Drive y herramientas locales de lectura de archivos/código de esta ejecución. No llames a APIs de inferencia, no ejecutes `cranalysis run` y no dependas de carpetas locales del VPS.
 
 ## Rol, materiales y permisos
 
@@ -27,7 +27,7 @@ Registra `started_at` con el reloj real al inicio. Genera un identificador únic
 
 Lee `manifest.json` en Control y el índice ligero `queue-index.json`, localizado también por `queue_index_file_id` del manifest. Lista metadatos de Pendientes y Resultados. Contrasta el índice con los archivos realmente presentes: es una ayuda de localización, no prueba de análisis o publicación. Si hay trabajos nuevos fuera del índice, lee únicamente esos trabajos para obtener `published_at`. No excluyas novedades por un índice desactualizado. Si falta el índice, obtén el orden desde los trabajos reales y declara que usaste esa alternativa.
 
-Ordena por fecha de publicación, más antiguo primero. Para un resultado cuyo nombre coincida con un candidato, lee su JSON y comprueba el `job_id`; el nombre solo sirve para localizarlo. Un resultado existente, aunque espere validación, evita emitir otro del mismo trabajo. Un resultado existente inválido, duplicado o contradictorio requiere revisión: registra el conflicto y no lo sobrescribas. Tampoco reintentes un trabajo con un error previo registrado en Ejecuciones sin una autorización posterior explícita. Puedes seleccionar otro candidato elegible; como máximo intentas analizar uno.
+Ordena por fecha de publicación, más antiguo primero. Para un resultado cuyo nombre coincida con un candidato, lee su JSON y comprueba el `job_id`; el nombre solo sirve para localizarlo. Un resultado existente, aunque espere validación, evita emitir otro del mismo trabajo. Un resultado existente inválido, duplicado o contradictorio requiere revisión: registra el conflicto y no lo sobrescribas. Tampoco reintentes un trabajo con un error previo registrado en Ejecuciones sin una autorización posterior explícita. Selecciona hasta dos candidatos elegibles, más antiguos primero. Analízalos uno a uno: guarda y verifica el primero antes de comenzar el segundo. No mezcles videos en un análisis. Vuelve a comprobar los resultados existentes antes de iniciar cada trabajo.
 
 Descarga contenido solo cuando haga falta para seleccionar o comprobar un candidato. No releas todos los resultados, transcripciones, informes comparativos o auditorías en cada ejecución. No dependas de memoria de ejecuciones anteriores. Si una lista es parcial, utiliza la paginación o búsqueda disponible; cuando no puedas completarla, no declares la cola exhaustiva ni un conteo exacto.
 
@@ -59,7 +59,7 @@ Relaciona explícitamente activos y posturas con sus condiciones para facilitar 
 
 En este piloto usa solo material aportado: no navegues para contrastar. Sin fuentes externas, registra `verificacion_externa=no_realizada`; ninguna afirmación puede declararse respaldada o contradicha externamente. Sin historial no evalúes aciertos ni patrones. Sin audiovisual no inventes gráficos, música, cortes o gestos. Reconstruye escenarios con origen, señales, supuestos, horizonte y límites; deja probabilidades null salvo método y datos justificables ya aportados.
 
-Redacta con concisión: cada hallazgo debe aportar información. No rellenes cupos, repitas párrafos de advertencias ni prepares un informe comparativo por ejecución. Reduce repetición, no evidencias necesarias ni insights.
+Redacta con concisión: cada hallazgo debe aportar información. En shorts, procura una oración breve por campo del resumen y un hallazgo pertinente por aspecto cuando baste; usa citas breves con contexto suficiente y afirma solo puntos materiales. Esto es una pauta de brevedad, no un cupo que permita omitir insights, condiciones o evidencias. No rellenes cupos, repitas párrafos de advertencias ni prepares un informe comparativo por ejecución. Reduce repetición, no evidencias necesarias ni insights.
 
 ## 4. Construir evidencias desde los segmentos
 
