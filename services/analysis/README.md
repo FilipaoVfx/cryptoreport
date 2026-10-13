@@ -4,6 +4,8 @@ El [system prompt de análisis](prompts/narrative-analysis.system.md) define el 
 
 Estado: integración probada con OpenAI (`gpt-6.1-sol`), sin conectar todavía al timer.
 
+Los [dos análisis reales guardados el 12 oct, con sus resultados completos y procedencia](../../docs/validaciones/analisis-narrativas-2026-10-12/README.md), están respaldados en el repositorio. Los originales del servicio permanecen en `/var/lib/cryptoreport-transcripts/analysis/nacho/`.
+
 - **Integrado:** prompt v1.0.0, [JSON Schema ejecutable](schema/narrative-analysis.schema.json), dos proveedores (OpenAI por defecto, Claude como alternativa), validador semántico y CLI.
 - **Probado el 12 oct:** la entrada sintética de este README dio el resultado esperado y el video largo `agFTCuv80XE` pasó la validación.
 - **En la web:** los análisis válidos aparecen en la pestaña **Análisis** del visor y en la etapa 05; los publica el ciclo del servicio de transcripciones, en un máximo de 15 min.

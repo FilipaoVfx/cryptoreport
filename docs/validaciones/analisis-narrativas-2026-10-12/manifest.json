@@ -1,0 +1,50 @@
+{
+  "exported_at": "2026-10-13T03:18:07.877748+00:00",
+  "prompt_file": "services/analysis/prompts/narrative-analysis.system.md",
+  "prompt_version": "1.0.0",
+  "prompt_sha256": "082e5acbefbb832e35736ce85acf66cffbeefb7813133878666ec3578d29248f",
+  "schema_file": "services/analysis/schema/narrative-analysis.schema.json",
+  "schema_sha256": "7b88e0b75f8c36832a285d7ff70929a941844a510dd981c290f37d3d62af2e38",
+  "source_code_commit": "675000f",
+  "export_mode": "byte-for-byte copies of saved results; no new API requests",
+  "results": [
+    {
+      "file": "2026-10-09_OwrAjFdTQ4s.json",
+      "video_id": "OwrAjFdTQ4s",
+      "video_url": "https://www.youtube.com/watch?v=OwrAjFdTQ4s",
+      "title": "¿Ya están TODOS Bajistas? Bitcoin Va a Hacer ESTO antes de los $90.000",
+      "provider": "openai",
+      "model": "gpt-6.1-sol",
+      "analyzed_at": "2026-10-12T19:36:40+00:00",
+      "source_runtime_file": "/var/lib/cryptoreport-transcripts/analysis/nacho/2026-10-09_OwrAjFdTQ4s.json",
+      "result_sha256": "0e7e6955e567f66112aaf881c856a63d8046f51bf2f5448ad29c538d34a7c240",
+      "transcript_sha256": "fd6c08dad186b10431bf1fb0d35142c715b453d2d58f2ed83e4aa96d0c54f75f",
+      "claims": 34,
+      "evidence": 41,
+      "analysis_state": "parcial",
+      "validation": {
+        "ok": true,
+        "errors": []
+      }
+    },
+    {
+      "file": "2026-10-12_agFTCuv80XE.json",
+      "video_id": "agFTCuv80XE",
+      "video_url": "https://www.youtube.com/watch?v=agFTCuv80XE",
+      "title": "CUIDADO: Bitcoin va a confirmar la TRAMPA BAJISTA en 3 DIAS",
+      "provider": "openai",
+      "model": "gpt-6.1-sol",
+      "analyzed_at": "2026-10-12T19:36:40+00:00",
+      "source_runtime_file": "/var/lib/cryptoreport-transcripts/analysis/nacho/2026-10-12_agFTCuv80XE.json",
+      "result_sha256": "0cabcbcb2394d00eee30fff72361e69f1d24c15380169fa43c7fb99c61f440e9",
+      "transcript_sha256": "7b51825c07c0cfe7612c279ac53a7dc2719e4b6628de55ea3ce6d77a63652e84",
+      "claims": 25,
+      "evidence": 28,
+      "analysis_state": "parcial",
+      "validation": {
+        "ok": true,
+        "errors": []
+      }
+    }
+  ]
+}

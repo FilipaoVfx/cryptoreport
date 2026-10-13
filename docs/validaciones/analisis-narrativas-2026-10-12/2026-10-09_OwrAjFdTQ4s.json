@@ -1,0 +1,2097 @@
+{
+ "meta": {
+  "video_id": "OwrAjFdTQ4s",
+  "channel": "nacho",
+  "transcript_file": "/var/lib/cryptoreport-transcripts/transcripts/nacho/2026-10-09_OwrAjFdTQ4s.json",
+  "prompt_version": "1.0.0",
+  "prompt_sha256": "082e5acbefbb832e35736ce85acf66cffbeefb7813133878666ec3578d29248f",
+  "schema_sha256": "7b88e0b75f8c36832a285d7ff70929a941844a510dd981c290f37d3d62af2e38",
+  "provider": "openai",
+  "model_requested": "gpt-6.1-sol",
+  "effort": "high",
+  "analyzed_at": "2026-10-12T19:36:40+00:00",
+  "model": "gpt-6.1-sol",
+  "request_id": "req_4be278529fbe468bb6cc61c0f38758a4",
+  "fallback_used": false,
+  "usage": {
+   "input_tokens": 3,
+   "cache_read_input_tokens": 7392,
+   "cache_creation_input_tokens": 12627,
+   "output_tokens": 32571,
+   "reasoning_tokens": 8804
+  },
+  "cost_usd_estimate": 0.358,
+  "validation": {
+   "ok": true,
+   "errors": []
+  },
+  "status": "ok"
+ },
+ "analysis": {
+  "prompt_version": "1.0.0",
+  "estado": "parcial",
+  "video": {
+   "video_id": "OwrAjFdTQ4s",
+   "canal": "Nacho IC",
+   "titulo": "¿Ya están TODOS Bajistas? Bitcoin Va a Hacer ESTO antes de los $90.000",
+   "publicado_en": "2026-10-09T10:20:44+00:00",
+   "analizado_en": "2026-10-12T19:36:40+00:00"
+  },
+  "alcance": {
+   "material_recibido": [
+    "Metadatos del video, incluida duración de 1079 segundos.",
+    "Transcripción en español de Supadata: 499 segmentos, obtenida el 2026-10-09T10:31:43+00:00; tipo de pista no identificado.",
+    "Título del video."
+   ],
+   "cobertura_reportada": 1.0,
+   "limitaciones": [
+    "Se examinó toda la transcripción recibida. El análisis se marca parcial por ambigüedades materiales del texto, especialmente una negación en la condición de ruptura, cifras distintas para el mínimo previo y nombres de instrumentos mal reconocidos.",
+    "La cobertura de 1.0 no demuestra integridad ni exactitud. Hay segmentos solapados, frases truncadas y un último subtítulo que termina en 1080.4 segundos, 1.4 segundos después de la duración declarada.",
+    "No se recibieron descripción, audio, miniatura, fotogramas ni gráficos. Las referencias del creador a gráficos no permiten inspeccionar sus datos o trazados.",
+    "No se aportaron fuentes externas con contenido, datos de mercado ni historial del canal; no hay herramientas de consulta disponibles en este entorno.",
+    "Las fechas de publicación y análisis se toman de los metadatos recibidos. No se dispone de datos posteriores para resolver los pronósticos o comprobar operaciones."
+   ],
+   "verificacion_externa": "no_realizada",
+   "alcance_verificacion": "Se verificó la trazabilidad de las afirmaciones dentro del material recibido, no su correspondencia con precios, indicadores, operaciones, condiciones comerciales o estados financieros."
+  },
+  "resumen": {
+   "tesis_principal": "La caída de Bitcoin sería una corrección dentro de un nuevo ciclo alcista: el creador cambia de cortos tácticos a largos condicionados a conservar la estructura y espera un impulso desde finales de octubre asociado a una recuperación de la liquidez global.",
+   "mensaje_explicito": "Declara posiciones de medio plazo en Bitcoin, oro y S&P 500, sostiene que Bitcoin está menos sobrecalentado pero no en la mejor zona de compra, y espera subidas a partir del 28 de octubre. Advierte de una caída hacia 75.000–76.000 si falla el soporte y mantiene condiciones distintas para otros activos.",
+   "narrativa_sugerida": "El encuadre invita a interpretar el miedo reciente como una oportunidad dentro de una tendencia mayor favorable y a desconfiar de los anuncios de crisis. El método de seis indicadores, los niveles precisos y las autocitas de operaciones construyen una imagen de control analítico; esto no demuestra su intención privada ni la respuesta real de la audiencia.",
+   "respaldo_demostrable": "La transcripción respalda la existencia de ese discurso, sus condiciones y sus promociones. No demuestra los precios citados, la capacidad predictiva del indicador de liquidez, las posiciones declaradas ni el mecanismo de los instrumentos comentados. El propio creador reconoce que Bitcoin había subido mientras la liquidez bajaba, lo que complica una lectura mecánica de esa relación.",
+   "conclusion_provisional": "La mejor versión del argumento es condicional y distingue operativa de corto plazo de inversión de medio plazo; esa combinación no es contradictoria por sí misma. La precisión del calendario alcista y la afirmación de que quedan tres años de mercado alcista exceden el respaldo aportado. Los $90.000 aparecen como referencia del título, no como objetivo desarrollado en el cuerpo. Datos reproducibles de los indicadores, aclaración de los cierres relevantes y precios posteriores podrían cambiar la evaluación."
+  },
+  "cadena_narrativa": [
+   {
+    "premisa": "Bitcoin habría perdido momentáneamente 81.300 y cerrado de nuevo por encima.",
+    "conclusion": "La estructura todavía permitiría buscar un rebote; una ruptura confirmada abriría el riesgo de 75.000–76.000.",
+    "vinculo": "explicito",
+    "supuesto": "La zona actúa como soporte relevante. La temporalidad exacta del cierre y la negación transcrita necesitan aclaración.",
+    "afirmacion_ids": [
+     "A1",
+     "A2",
+     "A5"
+    ],
+    "evidencia_ids": [
+     "E2",
+     "E4",
+     "E5",
+     "E6",
+     "E7"
+    ]
+   },
+   {
+    "premisa": "El creador identifica divergencias alcistas horarias y liquidez situada por encima del precio.",
+    "conclusion": "Espera un movimiento próximo hacia 82.860–82.950 y pasa a plantear largos.",
+    "vinculo": "explicito",
+    "supuesto": "Las divergencias y los mapas de liquidaciones contienen información predictiva suficiente; sus datos y metodología no se aportan.",
+    "afirmacion_ids": [
+     "A3",
+     "A4",
+     "A5",
+     "A7"
+    ],
+    "evidencia_ids": [
+     "E3",
+     "E7",
+     "E8",
+     "E9"
+    ]
+   },
+   {
+    "premisa": "Su método de seis componentes arroja 62 sobre 100 y una valoración neutral.",
+    "conclusion": "Considera razonable empezar a construir posición, aunque no sea la mejor zona de compra.",
+    "vinculo": "explicito",
+    "supuesto": "La puntuación mide oportunidad de inversión y no únicamente sentimiento o condiciones técnicas.",
+    "afirmacion_ids": [
+     "A9",
+     "A10",
+     "A11",
+     "A12",
+     "A13",
+     "A14"
+    ],
+    "evidencia_ids": [
+     "E11",
+     "E12",
+     "E13",
+     "E17",
+     "E24",
+     "E25",
+     "E26"
+    ]
+   },
+   {
+    "premisa": "El indicador denominado «Global Equity Index» mostraría un suelo de liquidez hasta el 28 de octubre y una subida posterior.",
+    "conclusion": "Bitcoin y otras criptomonedas subirían desde finales de octubre, con especial optimismo hasta el 9 de diciembre.",
+    "vinculo": "explicito",
+    "supuesto": "El indicador está correctamente identificado, anticipa cambios de liquidez y estos se transmiten a los precios con el calendario esperado.",
+    "afirmacion_ids": [
+     "A15",
+     "A16",
+     "A17"
+    ],
+    "evidencia_ids": [
+     "E15",
+     "E19",
+     "E20",
+     "E21"
+    ]
+   },
+   {
+    "premisa": "Bitcoin habría subido aun con liquidez global descendente.",
+    "conclusion": "Una recuperación de la liquidez podría potenciar todavía más su subida.",
+    "vinculo": "explicito",
+    "supuesto": "La divergencia reciente no invalida el indicador y el efecto favorable de una mayor liquidez se mantiene, pese a posibles factores independientes.",
+    "afirmacion_ids": [
+     "A16",
+     "A17"
+    ],
+    "evidencia_ids": [
+     "E20",
+     "E21"
+    ]
+   },
+   {
+    "premisa": "Bajan el dólar, los rendimientos de bonos y MOVE, mientras sube el instrumento transcrito como HIG.",
+    "conclusion": "El alivio de esas condiciones permitiría buenos tiempos de mercado en el corto plazo.",
+    "vinculo": "explicito",
+    "supuesto": "Esos movimientos representan menor tensión y no una respuesta a deterioro económico u otros factores.",
+    "afirmacion_ids": [
+     "A20",
+     "A21"
+    ],
+    "evidencia_ids": [
+     "E27",
+     "E41"
+    ]
+   },
+   {
+    "premisa": "El creador rechaza las narrativas de crisis y presenta oportunidades operativas.",
+    "conclusion": "El espectador es invitado a mantener exposición o explorar operaciones, además de acceder a la plataforma y comunidad promocionadas.",
+    "vinculo": "inferido",
+    "supuesto": "Es una interpretación de la función persuasiva del discurso, no una prueba de que la audiencia opere o de que la tesis financiera se origine en el incentivo comercial.",
+    "afirmacion_ids": [
+     "A14",
+     "A22"
+    ],
+    "evidencia_ids": [
+     "E26",
+     "E29",
+     "E34",
+     "E40",
+     "E41"
+    ]
+   }
+  ],
+  "afirmaciones": [
+   {
+    "id": "A1",
+    "enunciado": "Bitcoin habría caído el día anterior hasta 80.300, perdido momentáneamente 81.300 y cerrado por encima de ese nivel. Más adelante el mínimo previo se cifra en 80.400.",
+    "tipo": "hecho_verificable",
+    "emisor": "Nacho IC",
+    "evidencia_ids": [
+     "E5",
+     "E7"
+    ],
+    "fuente_ids": [],
+    "estado_verificacion": "no_verificada",
+    "justificacion_verificacion": "No se recibieron velas de mercado. La diferencia entre 80.300 y 80.400 puede proceder de redondeo, proveedor o transcripción; no puede resolverse.",
+    "conviccion_creador": null,
+    "confianza_extraccion": "alta",
+    "motivo_confianza": "Ambas cifras aparecen explícitamente; su correspondencia con el mercado es desconocida.",
+    "mercado": {
+     "activo_literal": "Bitcoin",
+     "activo_normalizado": "Bitcoin (BTC)",
+     "postura": "Describe una pérdida intraperiodo y recuperación del soporte, no una entrada.",
+     "horizonte_literal": "ayer",
+     "condicion": null,
+     "entrada": null,
+     "objetivo": null,
+     "invalidacion": null,
+     "catalizador": null,
+     "operacion_propia_declarada": null
+    }
+   },
+   {
+    "id": "A2",
+    "enunciado": "Una pérdida confirmada de la zona 81.300–82.500 deterioraría la estructura de Bitcoin y podría llevarlo hacia 76.000–75.000, unos 6.000–7.000 puntos más abajo.",
+    "tipo": "prediccion",
+    "emisor": "Nacho IC",
+    "evidencia_ids": [
+     "E2",
+     "E4",
+     "E6"
+    ],
+    "fuente_ids": [],
+    "estado_verificacion": "no_verificada",
+    "justificacion_verificacion": "No hay datos para resolver el desenlace. El contexto favorece distinguir ruptura confirmada de una incursión breve, pero la negación de E4 impide fijar inequívocamente la condición.",
+    "conviccion_creador": "alta",
+    "confianza_extraccion": "media",
+    "motivo_confianza": "El destino bajista es claro; la condición exacta contiene una negación problemática y no especifica inequívocamente la temporalidad del cierre.",
+    "mercado": {
+     "activo_literal": "Bitcoin",
+     "activo_normalizado": "Bitcoin (BTC)",
+     "postura": "Bajista si se confirma la ruptura del soporte.",
+     "horizonte_literal": "Si lo confirmamos el día de hoy",
+     "condicion": "Pérdida confirmada del soporte; distingue una incursión de horas de un cierre bajo 81.300, aunque la negación transcrita requiere aclaración.",
+     "entrada": null,
+     "objetivo": "76.000–75.000, niveles de Bitcoin; unidad monetaria no explicitada en este pasaje.",
+     "invalidacion": "Conservación o recuperación del soporte sin ruptura confirmada; no da una regla completa de invalidación.",
+     "catalizador": "Ruptura del soporte 81.300–82.500.",
+     "operacion_propia_declarada": null
+    }
+   },
+   {
+    "id": "A3",
+    "enunciado": "El gráfico horario de Bitcoin presentaría múltiples divergencias alcistas.",
+    "tipo": "hecho_verificable",
+    "emisor": "Nacho IC",
+    "evidencia_ids": [
+     "E7"
+    ],
+    "fuente_ids": [],
+    "estado_verificacion": "no_verificada",
+    "justificacion_verificacion": "No se recibió el gráfico, el oscilador utilizado ni los puntos que definirían las divergencias.",
+    "conviccion_creador": null,
+    "confianza_extraccion": "alta",
+    "motivo_confianza": "La afirmación y la temporalidad son explícitas.",
+    "mercado": {
+     "activo_literal": "Bitcoin",
+     "activo_normalizado": "Bitcoin (BTC)",
+     "postura": "Señal técnica presentada como favorable al rebote.",
+     "horizonte_literal": "gráfico de una hora",
+     "condicion": null,
+     "entrada": null,
+     "objetivo": null,
+     "invalidacion": null,
+     "catalizador": "Divergencias alcistas horarias.",
+     "operacion_propia_declarada": null
+    }
+   },
+   {
+    "id": "A4",
+    "enunciado": "El mapa citado situaría zonas de liquidez en 82.860, 82.950, 83.320 y 83.790, además de liquidez no recogida por debajo de 80.050.",
+    "tipo": "hecho_verificable",
+    "emisor": "Nacho IC",
+    "evidencia_ids": [
+     "E8",
+     "E9",
+     "E10"
+    ],
+    "fuente_ids": [],
+    "estado_verificacion": "no_verificada",
+    "justificacion_verificacion": "No consta proveedor, fecha del mapa, mercado cubierto ni metodología. La presencia de liquidez no demuestra que el precio vaya a alcanzarla.",
+    "conviccion_creador": null,
+    "confianza_extraccion": "alta",
+    "motivo_confianza": "Los niveles se transcriben con claridad; son zonas citadas, no entradas ni objetivos equivalentes.",
+    "mercado": {
+     "activo_literal": "Bitcoin",
+     "activo_normalizado": "Bitcoin (BTC)",
+     "postura": "Describe liquidez por encima y por debajo del precio.",
+     "horizonte_literal": "corto plazo",
+     "condicion": null,
+     "entrada": null,
+     "objetivo": null,
+     "invalidacion": null,
+     "catalizador": "Zonas de liquidez según un mapa no aportado.",
+     "operacion_propia_declarada": null
+    }
+   },
+   {
+    "id": "A5",
+    "enunciado": "Si Bitcoin no pierde el mínimo previo citado en 80.400, el creador cree que puede mirar hacia arriba y espera liquidar pronto las zonas 82.860–82.950.",
+    "tipo": "prediccion",
+    "emisor": "Nacho IC",
+    "evidencia_ids": [
+     "E7",
+     "E8"
+    ],
+    "fuente_ids": [],
+    "estado_verificacion": "no_verificada",
+    "justificacion_verificacion": "Faltan precios posteriores y una definición temporal de «dentro de poquito». Los niveles superiores 83.320 y 83.790 no se convierten aquí en objetivos prometidos.",
+    "conviccion_creador": "media",
+    "confianza_extraccion": "alta",
+    "motivo_confianza": "Conserva «creo», la condición del mínimo y «seguramente» para el movimiento próximo.",
+    "mercado": {
+     "activo_literal": "Bitcoin",
+     "activo_normalizado": "Bitcoin (BTC)",
+     "postura": "Alcista táctica y condicional.",
+     "horizonte_literal": "dentro de poquito",
+     "condicion": "No perder el mínimo de ayer citado en 80.400; no precisa cierre de vela para esta condición.",
+     "entrada": null,
+     "objetivo": "82.860–82.950 como zonas que espera liquidar; unidad monetaria no explicitada en el pasaje.",
+     "invalidacion": "Pérdida de 80.400 según la condición verbal; no ofrece una orden de stop.",
+     "catalizador": "Divergencias alcistas y liquidez superior.",
+     "operacion_propia_declarada": null
+    }
+   },
+   {
+    "id": "A6",
+    "enunciado": "Una pérdida breve del soporte seguida de recuperación se explicaría como una manipulación o trampa de liquidez.",
+    "tipo": "hipotesis",
+    "emisor": "Nacho IC",
+    "evidencia_ids": [
+     "E4",
+     "E5"
+    ],
+    "fuente_ids": [],
+    "estado_verificacion": "no_verificada",
+    "justificacion_verificacion": "La forma de una vela no identifica por sí sola agentes, intención o manipulación. Harían falta datos de órdenes, liquidaciones y un mecanismo específico.",
+    "conviccion_creador": "alta",
+    "confianza_extraccion": "media",
+    "motivo_confianza": "La etiqueta causal es explícita, pero el enlace condicional está afectado por la negación transcrita.",
+    "mercado": {
+     "activo_literal": "Bitcoin",
+     "activo_normalizado": "Bitcoin (BTC)",
+     "postura": "Interpreta una ruptura recuperada como compatible con el rebote.",
+     "horizonte_literal": "unas horas",
+     "condicion": "Pérdida momentánea y posterior recuperación del soporte.",
+     "entrada": null,
+     "objetivo": null,
+     "invalidacion": null,
+     "catalizador": "Supuestas liquidaciones alrededor del soporte.",
+     "operacion_propia_declarada": null
+    }
+   },
+   {
+    "id": "A7",
+    "enunciado": "El creador declara que deja de hacer cortos en Bitcoin y empieza a construir largos; al cierre vuelve a señalar que el cambio necesita confirmación.",
+    "tipo": "hecho_verificable",
+    "emisor": "Nacho IC",
+    "evidencia_ids": [
+     "E3",
+     "E28",
+     "E39"
+    ],
+    "fuente_ids": [],
+    "estado_verificacion": "no_verificada",
+    "justificacion_verificacion": "La declaración está documentada, pero no se aportaron registros de operaciones. La secuencia de fechas de los shorts es poco clara en la transcripción.",
+    "conviccion_creador": "media",
+    "confianza_extraccion": "alta",
+    "motivo_confianza": "La transición es reiterada, con una formulación más cauta al final.",
+    "mercado": {
+     "activo_literal": "Bitcoin",
+     "activo_normalizado": "Bitcoin (BTC)",
+     "postura": "Transición declarada de shorts tácticos a longs.",
+     "horizonte_literal": "corto plazo",
+     "condicion": "hay que confirmar",
+     "entrada": null,
+     "objetivo": null,
+     "invalidacion": null,
+     "catalizador": "Corrección previa, divergencias y conservación de estructura.",
+     "operacion_propia_declarada": true
+    }
+   },
+   {
+    "id": "A8",
+    "enunciado": "Declara estar muy invertido en Bitcoin, oro y S&P 500 en el medio plazo, independientemente de sus shorts tácticos.",
+    "tipo": "hecho_verificable",
+    "emisor": "Nacho IC",
+    "evidencia_ids": [
+     "E16"
+    ],
+    "fuente_ids": [],
+    "estado_verificacion": "no_verificada",
+    "justificacion_verificacion": "No se recibieron posiciones, pesos, fechas de compra o registros de cuenta. La declaración no demuestra tenencia actual.",
+    "conviccion_creador": "alta",
+    "confianza_extraccion": "alta",
+    "motivo_confianza": "La separación entre horizontes se expresa directamente.",
+    "mercado": {
+     "activo_literal": "Bitcoin, oro y SP500",
+     "activo_normalizado": "Bitcoin (BTC), oro y S&P 500",
+     "postura": "Exposición larga declarada.",
+     "horizonte_literal": "en el medio plazo",
+     "condicion": null,
+     "entrada": null,
+     "objetivo": null,
+     "invalidacion": null,
+     "catalizador": null,
+     "operacion_propia_declarada": true
+    }
+   },
+   {
+    "id": "A9",
+    "enunciado": "El índice de miedo y codicia citado estaría en 59 o 56, según dónde se consulte; el creador califica 56 como neutral.",
+    "tipo": "hecho_verificable",
+    "emisor": "Nacho IC",
+    "evidencia_ids": [
+     "E11",
+     "E12"
+    ],
+    "fuente_ids": [],
+    "estado_verificacion": "no_verificada",
+    "justificacion_verificacion": "No identifica las fuentes de ambas lecturas ni sus horas o metodologías. La clasificación neutral debe comprobarse en el proveedor correspondiente.",
+    "conviccion_creador": null,
+    "confianza_extraccion": "media",
+    "motivo_confianza": "Los números son claros, pero el nombre del índice está mal reconocido y no se identifica proveedor.",
+    "mercado": {
+     "activo_literal": "Bitcoin",
+     "activo_normalizado": "Bitcoin (BTC)",
+     "postura": "Sentimiento presentado como menos sobrecalentado; no equivale a precio de compra.",
+     "horizonte_literal": "En estos momentos",
+     "condicion": null,
+     "entrada": null,
+     "objetivo": null,
+     "invalidacion": null,
+     "catalizador": null,
+     "operacion_propia_declarada": null
+    }
+   },
+   {
+    "id": "A10",
+    "enunciado": "El RSI diario de Bitcoin estaría alrededor de 50 y habría alcanzado 46 durante la caída anterior.",
+    "tipo": "hecho_verificable",
+    "emisor": "Nacho IC",
+    "evidencia_ids": [
+     "E13",
+     "E14"
+    ],
+    "fuente_ids": [],
+    "estado_verificacion": "no_verificada",
+    "justificacion_verificacion": "No se aportaron serie, configuración del RSI o gráfico. La frase posterior «ya no está en sobreventa» se conserva, sin sustituirla por «sobrecompra».",
+    "conviccion_creador": null,
+    "confianza_extraccion": "alta",
+    "motivo_confianza": "Los valores y la temporalidad son explícitos; la terminología posterior es potencialmente incoherente.",
+    "mercado": {
+     "activo_literal": "Bitcoin",
+     "activo_normalizado": "Bitcoin (BTC)",
+     "postura": "RSI presentado como señal de menor sobrecalentamiento.",
+     "horizonte_literal": "RSI diario",
+     "condicion": null,
+     "entrada": null,
+     "objetivo": null,
+     "invalidacion": null,
+     "catalizador": null,
+     "operacion_propia_declarada": null
+    }
+   },
+   {
+    "id": "A11",
+    "enunciado": "La EMA de 200 citada pasaría por 76.300 y el creador espera que se aproxime a su zona denominada «muro María», reforzándola como soporte.",
+    "tipo": "hecho_verificable",
+    "emisor": "Nacho IC",
+    "evidencia_ids": [
+     "E17"
+    ],
+    "fuente_ids": [],
+    "estado_verificacion": "no_verificada",
+    "justificacion_verificacion": "No se aportaron datos para reproducir la media. El valor de una EMA no demuestra que vaya a detener una caída; esa expectativa se trata en los escenarios.",
+    "conviccion_creador": null,
+    "confianza_extraccion": "alta",
+    "motivo_confianza": "La lectura numérica es clara y se distingue de una entrada.",
+    "mercado": {
+     "activo_literal": "Bitcoin",
+     "activo_normalizado": "Bitcoin (BTC)",
+     "postura": "Media móvil presentada como posible soporte.",
+     "horizonte_literal": "ahora mismo",
+     "condicion": null,
+     "entrada": null,
+     "objetivo": null,
+     "invalidacion": null,
+     "catalizador": null,
+     "operacion_propia_declarada": null
+    }
+   },
+   {
+    "id": "A12",
+    "enunciado": "Google Trends mostraría un interés por Bitcoin de 22 sobre 100, en el mínimo de los últimos cinco años y empatado con una zona de 2023.",
+    "tipo": "hecho_verificable",
+    "emisor": "Nacho IC",
+    "evidencia_ids": [
+     "E24",
+     "E25"
+    ],
+    "fuente_ids": [],
+    "estado_verificacion": "no_verificada",
+    "justificacion_verificacion": "Faltan consulta, ámbito geográfico, periodo, categoría y exportación. Un valor relativo de búsqueda no mide directamente valoración financiera.",
+    "conviccion_creador": "alta",
+    "confianza_extraccion": "alta",
+    "motivo_confianza": "Expresa valor, comparación histórica y fuente nominal.",
+    "mercado": {
+     "activo_literal": "Bitcoin",
+     "activo_normalizado": "Bitcoin (BTC)",
+     "postura": "Bajo interés interpretado como componente favorable para acumular.",
+     "horizonte_literal": "los últimos 5 años",
+     "condicion": null,
+     "entrada": null,
+     "objetivo": null,
+     "invalidacion": null,
+     "catalizador": null,
+     "operacion_propia_declarada": null
+    }
+   },
+   {
+    "id": "A13",
+    "enunciado": "El método de seis parámetros del creador arrojaría 62 sobre 100 y una lectura neutral, no sobrecalentada.",
+    "tipo": "hecho_verificable",
+    "emisor": "Nacho IC",
+    "evidencia_ids": [
+     "E26"
+    ],
+    "fuente_ids": [],
+    "estado_verificacion": "no_verificada",
+    "justificacion_verificacion": "No se recibió una fórmula completa, ponderaciones reproducibles, datos de entrada ni validación del método.",
+    "conviccion_creador": null,
+    "confianza_extraccion": "alta",
+    "motivo_confianza": "La puntuación es inequívoca; el nombre del método aparece con variantes de reconocimiento.",
+    "mercado": {
+     "activo_literal": "Bitcoin",
+     "activo_normalizado": "Bitcoin (BTC)",
+     "postura": "Valoración neutral según su método.",
+     "horizonte_literal": null,
+     "condicion": null,
+     "entrada": null,
+     "objetivo": null,
+     "invalidacion": null,
+     "catalizador": null,
+     "operacion_propia_declarada": null
+    }
+   },
+   {
+    "id": "A14",
+    "enunciado": "Aunque no considera que sea la mejor zona de compra, ve señales favorables para que quien esté fuera empiece a construir posición en Bitcoin.",
+    "tipo": "opinion",
+    "emisor": "Nacho IC",
+    "evidencia_ids": [
+     "E26"
+    ],
+    "fuente_ids": [],
+    "estado_verificacion": "no_verificable",
+    "justificacion_verificacion": "Es una valoración de conveniencia sin perfil de riesgo, criterio comparativo completo o regla de asignación.",
+    "conviccion_creador": "media",
+    "confianza_extraccion": "alta",
+    "motivo_confianza": "La invitación es explícita y matizada por «no es la mejor zona».",
+    "mercado": {
+     "activo_literal": "Bitcoin",
+     "activo_normalizado": "Bitcoin (BTC)",
+     "postura": "Favorable a una construcción gradual de posición, no a una compra óptima garantizada.",
+     "horizonte_literal": "medio largo plazo",
+     "condicion": "Para quien se haya quedado fuera.",
+     "entrada": null,
+     "objetivo": null,
+     "invalidacion": null,
+     "catalizador": "Mejora de la puntuación de sus indicadores.",
+     "operacion_propia_declarada": null
+    }
+   },
+   {
+    "id": "A15",
+    "enunciado": "El indicador denominado «Global Equity Index» anticiparía un suelo de liquidez hasta el 28 de octubre y una subida posterior hasta el 9 de diciembre.",
+    "tipo": "prediccion",
+    "emisor": "Nacho IC",
+    "evidencia_ids": [
+     "E19",
+     "E21"
+    ],
+    "fuente_ids": [],
+    "estado_verificacion": "no_verificada",
+    "justificacion_verificacion": "La identidad del indicador es incierta y no se aporta su serie proyectada. No puede evaluarse el desenlace con el material recibido.",
+    "conviccion_creador": "alta",
+    "confianza_extraccion": "media",
+    "motivo_confianza": "Las fechas se repiten, pero el nombre literal no permite identificar inequívocamente una medida de liquidez global.",
+    "mercado": null
+   },
+   {
+    "id": "A16",
+    "enunciado": "Ese indicador normalmente anticiparía los suelos y techos de Bitcoin, aunque el creador reconoce que Bitcoin había subido durante dos meses de liquidez descendente.",
+    "tipo": "hecho_verificable",
+    "emisor": "Nacho IC",
+    "evidencia_ids": [
+     "E20"
+    ],
+    "fuente_ids": [],
+    "estado_verificacion": "no_verificada",
+    "justificacion_verificacion": "No hay prueba histórica, desfase predefinido, muestra de fallos o comparación con referencias simples. La divergencia admitida limita una interpretación mecánica.",
+    "conviccion_creador": "alta",
+    "confianza_extraccion": "alta",
+    "motivo_confianza": "Tanto la atribución de capacidad predictiva como la excepción reciente están expresadas.",
+    "mercado": null
+   },
+   {
+    "id": "A17",
+    "enunciado": "Espera nuevas oportunidades hasta el 28 de octubre y un impulso alcista de Bitcoin y otras criptomonedas desde finales de octubre, mostrándose especialmente alcista hasta el 9 de diciembre.",
+    "tipo": "prediccion",
+    "emisor": "Nacho IC",
+    "evidencia_ids": [
+     "E15",
+     "E19",
+     "E21"
+    ],
+    "fuente_ids": [],
+    "estado_verificacion": "no_verificada",
+    "justificacion_verificacion": "No se aportaron precios posteriores. Hay fechas, pero «petardazo» y «muy alcista» no fijan magnitud, trayectoria ni una definición suficiente de éxito.",
+    "conviccion_creador": "alta",
+    "confianza_extraccion": "alta",
+    "motivo_confianza": "La expectativa se reitera; también menciona una ventana más amplia entre mediados de octubre y principios de noviembre.",
+    "mercado": {
+     "activo_literal": "Bitcoin y otro tipo de criptomonedas",
+     "activo_normalizado": "Bitcoin (BTC) y criptomonedas no especificadas",
+     "postura": "Alcista desde finales de octubre.",
+     "horizonte_literal": "A partir del 28; hasta el día 9 de diciembre",
+     "condicion": "Se apoya en la recuperación de liquidez que espera; no formula una regla operativa completa.",
+     "entrada": null,
+     "objetivo": null,
+     "invalidacion": null,
+     "catalizador": "Subida prevista de la liquidez global.",
+     "operacion_propia_declarada": null
+    }
+   },
+   {
+    "id": "A18",
+    "enunciado": "Bitcoin estaría empezando un mercado alcista al que le quedarían tres años.",
+    "tipo": "prediccion",
+    "emisor": "Nacho IC",
+    "evidencia_ids": [
+     "E18"
+    ],
+    "fuente_ids": [],
+    "estado_verificacion": "no_verificable",
+    "justificacion_verificacion": "El horizonte es explícito, pero no define qué movimientos o rupturas terminarían el «bull market». Tal como está formulado no permite una evaluación inequívoca.",
+    "conviccion_creador": "alta",
+    "confianza_extraccion": "alta",
+    "motivo_confianza": "La duración restante se enuncia de forma directa.",
+    "mercado": {
+     "activo_literal": "Bitcoin",
+     "activo_normalizado": "Bitcoin (BTC)",
+     "postura": "Alcista de largo plazo.",
+     "horizonte_literal": "Quedan 3 años",
+     "condicion": null,
+     "entrada": null,
+     "objetivo": null,
+     "invalidacion": null,
+     "catalizador": "Ruptura de la EMA de 200 y cambio de régimen según su interpretación.",
+     "operacion_propia_declarada": null
+    }
+   },
+   {
+    "id": "A19",
+    "enunciado": "Propone una pauta de cuatro años en la que sube el dólar y baja el oro, y la aplica al periodo de febrero a noviembre de 2026.",
+    "tipo": "hipotesis",
+    "emisor": "Nacho IC",
+    "evidencia_ids": [
+     "E22",
+     "E23"
+    ],
+    "fuente_ids": [],
+    "estado_verificacion": "no_verificada",
+    "justificacion_verificacion": "Las referencias a 2018 y 2022 no sustituyen una muestra completa ni un mecanismo. Noviembre de 2026 todavía es futuro respecto del video, aunque la narración lo incluya en un periodo.",
+    "conviccion_creador": "alta",
+    "confianza_extraccion": "media",
+    "motivo_confianza": "La pauta general es clara; varias fechas y nombres de índices están reconocidos de forma irregular.",
+    "mercado": {
+     "activo_literal": "el dólar, el DX; oro",
+     "activo_normalizado": "Índice del dólar y oro; ticker exacto del índice no confirmado",
+     "postura": "Espera el final de la fase alcista del dólar y una reacción favorable del oro.",
+     "horizonte_literal": "desde febrero del 2026 hasta noviembre de 2026",
+     "condicion": "Repetición de la pauta de cuatro años propuesta.",
+     "entrada": null,
+     "objetivo": null,
+     "invalidacion": null,
+     "catalizador": "Cambios de liquidez global según su explicación.",
+     "operacion_propia_declarada": null
+    }
+   },
+   {
+    "id": "A20",
+    "enunciado": "En el momento comentado bajarían el dólar, los rendimientos de bonos y MOVE, mientras subiría el instrumento transcrito como HIG.",
+    "tipo": "hecho_verificable",
+    "emisor": "Nacho IC",
+    "evidencia_ids": [
+     "E27"
+    ],
+    "fuente_ids": [],
+    "estado_verificacion": "no_verificada",
+    "justificacion_verificacion": "Faltan series, horas y definición del instrumento «HIG», que no se normaliza a otro ticker.",
+    "conviccion_creador": "alta",
+    "confianza_extraccion": "alta",
+    "motivo_confianza": "Las direcciones citadas son claras; la identidad de HIG queda sin resolver.",
+    "mercado": null
+   },
+   {
+    "id": "A21",
+    "enunciado": "Si continúa aliviándose la tensión en bonos, dólar, MOVE y HIG, vendrían buenos tiempos de mercado en el corto plazo.",
+    "tipo": "prediccion",
+    "emisor": "Nacho IC",
+    "evidencia_ids": [
+     "E41"
+    ],
+    "fuente_ids": [],
+    "estado_verificacion": "no_verificada",
+    "justificacion_verificacion": "Conserva una condición observable en términos generales, pero no especifica activos, magnitud del alivio ni duración de «buenos tiempos».",
+    "conviccion_creador": "alta",
+    "confianza_extraccion": "alta",
+    "motivo_confianza": "La frase final contiene explícitamente la condición «si».",
+    "mercado": {
+     "activo_literal": "mercado",
+     "activo_normalizado": null,
+     "postura": "Favorable al riesgo de forma condicional.",
+     "horizonte_literal": "en el corto plazo",
+     "condicion": "Alivio de tensión en bonos, dólar, MOV y HIG; instrumentos y umbrales no totalmente identificados.",
+     "entrada": null,
+     "objetivo": null,
+     "invalidacion": null,
+     "catalizador": "Continuación del alivio financiero.",
+     "operacion_propia_declarada": null
+    }
+   },
+   {
+    "id": "A22",
+    "enunciado": "Rechaza las advertencias de crisis con la afirmación «No hay ninguna crisis» y aconseja no perder las oportunidades actuales.",
+    "tipo": "opinion",
+    "emisor": "Nacho IC",
+    "evidencia_ids": [
+     "E40",
+     "E41"
+    ],
+    "fuente_ids": [],
+    "estado_verificacion": "no_verificable",
+    "justificacion_verificacion": "No delimita qué crisis, economía, mercado o indicadores permitirían comprobar esa negación general.",
+    "conviccion_creador": "alta",
+    "confianza_extraccion": "alta",
+    "motivo_confianza": "El rechazo es literal y categórico.",
+    "mercado": null
+   },
+   {
+    "id": "A23",
+    "enunciado": "El título sugiere un movimiento de Bitcoin previo a $90.000 y un contraste con un supuesto clima bajista; no precisa qué es «ESTO» ni demuestra que todos estén bajistas.",
+    "tipo": "insinuacion",
+    "emisor": "Analista: interpretación del título",
+    "evidencia_ids": [
+     "E1"
+    ],
+    "fuente_ids": [],
+    "estado_verificacion": "no_verificable",
+    "justificacion_verificacion": "Es una interpretación del encuadre. La pregunta no se transforma en un dato de sentimiento y el cuerpo no desarrolla $90.000 como objetivo.",
+    "conviccion_creador": null,
+    "confianza_extraccion": "media",
+    "motivo_confianza": "La referencia y la pregunta son claras; el movimiento insinuado permanece indeterminado.",
+    "mercado": {
+     "activo_literal": "Bitcoin",
+     "activo_normalizado": "Bitcoin (BTC)",
+     "postura": "Movimiento no especificado antes de la referencia de $90.000.",
+     "horizonte_literal": null,
+     "condicion": null,
+     "entrada": null,
+     "objetivo": null,
+     "invalidacion": null,
+     "catalizador": null,
+     "operacion_propia_declarada": null
+    }
+   },
+   {
+    "id": "A24",
+    "enunciado": "La plataforma mencionada como «Quan Fury» no tendría comisiones ni tasa de financiación.",
+    "tipo": "hecho_verificable",
+    "emisor": "Nacho IC",
+    "evidencia_ids": [
+     "E29",
+     "E30"
+    ],
+    "fuente_ids": [],
+    "estado_verificacion": "no_verificada",
+    "justificacion_verificacion": "No se consultaron condiciones comerciales, jurisdicción, productos, spreads u otros costes. El nombre literal se conserva sin afirmar una identificación externa verificada.",
+    "conviccion_creador": "alta",
+    "confianza_extraccion": "alta",
+    "motivo_confianza": "La afirmación comercial es explícita.",
+    "mercado": null
+   },
+   {
+    "id": "A25",
+    "enunciado": "Cancela el planteamiento de largos en HYPE hasta recuperar la estructura de corto plazo y considera que su avance depende de que Bitcoin rompa su propia barrera.",
+    "tipo": "opinion",
+    "emisor": "Nacho IC",
+    "evidencia_ids": [
+     "E32"
+    ],
+    "fuente_ids": [],
+    "estado_verificacion": "no_verificable",
+    "justificacion_verificacion": "Es una decisión o criterio operativo sin niveles reproducibles. «Cancelamos largos» no demuestra cierre de una posición ejecutada.",
+    "conviccion_creador": "alta",
+    "confianza_extraccion": "alta",
+    "motivo_confianza": "La suspensión y la condición son explícitas.",
+    "mercado": {
+     "activo_literal": "Hiperliqu; el token de Hype",
+     "activo_normalizado": "HYPE, token referido a Hyperliquid",
+     "postura": "No plantear nuevos largos hasta recuperar estructura.",
+     "horizonte_literal": "en el corto plazo",
+     "condicion": "Recuperar estructura; también menciona la ruptura de la barrera de Bitcoin.",
+     "entrada": null,
+     "objetivo": null,
+     "invalidacion": null,
+     "catalizador": "Recuperación de estructura y mejora de Bitcoin.",
+     "operacion_propia_declarada": null
+    }
+   },
+   {
+    "id": "A26",
+    "enunciado": "ATOM mejoraría técnicamente si rompe el bloque señalado, aunque el creador no espera necesariamente las subidas de 20% mencionadas y estaría dispuesto a rectificar para ponerse largo.",
+    "tipo": "prediccion",
+    "emisor": "Nacho IC",
+    "evidencia_ids": [
+     "E33"
+    ],
+    "fuente_ids": [],
+    "estado_verificacion": "no_verificada",
+    "justificacion_verificacion": "No se aportó el gráfico ni el nivel del bloque. Los «más 20%» no son un objetivo asumido: el propio creador expresa que no cree que se produzca ese resultado.",
+    "conviccion_creador": "media",
+    "confianza_extraccion": "alta",
+    "motivo_confianza": "La condición y la reserva frente al ejemplo de 20% están expresadas.",
+    "mercado": {
+     "activo_literal": "Atom",
+     "activo_normalizado": "Cosmos (ATOM)",
+     "postura": "Largo potencial condicionado a ruptura; no declara una entrada ejecutada.",
+     "horizonte_literal": "corto plazo",
+     "condicion": "Romper el bloque mostrado, cuyo precio no aparece en el texto.",
+     "entrada": null,
+     "objetivo": null,
+     "invalidacion": null,
+     "catalizador": "Ruptura del bloque técnico.",
+     "operacion_propia_declarada": null
+    }
+   },
+   {
+    "id": "A27",
+    "enunciado": "Considera que Polkadot vuelve a una zona para vender después de recuperar la caída previa.",
+    "tipo": "opinion",
+    "emisor": "Nacho IC",
+    "evidencia_ids": [
+     "E31"
+    ],
+    "fuente_ids": [],
+    "estado_verificacion": "no_verificable",
+    "justificacion_verificacion": "La valoración de venta depende de una zona gráfica no disponible y no constituye una operación comprobada.",
+    "conviccion_creador": "media",
+    "confianza_extraccion": "alta",
+    "motivo_confianza": "Dice expresamente «para mí» y no proporciona precio.",
+    "mercado": {
+     "activo_literal": "Polcadot",
+     "activo_normalizado": "Polkadot (DOT)",
+     "postura": "Favorable a vender en la zona señalada.",
+     "horizonte_literal": null,
+     "condicion": "Llegada a una zona visible solo en el gráfico no recibido.",
+     "entrada": null,
+     "objetivo": null,
+     "invalidacion": null,
+     "catalizador": null,
+     "operacion_propia_declarada": null
+    }
+   },
+   {
+    "id": "A28",
+    "enunciado": "Ve alcista en el corto plazo el instrumento transcrito como «Happy» y considera que oportunidades entre 55 y 56 son para comprar.",
+    "tipo": "opinion",
+    "emisor": "Nacho IC",
+    "evidencia_ids": [
+     "E35"
+    ],
+    "fuente_ids": [],
+    "estado_verificacion": "no_verificable",
+    "justificacion_verificacion": "Es una recomendación valorativa y el instrumento no está identificado de forma inequívoca.",
+    "conviccion_creador": "alta",
+    "confianza_extraccion": "media",
+    "motivo_confianza": "La zona y la recomendación son claras, pero el ticker y la unidad monetaria no constan.",
+    "mercado": {
+     "activo_literal": "Happy",
+     "activo_normalizado": null,
+     "postura": "Alcista y favorable a comprar en la zona citada.",
+     "horizonte_literal": "en el corto plazo",
+     "condicion": "Oportunidad entre 55 y 56.",
+     "entrada": "Entre 55 y 56; unidad monetaria no indicada.",
+     "objetivo": null,
+     "invalidacion": null,
+     "catalizador": "Comportamiento histórico de la zona según su interpretación.",
+     "operacion_propia_declarada": null
+    }
+   },
+   {
+    "id": "A29",
+    "enunciado": "El instrumento denominado «Happy» daría un dividendo de casi 9% al año.",
+    "tipo": "hecho_verificable",
+    "emisor": "Nacho IC",
+    "evidencia_ids": [
+     "E36"
+    ],
+    "fuente_ids": [],
+    "estado_verificacion": "no_verificada",
+    "justificacion_verificacion": "Faltan identidad, fecha, historial de distribuciones y definición del rendimiento. No se puede tratar esa cifra como rentabilidad total ni garantizada.",
+    "conviccion_creador": "alta",
+    "confianza_extraccion": "alta",
+    "motivo_confianza": "La cifra y su periodicidad son explícitas, aunque el activo siga sin resolver.",
+    "mercado": {
+     "activo_literal": "Happy",
+     "activo_normalizado": null,
+     "postura": "Presentado como instrumento de ingresos y contrapeso de cartera.",
+     "horizonte_literal": "al año",
+     "condicion": null,
+     "entrada": null,
+     "objetivo": null,
+     "invalidacion": null,
+     "catalizador": null,
+     "operacion_propia_declarada": null
+    }
+   },
+   {
+    "id": "A30",
+    "enunciado": "Sostiene que «Happy» no depende del precio de las acciones en sí, sino de la velocidad de sus subidas o bajadas.",
+    "tipo": "hecho_verificable",
+    "emisor": "Nacho IC",
+    "evidencia_ids": [
+     "E36"
+    ],
+    "fuente_ids": [],
+    "estado_verificacion": "no_verificada",
+    "justificacion_verificacion": "Es una afirmación contrastable sobre el funcionamiento de un producto, pero no se dispone de su identidad o documentación. No distingue claramente ingresos distribuidos de variación del capital.",
+    "conviccion_creador": "alta",
+    "confianza_extraccion": "alta",
+    "motivo_confianza": "El mecanismo se afirma directamente; su exactitud queda abierta.",
+    "mercado": {
+     "activo_literal": "Happy",
+     "activo_normalizado": null,
+     "postura": "Presentado como contrapeso de cartera.",
+     "horizonte_literal": null,
+     "condicion": null,
+     "entrada": null,
+     "objetivo": null,
+     "invalidacion": null,
+     "catalizador": "Velocidad de las variaciones de las acciones según su explicación.",
+     "operacion_propia_declarada": null
+    }
+   },
+   {
+    "id": "A31",
+    "enunciado": "Lucid Group perdería cada vez más dinero.",
+    "tipo": "hecho_verificable",
+    "emisor": "Nacho IC",
+    "evidencia_ids": [
+     "E37"
+    ],
+    "fuente_ids": [],
+    "estado_verificacion": "no_verificada",
+    "justificacion_verificacion": "No se recibieron estados financieros ni un periodo o métrica de pérdidas para comprobar la tendencia.",
+    "conviccion_creador": "alta",
+    "confianza_extraccion": "alta",
+    "motivo_confianza": "La afirmación empresarial es directa.",
+    "mercado": {
+     "activo_literal": "Lucid Group",
+     "activo_normalizado": "Lucid Group",
+     "postura": "Valoración empresarial negativa.",
+     "horizonte_literal": "cada vez",
+     "condicion": null,
+     "entrada": null,
+     "objetivo": null,
+     "invalidacion": null,
+     "catalizador": "Pérdidas crecientes alegadas.",
+     "operacion_propia_declarada": null
+    }
+   },
+   {
+    "id": "A32",
+    "enunciado": "Lucid Group estaría diluyendo al inversor.",
+    "tipo": "hecho_verificable",
+    "emisor": "Nacho IC",
+    "evidencia_ids": [
+     "E37"
+    ],
+    "fuente_ids": [],
+    "estado_verificacion": "no_verificada",
+    "justificacion_verificacion": "No se aportaron emisiones, evolución del número de acciones o documentación corporativa. El gráfico de precio por sí solo no demostraría dilución.",
+    "conviccion_creador": "alta",
+    "confianza_extraccion": "alta",
+    "motivo_confianza": "La atribución de dilución aparece expresamente.",
+    "mercado": {
+     "activo_literal": "Lucid Group",
+     "activo_normalizado": "Lucid Group",
+     "postura": "Negativa por dilución alegada.",
+     "horizonte_literal": null,
+     "condicion": null,
+     "entrada": null,
+     "objetivo": null,
+     "invalidacion": null,
+     "catalizador": "Dilución alegada.",
+     "operacion_propia_declarada": null
+    }
+   },
+   {
+    "id": "A33",
+    "enunciado": "El precio de Lucid Group habría bajado en cuatro años de 600 a 3,82.",
+    "tipo": "hecho_verificable",
+    "emisor": "Nacho IC",
+    "evidencia_ids": [
+     "E38"
+    ],
+    "fuente_ids": [],
+    "estado_verificacion": "no_verificada",
+    "justificacion_verificacion": "No se recibió una serie ajustada ni información sobre operaciones corporativas, fechas exactas o unidad monetaria. Se conservan los números sin corregirlos.",
+    "conviccion_creador": "alta",
+    "confianza_extraccion": "alta",
+    "motivo_confianza": "La comparación numérica está explícitamente transcrita.",
+    "mercado": {
+     "activo_literal": "Lucid Group",
+     "activo_normalizado": "Lucid Group",
+     "postura": "Usa la caída histórica como argumento negativo, no como objetivo futuro.",
+     "horizonte_literal": "en 4 años",
+     "condicion": null,
+     "entrada": null,
+     "objetivo": null,
+     "invalidacion": null,
+     "catalizador": null,
+     "operacion_propia_declarada": null
+    }
+   },
+   {
+    "id": "A34",
+    "enunciado": "Recomienda no comprar Lucid Group y centrarse en acciones que suben.",
+    "tipo": "opinion",
+    "emisor": "Nacho IC",
+    "evidencia_ids": [
+     "E37",
+     "E38"
+    ],
+    "fuente_ids": [],
+    "estado_verificacion": "no_verificable",
+    "justificacion_verificacion": "Es una recomendación prescriptiva. Su conveniencia no se demuestra únicamente con una caída histórica; las premisas empresariales requieren contraste separado.",
+    "conviccion_creador": "alta",
+    "confianza_extraccion": "alta",
+    "motivo_confianza": "La indicación de no comprar es reiterada.",
+    "mercado": {
+     "activo_literal": "Lucid Group",
+     "activo_normalizado": "Lucid Group",
+     "postura": "Evitar la compra; no declara una posición corta.",
+     "horizonte_literal": null,
+     "condicion": null,
+     "entrada": null,
+     "objetivo": null,
+     "invalidacion": null,
+     "catalizador": "Pérdidas, dilución y deterioro histórico alegados.",
+     "operacion_propia_declarada": null
+    }
+   }
+  ],
+  "ocho_aspectos": {
+   "intencion": {
+    "estado": "evaluado",
+    "hallazgos": [
+     {
+      "observacion": "Combina explicación de indicadores con orientación operativa: propone pasar de cortos a largos y considera razonable construir posición sin describir la zona como óptima.",
+      "interpretacion": "La función observable mezcla informar y persuadir sobre una lectura alcista condicional.",
+      "evidencia_ids": [
+       "E26",
+       "E39"
+      ],
+      "fuente_ids": [],
+      "confianza": "alta",
+      "limite": "No permite atribuir una intención privada de engaño ni medir efectos en la audiencia."
+     },
+     {
+      "observacion": "Invita a registrarse con un código de apoyo y deriva la explicación de algunas operaciones a una comunidad privada.",
+      "interpretacion": "Existe una función comercial y de construcción de comunidad explícita, además del análisis.",
+      "evidencia_ids": [
+       "E29",
+       "E34"
+      ],
+      "fuente_ids": [],
+      "confianza": "alta",
+      "limite": "No constan el importe del beneficio, las condiciones del acuerdo ni el precio de la comunidad."
+     }
+    ],
+    "limitaciones": []
+   },
+   "lenguaje": {
+    "estado": "evaluado",
+    "hallazgos": [
+     {
+      "observacion": "Conviven expresiones condicionales —«si no perdemos», «hay que confirmar»— con formulaciones enfáticas como «petardazo arriba», «Quedan 3 años» y «No hay ninguna crisis».",
+      "interpretacion": "El discurso conserva cautela táctica, pero amplía la certeza al describir el régimen general y su duración.",
+      "evidencia_ids": [
+       "E7",
+       "E15",
+       "E18",
+       "E39",
+       "E40"
+      ],
+      "fuente_ids": [],
+      "confianza": "alta",
+      "limite": "La convicción se infiere del texto, no de una voz o gestualidad observada."
+     },
+     {
+      "observacion": "Describe una recuperación del soporte como «manipulación» o «trampa de liquidez» y alude a la «intencionalidad» del movimiento.",
+      "interpretacion": "Ese vocabulario favorece una explicación intencional de la acción del precio.",
+      "evidencia_ids": [
+       "E4"
+      ],
+      "fuente_ids": [],
+      "confianza": "alta",
+      "limite": "No identifica actor ni aporta datos para distinguir manipulación de volatilidad u otros procesos de mercado."
+     }
+    ],
+    "limitaciones": [
+     "La negación en E4 impide fijar por completo la condición a la que aplica ese encuadre."
+    ]
+   },
+   "emociones": {
+    "estado": "evaluado",
+    "hallazgos": [
+     {
+      "observacion": "Contrapone una posible caída adicional de 6.000–7.000 puntos con un próximo «petardazo arriba» y señales de oportunidad.",
+      "interpretacion": "La combinación puede convocar miedo a perder el soporte y esperanza de capturar la recuperación.",
+      "evidencia_ids": [
+       "E6",
+       "E15",
+       "E26"
+      ],
+      "fuente_ids": [],
+      "confianza": "alta",
+      "limite": "No demuestra que los espectadores experimenten esas emociones."
+     },
+     {
+      "observacion": "El cierre pide no perder las mejores oportunidades y rechaza que se vendan relatos de crisis.",
+      "interpretacion": "Puede activar urgencia o FOMO y favorecer una identificación con quienes mantienen una lectura optimista.",
+      "evidencia_ids": [
+       "E40",
+       "E41"
+      ],
+      "fuente_ids": [],
+      "confianza": "media",
+      "limite": "Es una lectura del recurso discursivo; no acredita presión deliberada ni conducta de inversión."
+     }
+    ],
+    "limitaciones": []
+   },
+   "pruebas": {
+    "estado": "parcial",
+    "hallazgos": [
+     {
+      "observacion": "Presenta numerosas cifras y un método compuesto, pero no aporta en el material recibido fórmulas completas, proveedores, consultas reproducibles o pruebas históricas.",
+      "interpretacion": "La precisión numérica facilita formular comprobaciones, pero no equivale a evidencia independiente o validación predictiva.",
+      "evidencia_ids": [
+       "E8",
+       "E17",
+       "E19",
+       "E25",
+       "E26"
+      ],
+      "fuente_ids": [],
+      "confianza": "alta",
+      "limite": "Los gráficos podrían contener información adicional, pero no fueron recibidos."
+     },
+     {
+      "observacion": "Reconoce que Bitcoin había subido mientras la liquidez descendía, pese a atribuir al indicador capacidad para anticipar extremos.",
+      "interpretacion": "Hay una salvedad relevante dentro del propio argumento; es necesario explicar desfases o factores adicionales antes de usarlo como calendario preciso.",
+      "evidencia_ids": [
+       "E20",
+       "E21"
+      ],
+      "fuente_ids": [],
+      "confianza": "alta",
+      "limite": "La divergencia y la capacidad histórica tampoco se han comprobado externamente."
+     },
+     {
+      "observacion": "Afirma haber cazado todas las señales de varios indicadores y repasa operaciones anteriores.",
+      "interpretacion": "Son autocitas de desempeño, no una muestra suficiente para evaluar aciertos.",
+      "evidencia_ids": [
+       "E27",
+       "E28"
+      ],
+      "fuente_ids": [],
+      "confianza": "alta",
+      "limite": "No hay registros fechados originales, fallos, tamaño de muestra ni datos de ejecución."
+     }
+    ],
+    "limitaciones": [
+     "No se ha contrastado ninguna afirmación del mundo exterior."
+    ]
+   },
+   "saltos_logicos": {
+    "estado": "evaluado",
+    "hallazgos": [
+     {
+      "observacion": "De una proyección de liquidez deriva una expectativa alcista con fechas concretas, aun admitiendo un desacoplamiento reciente.",
+      "interpretacion": "Falta demostrar el mecanismo de transmisión, su desfase y estabilidad. Que Bitcoin suba con liquidez descendente no demuestra que vaya a subir más cuando esta aumente.",
+      "evidencia_ids": [
+       "E19",
+       "E20",
+       "E21"
+      ],
+      "fuente_ids": [],
+      "confianza": "alta",
+      "limite": "La relación podría ser condicional o rezagada; no se aportan datos que permitan resolverlo."
+     },
+     {
+      "observacion": "Utiliza interés de búsqueda, sentimiento y RSI para hablar de que Bitcoin está menos caro y de oportunidades de compra.",
+      "interpretacion": "Hay un paso no demostrado entre menor sobrecalentamiento técnico o menor atención y una valoración económica atractiva.",
+      "evidencia_ids": [
+       "E11",
+       "E12",
+       "E13",
+       "E25",
+       "E26"
+      ],
+      "fuente_ids": [],
+      "confianza": "alta",
+      "limite": "Estos indicadores podrían ser útiles para una estrategia concreta si existiera validación; no se recibió."
+     },
+     {
+      "observacion": "Aplica a 2026 una pauta de cuatro años ilustrada con ciclos anteriores.",
+      "interpretacion": "La extrapolación necesita una muestra completa y una explicación de por qué persistiría el patrón; los ejemplos no establecen periodicidad necesaria.",
+      "evidencia_ids": [
+       "E22",
+       "E23"
+      ],
+      "fuente_ids": [],
+      "confianza": "alta",
+      "limite": "No se afirma que los ejemplos sean falsos; falta verificar su representatividad."
+     },
+     {
+      "observacion": "Separa expresamente inversión de medio plazo de shorts tácticos y conserva una rama bajista si falla el soporte.",
+      "interpretacion": "Son distinciones coherentes dentro del argumento; no hay contradicción automática entre ambos horizontes.",
+      "evidencia_ids": [
+       "E6",
+       "E16",
+       "E39"
+      ],
+      "fuente_ids": [],
+      "confianza": "alta",
+      "limite": "La coherencia discursiva no verifica la rentabilidad o ejecución de las operaciones."
+     }
+    ],
+    "limitaciones": []
+   },
+   "omisiones": {
+    "estado": "parcial",
+    "hallazgos": [
+     {
+      "observacion": "No aparece una definición reproducible del indicador de liquidez, sus ponderaciones dentro del método ni una regla completa de invalidación del calendario alcista.",
+      "interpretacion": "Estos datos son necesarios para separar una hipótesis contrastable de una lectura adaptable después del desenlace.",
+      "evidencia_ids": [
+       "E19",
+       "E21",
+       "E26"
+      ],
+      "fuente_ids": [],
+      "confianza": "alta",
+      "limite": "Se describe ausencia en el material recibido, no ocultación deliberada."
+     },
+     {
+      "observacion": "La explicación de «Happy» destaca compras y casi 9% anual sin identificar inequívocamente el producto ni detallar variabilidad de distribuciones o riesgo de capital.",
+      "interpretacion": "Es necesario distinguir ingresos distribuidos, funcionamiento del producto y rentabilidad total antes de evaluar la recomendación.",
+      "evidencia_ids": [
+       "E35",
+       "E36"
+      ],
+      "fuente_ids": [],
+      "confianza": "alta",
+      "limite": "No se presupone qué producto es ni se inventan riesgos específicos de un instrumento no identificado."
+     },
+     {
+      "observacion": "Las cifras de Lucid se presentan sin estados financieros, serie ajustada o documentación de emisiones.",
+      "interpretacion": "Pérdidas, dilución y caída de precio deben comprobarse por separado; una de ellas no prueba automáticamente las otras.",
+      "evidencia_ids": [
+       "E37",
+       "E38"
+      ],
+      "fuente_ids": [],
+      "confianza": "alta",
+      "limite": "La ausencia documental impide sostener o refutar las premisas empresariales."
+     }
+    ],
+    "limitaciones": [
+     "La transcripción contiene fragmentos truncados y no permite saber qué información adicional aparecía visualmente."
+    ]
+   },
+   "audiovisual": {
+    "estado": "parcial",
+    "hallazgos": [
+     {
+      "observacion": "El título destaca «TODOS Bajistas», «ESTO» y $90.000. El cuerpo desarrolla soportes, liquidez y un calendario, pero no ofrece $90.000 como objetivo explícito.",
+      "interpretacion": "El título crea curiosidad y una referencia alcista más amplia que los niveles operativos desarrollados.",
+      "evidencia_ids": [
+       "E1",
+       "E6",
+       "E8",
+       "E15"
+      ],
+      "fuente_ids": [],
+      "confianza": "alta",
+      "limite": "No puede determinarse si el título cambió tras la publicación ni atribuir esa referencia a una promesa del cuerpo."
+     }
+    ],
+    "limitaciones": [
+     "No se recibieron modalidades audiovisuales.",
+     "No se evalúan miniatura, música, gestos, montaje o gráficos; solo título y transcripción."
+    ]
+   },
+   "incentivos": {
+    "estado": "evaluado",
+    "hallazgos": [
+     {
+      "observacion": "Solicita crear una cuenta y aplicar el código «Nacho», diciendo que así se le ayuda.",
+      "interpretacion": "Hay un beneficio de apoyo o referidos declarado. Puede incentivar registros y actividad, pero no consta la forma de remuneración.",
+      "evidencia_ids": [
+       "E29",
+       "E30"
+      ],
+      "fuente_ids": [],
+      "confianza": "alta",
+      "limite": "No se afirma una comisión específica ni un patrocinio contractual no documentado."
+     },
+     {
+      "observacion": "Promociona una comunidad privada para aprender a operar oportunidades como McDonald's.",
+      "interpretacion": "El contenido también funciona como vía de captación hacia esa comunidad.",
+      "evidencia_ids": [
+       "E34"
+      ],
+      "fuente_ids": [],
+      "confianza": "alta",
+      "limite": "No se recibió el enlace ni información que confirme precio o modalidad de pago."
+     },
+     {
+      "observacion": "Declara exposición elevada en Bitcoin, oro y S&P 500.",
+      "interpretacion": "Si esas posiciones existen, puede haber interés económico alineado con una lectura favorable de esos activos.",
+      "evidencia_ids": [
+       "E16"
+      ],
+      "fuente_ids": [],
+      "confianza": "media",
+      "limite": "Las posiciones no están verificadas y un interés potencial no refuta el argumento."
+     }
+    ],
+    "limitaciones": [
+     "No se dispone de documentación comercial o registros de posiciones."
+    ]
+   }
+  },
+  "tecnicas_narrativas": [
+   {
+    "tecnica": "Predicción ambigua",
+    "mecanismo": "«Petardazo arriba» y «Quedan 3 años» ofrecen dirección o duración, pero carecen de magnitud, definición de régimen e invalidación suficientes para evaluar inequívocamente un fallo.",
+    "evidencia_ids": [
+     "E15",
+     "E18",
+     "E21"
+    ],
+    "fuente_ids": [],
+    "explicacion_alternativa": "Puede ser lenguaje coloquial para expresar una perspectiva, no un pronóstico formal. El calendario de finales de octubre sí aporta una restricción temporal parcial.",
+    "confianza": "alta"
+   },
+   {
+    "tecnica": "Insinuación sin afirmación",
+    "mecanismo": "La pregunta sobre «TODOS Bajistas» y la referencia a $90.000 sugieren un contraste entre pesimismo y un movimiento relevante, sin aportar una medición de consenso ni precisar el movimiento en el título.",
+    "evidencia_ids": [
+     "E1"
+    ],
+    "fuente_ids": [],
+    "explicacion_alternativa": "Es un recurso de curiosidad editorial; no equivale a afirmar literalmente unanimidad bajista ni un objetivo de $90.000.",
+    "confianza": "media"
+   }
+  ],
+  "escenarios": [
+   {
+    "id": "S1",
+    "nombre": "Rebote táctico y continuación alcista desde finales de octubre",
+    "origen": "creador",
+    "afirmacion_ids": [
+     "A2",
+     "A3",
+     "A4",
+     "A5",
+     "A15",
+     "A17"
+    ],
+    "supuestos": [
+     "Bitcoin conserva una estructura compatible con el rebote.",
+     "Las divergencias y zonas de liquidez citadas están correctamente identificadas.",
+     "El indicador anticipa una recuperación real de liquidez y esta favorece a Bitcoin.",
+     "El desacoplamiento reciente no invalida el mecanismo propuesto."
+    ],
+    "mecanismo": "Conservación del soporte y posible liquidación de posiciones superiores a corto plazo, seguida de un entorno de liquidez más favorable desde finales de octubre.",
+    "catalizadores": [
+     "Recuperación de las zonas 82.860–82.950 citadas.",
+     "Subida de la liquidez global prevista por el creador.",
+     "Continuación del alivio de condiciones financieras."
+    ],
+    "horizonte": "Rebote «dentro de poquito»; impulso esperado desde el 28 de octubre y especial optimismo hasta el 9 de diciembre de 2026.",
+    "origen_horizonte": "creador",
+    "senales_a_favor": [
+     "Conservación del soporte y ausencia de una ruptura confirmada.",
+     "Precio que alcanza las zonas superiores citadas.",
+     "Serie identificada de liquidez que efectivamente gira al alza en la ventana prevista."
+    ],
+    "senales_en_contra": [
+     "Pérdida sostenida del soporte o del mínimo previo.",
+     "Ausencia del giro de liquidez previsto.",
+     "Liquidez ascendente sin respuesta favorable de Bitcoin."
+    ],
+    "invalidacion": "La pérdida confirmada del soporte debilitaría la rama de rebote. La ausencia de recuperación de liquidez o de respuesta alcista en la ventana señalada exigiría reformular la tesis temporal; no hay una magnitud de «petardazo» fijada por el creador.",
+    "evidencia_faltante": [
+     "Velas del mercado y proveedor usados.",
+     "Temporalidad exacta de la confirmación y aclaración de la negación transcrita.",
+     "Identidad, datos y metodología del indicador de liquidez.",
+     "Precios y series posteriores a la publicación."
+    ],
+    "plausibilidad": "limitada",
+    "justificacion": "El mecanismo condicional es inteligible, pero sus premisas no están verificadas y el calendario preciso carece de validación aportada.",
+    "probabilidad": null,
+    "metodo_probabilidad": null
+   },
+   {
+    "id": "S2",
+    "nombre": "Desacoplamiento o continuidad lateral sin el impulso esperado",
+    "origen": "analista",
+    "afirmacion_ids": [
+     "A15",
+     "A16",
+     "A17",
+     "A20"
+    ],
+    "supuestos": [
+     "El indicador puede tener desfases variables o medir algo distinto de la liquidez relevante para Bitcoin.",
+     "Los flujos y condiciones particulares de Bitcoin pueden compensar el efecto de una mejora macro.",
+     "La relación entre liquidez y precio no es estable a lo largo del periodo."
+    ],
+    "mecanismo": "Una mejora del indicador no se transmite de inmediato al precio, o el precio ya incorpora parte de esa expectativa, produciendo lateralidad o una trayectoria irregular.",
+    "catalizadores": [
+     "Giro de liquidez sin aumento proporcional de demanda de Bitcoin.",
+     "Flujos específicos que compensen las condiciones generales."
+    ],
+    "horizonte": "Ventana de observación propuesta por el analista: del 28 de octubre al 9 de diciembre de 2026, para comparar con el tramo destacado por el creador.",
+    "origen_horizonte": "analista",
+    "senales_a_favor": [
+     "Liquidez ascendente acompañada de rentabilidad plana o negativa de Bitcoin en la ventana.",
+     "Cambios continuos del desfase necesario para hacer coincidir indicador y precio.",
+     "Rebotes puntuales sin una continuación sostenida."
+    ],
+    "senales_en_contra": [
+     "Recuperación conjunta y persistente del indicador identificado y de Bitcoin.",
+     "Validación fuera de muestra de un desfase fijado antes del desenlace."
+    ],
+    "invalidacion": "Una transmisión consistente y reproducible entre la mejora de liquidez y la subida de Bitcoin reduciría la plausibilidad de este desacoplamiento para la ventana examinada.",
+    "evidencia_faltante": [
+     "Series comparables y definición previa del desfase.",
+     "Datos de flujos específicos de Bitcoin.",
+     "Una referencia que permita distinguir tendencia sostenida de ruido."
+    ],
+    "plausibilidad": "plausible",
+    "justificacion": "Es una alternativa causal posible y el creador ya reconoce un desacoplamiento reciente, aunque este tampoco ha sido verificado.",
+    "probabilidad": null,
+    "metodo_probabilidad": null
+   },
+   {
+    "id": "S3",
+    "nombre": "Ruptura del soporte y visita a 75.000–76.000",
+    "origen": "creador",
+    "afirmacion_ids": [
+     "A1",
+     "A2",
+     "A11"
+    ],
+    "supuestos": [
+     "La pérdida es confirmada y no una incursión breve recuperada.",
+     "La zona 81.300–82.500 tiene la relevancia técnica atribuida.",
+     "El siguiente soporte relevante se encuentra en la región citada."
+    ],
+    "mecanismo": "La ruptura deteriora la estructura y abre una caída adicional hacia la zona denominada «muro María», próxima a la EMA de 200 mencionada.",
+    "catalizadores": [
+     "Cierre o confirmación bajo el soporte según la regla pendiente de aclarar.",
+     "Continuación bajista después de la pérdida."
+    ],
+    "horizonte": "El creador menciona confirmación «el día de hoy», correspondiente al 9 de octubre de 2026; no fija plazo para llegar a 75.000–76.000.",
+    "origen_horizonte": "creador",
+    "senales_a_favor": [
+     "Ruptura seguida de continuidad bajista.",
+     "Ausencia de recuperación rápida del soporte.",
+     "Precios que progresan hacia 76.000–75.000."
+    ],
+    "senales_en_contra": [
+     "Recuperación del soporte tras una incursión breve.",
+     "Rebote sostenido desde la zona sin deterioro adicional."
+    ],
+    "invalidacion": "Una pérdida momentánea seguida de recuperación no cumple la ruptura que el contexto parece exigir. La regla exacta no puede fijarse sin aclarar la negación y la temporalidad del cierre.",
+    "evidencia_faltante": [
+     "Datos del 9 de octubre y posteriores.",
+     "Regla de confirmación inequívoca.",
+     "Serie de la EMA y gráfico del soporte."
+    ],
+    "plausibilidad": "limitada",
+    "justificacion": "Es una rama bajista explícita y coherente con la condición de soporte, pero no hay datos para comprobar activación ni destino.",
+    "probabilidad": null,
+    "metodo_probabilidad": null
+   }
+  ],
+  "seguimiento": [
+   {
+    "afirmacion_ids": [
+     "A1",
+     "A2",
+     "A5"
+    ],
+    "que_observar": "Mínimo previo, cierres alrededor de 81.300 y evolución hacia las zonas superiores o inferiores citadas.",
+    "criterio": "Primero identificar mercado y temporalidad usados. No equiparar una mecha bajo soporte con ruptura confirmada ni convertir 80.400 en una orden de stop.",
+    "origen_criterio": "creador",
+    "plazo": "9 de octubre de 2026 y sesiones posteriores; el creador no fija plazo completo para ambos destinos.",
+    "dato_o_fuente_necesaria": "Velas horarias y diarias del proveedor original, más audio para aclarar la negación."
+   },
+   {
+    "afirmacion_ids": [
+     "A15",
+     "A16",
+     "A17"
+    ],
+    "que_observar": "Giro del indicador de liquidez y respuesta de Bitcoin en la ventana destacada.",
+    "criterio": "Como referencia del analista, registrar por separado la dirección del indicador y el rendimiento de Bitcoin entre los cierres del 28 de octubre y 9 de diciembre. Esta referencia no define retrospectivamente qué quiso decir «petardazo».",
+    "origen_criterio": "analista",
+    "plazo": "28 de octubre–9 de diciembre de 2026.",
+    "dato_o_fuente_necesaria": "Serie identificada del indicador y precios comparables de Bitcoin."
+   },
+   {
+    "afirmacion_ids": [
+     "A13",
+     "A14"
+    ],
+    "que_observar": "Reproducibilidad y utilidad del método de seis parámetros.",
+    "criterio": "Reconstruir 62/100 con datos fechados y reglas publicadas; evaluar posteriormente con una muestra fuera de la utilizada para construir el método.",
+    "origen_criterio": "analista",
+    "plazo": null,
+    "dato_o_fuente_necesaria": "Fórmula, ponderaciones, fuentes, archivo histórico de puntuaciones y objetivos de la estrategia."
+   },
+   {
+    "afirmacion_ids": [
+     "A7",
+     "A8"
+    ],
+    "que_observar": "Operaciones y posiciones que el creador declara.",
+    "criterio": "Distinguir posiciones de inversión de trades tácticos y exigir registros fechados antes de evaluar resultados; no inferir desempeño de autocitas.",
+    "origen_criterio": "analista",
+    "plazo": "Periodo anterior y contemporáneo a la publicación.",
+    "dato_o_fuente_necesaria": "Registro completo de operaciones, tamaños, costes y posiciones, si el creador lo facilita."
+   },
+   {
+    "afirmacion_ids": [
+     "A28",
+     "A29",
+     "A30"
+    ],
+    "que_observar": "Identidad y funcionamiento del instrumento «Happy».",
+    "criterio": "No evaluar la zona 55–56 ni el casi 9% anual hasta resolver el ticker y distinguir distribución, riesgo de capital y rentabilidad total.",
+    "origen_criterio": "analista",
+    "plazo": null,
+    "dato_o_fuente_necesaria": "Audio o gráfico original, ficha del emisor, política de distribuciones y documentación del producto."
+   }
+  ],
+  "historial": {
+   "estado": "no_disponible",
+   "videos_comparados": [],
+   "hallazgos": [],
+   "limitaciones": [
+    "No se aportaron videos anteriores o predicciones originales fechadas.",
+    "Las referencias a «ayer», al «otro día» y a señales cazadas no permiten evaluar actualizaciones, contradicciones, desplazamiento de hipótesis o tasas de acierto."
+   ]
+  },
+  "verificaciones_pendientes": [
+   {
+    "afirmacion_ids": [
+     "A1",
+     "A2",
+     "A5",
+     "A6"
+    ],
+    "prioridad": "alta",
+    "pregunta": "¿Cuál es la condición exacta de ruptura: qué cierre, en qué mercado y con qué temporalidad? ¿La negación de la transcripción reproduce el audio?",
+    "fuente_o_dato_buscado": "Audio original y velas del proveedor utilizado, con zona horaria.",
+    "impacto_en_conclusion": "Determina la activación de la rama bajista y evita redefinir después una pérdida del soporte."
+   },
+   {
+    "afirmacion_ids": [
+     "A15",
+     "A16",
+     "A17"
+    ],
+    "prioridad": "alta",
+    "pregunta": "¿Qué indicador llama «Global Equity Index», cómo se calcula y qué evidencia sostiene el suelo del 28 de octubre y el giro hasta el 9 de diciembre?",
+    "fuente_o_dato_buscado": "Proveedor, documentación, serie histórica, proyección archivada y prueba de desempeño con desfase fijado previamente.",
+    "impacto_en_conclusion": "Es la premisa decisiva del calendario alcista y podría fortalecerlo o revelar una extrapolación insuficiente."
+   },
+   {
+    "afirmacion_ids": [
+     "A3",
+     "A4",
+     "A9",
+     "A10",
+     "A11",
+     "A12",
+     "A13"
+    ],
+    "prioridad": "alta",
+    "pregunta": "¿Pueden reproducirse las divergencias, mapas, lecturas y puntuación compuesta con los datos disponibles en la fecha del video?",
+    "fuente_o_dato_buscado": "Gráficos originales, configuración de indicadores, mapa de liquidaciones, consulta de Google Trends y fórmula del método.",
+    "impacto_en_conclusion": "Permitiría separar lecturas técnicas verificables de una puntuación cuya utilidad no está demostrada."
+   },
+   {
+    "afirmacion_ids": [
+     "A18",
+     "A19",
+     "A21",
+     "A22"
+    ],
+    "prioridad": "media",
+    "pregunta": "¿Qué define el mercado alcista de tres años, la pauta cuatrienal y la ausencia de crisis? ¿Qué observaciones los harían fallar?",
+    "fuente_o_dato_buscado": "Definiciones previas, series completas de dólar y oro, y criterios económicos o financieros explícitos.",
+    "impacto_en_conclusion": "Haría evaluables las afirmaciones generales y permitiría comprobar si los ejemplos son representativos."
+   },
+   {
+    "afirmacion_ids": [
+     "A20"
+    ],
+    "prioridad": "media",
+    "pregunta": "¿Qué instrumento es «HIG» y cuáles eran las variaciones de los indicadores a la hora de grabación?",
+    "fuente_o_dato_buscado": "Audio o gráfico original y series fechadas de dólar, rendimientos, MOVE e instrumento identificado.",
+    "impacto_en_conclusion": "Aclara si la lectura de alivio financiero parte de datos correctamente identificados."
+   },
+   {
+    "afirmacion_ids": [
+     "A24"
+    ],
+    "prioridad": "alta",
+    "pregunta": "¿La ausencia de comisiones y financiación se aplica a todos los productos y usuarios mencionados? ¿Qué otros costes o restricciones existen?",
+    "fuente_o_dato_buscado": "Condiciones oficiales vigentes al publicarse el video, tarifas y documentación contractual; no enlaces de afiliación.",
+    "impacto_en_conclusion": "Puede matizar una afirmación comercial relevante para el coste real de operar."
+   },
+   {
+    "afirmacion_ids": [
+     "A28",
+     "A29",
+     "A30"
+    ],
+    "prioridad": "alta",
+    "pregunta": "¿Cuál es el instrumento «Happy» y qué significan el casi 9% anual y la supuesta dependencia de la velocidad de las variaciones?",
+    "fuente_o_dato_buscado": "Identificación mediante el recurso original y documentación del emisor con distribuciones, estrategia y riesgos.",
+    "impacto_en_conclusion": "Es necesario para evaluar una recomendación con niveles concretos y evitar confundir ingresos con rentabilidad o protección del capital."
+   },
+   {
+    "afirmacion_ids": [
+     "A31",
+     "A32",
+     "A33",
+     "A34"
+    ],
+    "prioridad": "media",
+    "pregunta": "¿Las pérdidas de Lucid aumentan en la métrica relevante, hay dilución documentada y la comparación 600–3,82 usa precios ajustados comparables?",
+    "fuente_o_dato_buscado": "Estados financieros, evolución de acciones, anuncios corporativos y serie ajustada con fechas exactas.",
+    "impacto_en_conclusion": "Puede sostener o matizar las premisas de la recomendación negativa, que no se prueban únicamente con el gráfico."
+   }
+  ],
+  "evidencias": [
+   {
+    "id": "E1",
+    "video_id": "OwrAjFdTQ4s",
+    "origen": "titulo",
+    "cita": "¿Ya están TODOS Bajistas? Bitcoin Va a Hacer ESTO antes de los $90.000",
+    "observacion": null,
+    "inicio_s": null,
+    "fin_s": null,
+    "localizador": "documento.video.title"
+   },
+   {
+    "id": "E2",
+    "video_id": "OwrAjFdTQ4s",
+    "origen": "transcripcion",
+    "cita": "no se puede perder ese mínimo que va de 81,300 a 82,500.",
+    "observacion": "Zona presentada como soporte, no como entrada.",
+    "inicio_s": 11.28,
+    "fin_s": 19.52,
+    "localizador": "documento.transcript.segments; start=11.28 y 13.88"
+   },
+   {
+    "id": "E3",
+    "video_id": "OwrAjFdTQ4s",
+    "origen": "transcripcion",
+    "cita": "Y he dejado de hacer cortos para empezar a construir largos. Sí, los cortos, los shorts se han acabado. Ya estoy mirando hacia arriba en Bitcoin",
+    "observacion": null,
+    "inicio_s": 34.76,
+    "fin_s": 46.44,
+    "localizador": "documento.transcript.segments; start=34.76 a 42.719"
+   },
+   {
+    "id": "E4",
+    "video_id": "OwrAjFdTQ4s",
+    "origen": "transcripcion",
+    "cita": "No me refiero a que cierre por debajo de 81,300 y que se vea claramente que la intencionalidad es seguir bajando. Si no, habrá sido una manipulación de liquidez, una trampa de liquidez como normalmente funciona",
+    "observacion": "La negación literal resulta problemática frente al contexto de pérdida confirmada; no se corrige.",
+    "inicio_s": 55.48,
+    "fin_s": 70.439,
+    "localizador": "documento.transcript.segments; start=55.48 a 66.72"
+   },
+   {
+    "id": "E5",
+    "video_id": "OwrAjFdTQ4s",
+    "origen": "transcripcion",
+    "cita": "apoyamos en 80,300, perdiendo momentáneamente 81,300, pero cerramos por encima",
+    "observacion": null,
+    "inicio_s": 88.96,
+    "fin_s": 99.88,
+    "localizador": "documento.transcript.segments; start=88.96 a 95.28"
+   },
+   {
+    "id": "E6",
+    "video_id": "OwrAjFdTQ4s",
+    "origen": "transcripcion",
+    "cita": "entonces empeoraría la estructura mogollón, bajaríamos 6000, 7000 puntos, nos iría más a 76,000, 75,000",
+    "observacion": null,
+    "inicio_s": 102.159,
+    "fin_s": 110.479,
+    "localizador": "documento.transcript.segments; start=102.159 a 106.36"
+   },
+   {
+    "id": "E7",
+    "video_id": "OwrAjFdTQ4s",
+    "origen": "transcripcion",
+    "cita": "podemos comprobar las múltiples divergencias alcistas que tenemos en esta temporalidad. Y sinceramente creo que si no perdemos el mínimo de ayer de 80,400, podemos empezar a mirar hacia arriba.",
+    "observacion": "El segmento previo identifica gráfico de una hora.",
+    "inicio_s": 165.44,
+    "fin_s": 180.64,
+    "localizador": "documento.transcript.segments; start=165.44 a 176.519"
+   },
+   {
+    "id": "E8",
+    "video_id": "OwrAjFdTQ4s",
+    "origen": "transcripcion",
+    "cita": "82,860, 82,950, un poquito más arriba, que es lo que vamos a liquidar seguramente dentro de poquito.",
+    "observacion": null,
+    "inicio_s": 196.2,
+    "fin_s": 206.799,
+    "localizador": "documento.transcript.segments; start=196.2 a 203.68"
+   },
+   {
+    "id": "E9",
+    "video_id": "OwrAjFdTQ4s",
+    "origen": "transcripcion",
+    "cita": "pequeño en 83,320 y el grande en 83,790,",
+    "observacion": "Se refiere a puntos calientes de liquidez.",
+    "inicio_s": 209.12,
+    "fin_s": 216.48,
+    "localizador": "documento.transcript.segments; start=209.12 y 211.76"
+   },
+   {
+    "id": "E10",
+    "video_id": "OwrAjFdTQ4s",
+    "origen": "transcripcion",
+    "cita": "debajo de 80,050 que no se ha cogido,",
+    "observacion": "Menciona también liquidez inferior no recogida.",
+    "inicio_s": 223.36,
+    "fin_s": 227.72,
+    "localizador": "documento.transcript.segments; start=223.36"
+   },
+   {
+    "id": "E11",
+    "video_id": "OwrAjFdTQ4s",
+    "origen": "transcripcion",
+    "cita": "and Griff Index, que está en 59.",
+    "observacion": "El nombre está mal reconocido; por contexto se interpreta como índice de miedo y codicia, sin identificar proveedor.",
+    "inicio_s": 272.759,
+    "fin_s": 277.039,
+    "localizador": "documento.transcript.segments; start=272.759"
+   },
+   {
+    "id": "E12",
+    "video_id": "OwrAjFdTQ4s",
+    "origen": "transcripcion",
+    "cita": "por aquí, en 56. Depende donde lo miréis, pues estará en una zona u otra. 56 está neutral",
+    "observacion": null,
+    "inicio_s": 283.039,
+    "fin_s": 292.8,
+    "localizador": "documento.transcript.segments; start=283.039 a 287.479"
+   },
+   {
+    "id": "E13",
+    "video_id": "OwrAjFdTQ4s",
+    "origen": "transcripcion",
+    "cita": "estábamos en 50. Ayer estuvimos, de hecho, en 46 en esa",
+    "observacion": "El contexto identifica RSI diario.",
+    "inicio_s": 311.08,
+    "fin_s": 316.8,
+    "localizador": "documento.transcript.segments; start=311.08 y 313.68"
+   },
+   {
+    "id": "E14",
+    "video_id": "OwrAjFdTQ4s",
+    "origen": "transcripcion",
+    "cita": "Así que ya no está en sobreventa, lo cual es bastante bueno para largo plazo.",
+    "observacion": "Se conserva «sobreventa»; no se sustituye por un término considerado más coherente.",
+    "inicio_s": 340.52,
+    "fin_s": 347.96,
+    "localizador": "documento.transcript.segments; start=340.52 y 343.08"
+   },
+   {
+    "id": "E15",
+    "video_id": "OwrAjFdTQ4s",
+    "origen": "transcripcion",
+    "cita": "hasta el 28 de octubre tendremos este tipo de oportunidades. A partir del 28 me espero petardazo arriba.",
+    "observacion": null,
+    "inicio_s": 361.199,
+    "fin_s": 370.12,
+    "localizador": "documento.transcript.segments; start=361.199 a 365.68"
+   },
+   {
+    "id": "E16",
+    "video_id": "OwrAjFdTQ4s",
+    "origen": "transcripcion",
+    "cita": "haciendo cortos, en el medio plazo estoy invertidísimo en Bitcoin, oro y SP500.",
+    "observacion": null,
+    "inicio_s": 370.12,
+    "fin_s": 376.919,
+    "localizador": "documento.transcript.segments; start=370.12 y 372.24"
+   },
+   {
+    "id": "E17",
+    "video_id": "OwrAjFdTQ4s",
+    "origen": "transcripcion",
+    "cita": "sería la EMA de 200, que si la ponemos podemos comprobar que ahora mismo pasa por 76,300 y de momento está bastante lejos.",
+    "observacion": "Es una lectura de media móvil, no un precio de compra.",
+    "inicio_s": 380.56,
+    "fin_s": 393.56,
+    "localizador": "documento.transcript.segments; start=380.56 a 387.68"
+   },
+   {
+    "id": "E18",
+    "video_id": "OwrAjFdTQ4s",
+    "origen": "transcripcion",
+    "cita": "roto todo y ahora mismo estamos en bull market, pero eh empezando el bull market. Quedan 3 años",
+    "observacion": null,
+    "inicio_s": 411.919,
+    "fin_s": 418.879,
+    "localizador": "documento.transcript.segments; start=411.919 a 415.4"
+   },
+   {
+    "id": "E19",
+    "video_id": "OwrAjFdTQ4s",
+    "origen": "transcripcion",
+    "cita": "Equity Index, vemos que hasta el día 28 de octubre estamos en suelo de liquidez, ¿vale? Y a partir de aquí me espero subidas tanto en Bitcoin como en otro tipo de criptomonedas.",
+    "observacion": "El segmento previo dice «Global»; no se resuelve la identidad del indicador.",
+    "inicio_s": 429.56,
+    "fin_s": 441.8,
+    "localizador": "documento.transcript.segments; start=429.56 a 436.4"
+   },
+   {
+    "id": "E20",
+    "video_id": "OwrAjFdTQ4s",
+    "origen": "transcripcion",
+    "cita": "prevé los suelos y los techos y los suelos de Bitcoin. Problema que desde hace ya eh dos meses que salimos de este BR market, la liquidez ha seguido bajando, pero Bitcoin ya ha tirado hacia arriba.",
+    "observacion": "Se conserva «BR market» como texto recibido.",
+    "inicio_s": 443.28,
+    "fin_s": 457.24,
+    "localizador": "documento.transcript.segments; start=443.28 a 454.319"
+   },
+   {
+    "id": "E21",
+    "video_id": "OwrAjFdTQ4s",
+    "origen": "transcripcion",
+    "cita": "imaginaos si un Bitcoin sube cuando la liquidez global baja, imagínate a partir de mediados de octubre, finales de octubre, principios de noviembre, de los mejores meses del año, cuando la liquidez global suba hasta el día 9 de diciembre. La verdad que en ese tramo estoy muy alcista, pero bueno, no me hagas caso, es simplemente mi análisis.",
+    "observacion": null,
+    "inicio_s": 457.24,
+    "fin_s": 479.199,
+    "localizador": "documento.transcript.segments; start=457.24 a 474.8"
+   },
+   {
+    "id": "E22",
+    "video_id": "OwrAjFdTQ4s",
+    "origen": "transcripcion",
+    "cita": "el 18 lo mismo. Eh, por lo tanto, cada 4 años baja el oro y sube el dólar.",
+    "observacion": null,
+    "inicio_s": 536.56,
+    "fin_s": 542.32,
+    "localizador": "documento.transcript.segments; start=536.56 y 538.88"
+   },
+   {
+    "id": "E23",
+    "video_id": "OwrAjFdTQ4s",
+    "origen": "transcripcion",
+    "cita": "dólar. Pues ahora lo mismo, desde febrero del 2026 hasta noviembre de 2026 está en bullm",
+    "observacion": "Noviembre de 2026 es futuro respecto a la publicación; «bullm» se conserva.",
+    "inicio_s": 513.959,
+    "fin_s": 523.32,
+    "localizador": "documento.transcript.segments; start=513.959 a 518.88"
+   },
+   {
+    "id": "E24",
+    "video_id": "OwrAjFdTQ4s",
+    "origen": "transcripcion",
+    "cita": "mismo estamos en el momento de más desinterés con una puntuación de 22 sobre 100 en el momento de más desinterés de los últimos 5 años en Bitcoin.",
+    "observacion": null,
+    "inicio_s": 550.04,
+    "fin_s": 561.76,
+    "localizador": "documento.transcript.segments; start=550.04 a 557.36"
+   },
+   {
+    "id": "E25",
+    "video_id": "OwrAjFdTQ4s",
+    "origen": "transcripcion",
+    "cita": "en 25 y por aquí en el 23 llegó a 22 igual que ahora. Vale, así que chicos, estamos en el punto junto con una zona de 2023 más barato según el interés de la gente en Bitcoin, en Google Trends.",
+    "observacion": null,
+    "inicio_s": 567.32,
+    "fin_s": 582.279,
+    "localizador": "documento.transcript.segments; start=567.32 a 577.04"
+   },
+   {
+    "id": "E26",
+    "video_id": "OwrAjFdTQ4s",
+    "origen": "transcripcion",
+    "cita": "Vale, estos seis parámetros nos una puntuación de 62 sobre 100. Es verdad que no está sobrecalentado, ya está neutral, pero no es la mejor zona de compra, pero ya empiezan a verse los brotes verdes para quien se haya quedado fuera empezar a construir posición.",
+    "observacion": "Se conserva la frase incompleta «nos una puntuación».",
+    "inicio_s": 579.839,
+    "fin_s": 595.48,
+    "localizador": "documento.transcript.segments; start=579.839 a 591.72"
+   },
+   {
+    "id": "E27",
+    "video_id": "OwrAjFdTQ4s",
+    "origen": "transcripcion",
+    "cita": "columnas las hemos cazado todas. Dólar bajando, rendimiento de bonos bajando, HIG subiendo y move bajando.",
+    "observacion": "HIG no se normaliza a otro ticker.",
+    "inicio_s": 635.959,
+    "fin_s": 645.639,
+    "localizador": "documento.transcript.segments; start=635.959 a 641.279"
+   },
+   {
+    "id": "E28",
+    "video_id": "OwrAjFdTQ4s",
+    "origen": "transcripcion",
+    "cita": "Desde el 2 de octubre que no hacía ningún short y fue para ganar 85 pavos, ¿vale? Pero desde el día 5, como veis por aquí, shorts. El día 6, dos shorts. El día 7, ayer un short, pero un largo a",
+    "observacion": "La secuencia temporal es poco clara y no acredita operaciones o resultados.",
+    "inicio_s": 664.959,
+    "fin_s": 680.44,
+    "localizador": "documento.transcript.segments; start=664.959 a 673.959"
+   },
+   {
+    "id": "E29",
+    "video_id": "OwrAjFdTQ4s",
+    "origen": "transcripcion",
+    "cita": "Si quieres apoyarme y aparte de suscribirte a este canal y dar un like, puedes hacerte una cuenta en Quan Fury, solo tienes que ir para arriba y arriba a la derecha en el monigote le das a recompensas y en estas recompensas escribes Nacho y aplicas. Así me estarás ayudando",
+    "observacion": "Invitación de apoyo mediante registro y código; no revela remuneración exacta.",
+    "inicio_s": 700.6,
+    "fin_s": 719.56,
+    "localizador": "documento.transcript.segments; start=700.6 a 715.24"
+   },
+   {
+    "id": "E30",
+    "video_id": "OwrAjFdTQ4s",
+    "origen": "transcripcion",
+    "cita": "ya que no tiene comisiones y tampoco tasa de financiación.",
+    "observacion": null,
+    "inicio_s": 719.56,
+    "fin_s": 723.839,
+    "localizador": "documento.transcript.segments; start=719.56 y 720.88"
+   },
+   {
+    "id": "E31",
+    "video_id": "OwrAjFdTQ4s",
+    "origen": "transcripcion",
+    "cita": "es Polcadot, porque ayer bajó, pero recuperó todo y ya está al nivel de hace dos días y vuelve otra vez a la zona, que para mí es para vender esta zona de por aquí.",
+    "observacion": "La identificación como Polkadot es contextual; no se aporta el nivel de la zona.",
+    "inicio_s": 793.6,
+    "fin_s": 804.399,
+    "localizador": "documento.transcript.segments; start=793.6 a 801.76"
+   },
+   {
+    "id": "E32",
+    "video_id": "OwrAjFdTQ4s",
+    "origen": "transcripcion",
+    "cita": "Hiperliqu, que tenemos muy mucho en cuenta, el token de Hype, ha retrocedido a cotas que han roto en el corto plazo la estructura que debía mantenerse, así que de momento cancelamos largos en hype hasta que recuperemos estructura. Seguramente no romperá mucha barrera hacia arriba hasta que Bitcoin no rompa su propia barrera.",
+    "observacion": "La mención explícita del token Hype permite identificar el activo pese al nombre truncado.",
+    "inicio_s": 803.199,
+    "fin_s": 823.399,
+    "localizador": "documento.transcript.segments; start=803.199 a 819.839"
+   },
+   {
+    "id": "E33",
+    "video_id": "OwrAjFdTQ4s",
+    "origen": "transcripcion",
+    "cita": "aquí un techo y ahora si lo rompe mejorará mucho la pinta y volverán las palomitas, ¿vale? Típica identificación de Quan Thurid más 20% más 20% más 20%. Bien, yo no creo que eh tengamos eso en Atom, pero si rompe eh yo he encantado de rectificar y estar en largo.",
+    "observacion": "Los porcentajes aparecen como ejemplo que el creador no adopta como expectativa firme.",
+    "inicio_s": 842.36,
+    "fin_s": 859.759,
+    "localizador": "documento.transcript.segments; start=842.36 a 855.959"
+   },
+   {
+    "id": "E34",
+    "video_id": "OwrAjFdTQ4s",
+    "origen": "transcripcion",
+    "cita": "¿Cómo operarlo a largo plazo? Para eso tienes la comunidad privada y te dejo abajo el link por si quieres unirte a operar este tipo de oportunidades con nosotros.",
+    "observacion": "El contexto es la oportunidad comentada en McDonald's; no se recibió el enlace.",
+    "inicio_s": 932.68,
+    "fin_s": 943.0,
+    "localizador": "documento.transcript.segments; start=932.68 a 939.48"
+   },
+   {
+    "id": "E35",
+    "video_id": "OwrAjFdTQ4s",
+    "origen": "transcripcion",
+    "cita": "interesante Happy que le veo alcista en el corto plazo y cualquier oportunidad entre 55 y 56 es para comprar",
+    "observacion": "Ticker y unidad monetaria no resueltos.",
+    "inicio_s": 941.16,
+    "fin_s": 949.72,
+    "localizador": "documento.transcript.segments; start=941.16 a 944.759"
+   },
+   {
+    "id": "E36",
+    "video_id": "OwrAjFdTQ4s",
+    "origen": "transcripcion",
+    "cita": "herramienta que te da un dividendo del casi 9% al año y no depende del precio de las acciones per sé, sino de la velocidad de las subidas o de las bajadas. Es una acción de contrapeso en",
+    "observacion": "Se refiere al instrumento llamado Happy en el pasaje anterior.",
+    "inicio_s": 953.639,
+    "fin_s": 965.399,
+    "localizador": "documento.transcript.segments; start=953.639 a 961.36"
+   },
+   {
+    "id": "E37",
+    "video_id": "OwrAjFdTQ4s",
+    "origen": "transcripcion",
+    "cita": "Lucid Group. No os metáis en estas historias. Es una empresa que pierde cada vez más dinero. Ni siquiera es a lo que se dedica, pero con esta estructura están diluyendo al inversor.",
+    "observacion": "El texto contiene formulaciones extrañas que no se corrigen.",
+    "inicio_s": 992.959,
+    "fin_s": 1007.0,
+    "localizador": "documento.transcript.segments; start=992.959 a 1002.839"
+   },
+   {
+    "id": "E38",
+    "video_id": "OwrAjFdTQ4s",
+    "origen": "transcripcion",
+    "cita": "No compres Algo que ha bajado en 4 años de 600 a 3,82 no es un proyecto a futuro, es un proyecto que cada vez gana menos",
+    "observacion": "Cifras conservadas sin asumir moneda ni ajustes corporativos.",
+    "inicio_s": 1021.04,
+    "fin_s": 1032.319,
+    "localizador": "documento.transcript.segments; start=1021.04 a 1028.919"
+   },
+   {
+    "id": "E39",
+    "video_id": "OwrAjFdTQ4s",
+    "origen": "transcripcion",
+    "cita": "Repito, paso de hacer cortos en Bitcoin a seguramente hacer largos hay que confirmar, aunque hemos tenido alguna oportunidad hoy y ayer en largo.",
+    "observacion": "Formulación final más condicional que la apertura.",
+    "inicio_s": 1042.319,
+    "fin_s": 1054.16,
+    "localizador": "documento.transcript.segments; start=1042.319 a 1048.96"
+   },
+   {
+    "id": "E40",
+    "video_id": "OwrAjFdTQ4s",
+    "origen": "transcripcion",
+    "cita": "reflexión, no vayas a predecir siete de cada seis crisis. No hay ninguna crisis que no te vendan el pescado podrido.",
+    "observacion": "Se conserva la puntuación recibida; «No hay ninguna crisis» forma parte del rechazo retórico.",
+    "inicio_s": 1054.16,
+    "fin_s": 1064.44,
+    "localizador": "documento.transcript.segments; start=1054.16 a 1060.28"
+   },
+   {
+    "id": "E41",
+    "video_id": "OwrAjFdTQ4s",
+    "origen": "transcripcion",
+    "cita": "mercado, porque si alivia la tensión de los bonos, alivia la tensión del dólar y alivia la tensión del MOV y del HIG, nos vienen buenos tiempos en el corto plazo.",
+    "observacion": "La predicción conserva la condición «si»; MOV y HIG no se corrigen en la cita.",
+    "inicio_s": 1066.36,
+    "fin_s": 1078.2,
+    "localizador": "documento.transcript.segments; start=1066.36 a 1073.88"
+   }
+  ],
+  "fuentes_externas": []
+ }
+}
