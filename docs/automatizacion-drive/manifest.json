@@ -1,0 +1,52 @@
+{
+  "protocol_version": "1.0.0",
+  "prepared_at": "2026-10-13T18:16:51.423805+00:00",
+  "prompt_version": "1.0.0",
+  "prompt_sha256": "082e5acbefbb832e35736ce85acf66cffbeefb7813133878666ec3578d29248f",
+  "schema_sha256": "7b88e0b75f8c36832a285d7ff70929a941844a510dd981c290f37d3d62af2e38",
+  "schedule": {
+    "timezone": "America/Bogota",
+    "frequency": "every_6_hours",
+    "hours": [
+      0,
+      6,
+      12,
+      18
+    ],
+    "max_attempts_per_run": 2,
+    "manual_test_max_attempts": 1,
+    "model_candidate": "gpt-6.1-sol",
+    "reasoning_candidate": "medium",
+    "speed": "standard",
+    "quality_certified": false,
+    "capacity_certified": false
+  },
+  "folders": {
+    "root": "1pglUIayp0Km1bmzUP98oKSdAMbKVou8m",
+    "control": "1hhEv-xK9boY1YVvrgYEArLfM8bKRMG61",
+    "pendientes": "10bkFP0qYv9TkS3XAJ8A6Hn58KAH7zjg8",
+    "resultados": "1TbdP93r5UKygovVxMZqd_e5eFIaY3LHi",
+    "ejecuciones": "1AP99U2Q2OVvp_1wpXMm_TQnzTfzyy6ae"
+  },
+  "pilot": {
+    "job_id": "BYjkV2SWcS4__df2297223b1f47993f5936c63f4e74237c7a57f4bca9deff920e72c38518bef3",
+    "video_id": "BYjkV2SWcS4",
+    "title": "🚨 URGENTE: Lo que hará Bitcoin MAÑANA (No operes sin ver esto)",
+    "duration_s": 37.0,
+    "purpose": "Probar lectura, análisis y subida con una transcripción breve real; no verifica la sincronización del servidor.",
+    "latest_review": {
+      "video_id": "vY69bkiUwl8",
+      "file_id": "1QbKq-KQoLPsHt1mpgarZwRxLY-GM9kyJ",
+      "server_validation_errors": 0,
+      "assisted_manual_test": true,
+      "model_reported_by_user": "Sol",
+      "runtime_model_id": null
+    }
+  },
+  "server_bridge_status": "not_implemented",
+  "scheduled_task_status": "not_created",
+  "instructions_revision": "1.2",
+  "queue_index_file_id": "1mT_DJSAO_LsdzHRorQ2Ar9wEgNsBjgRf",
+  "queue_index_url": "https://drive.google.com/file/d/1mT_DJSAO_LsdzHRorQ2Ar9wEgNsBjgRf/view?usp=drivesdk",
+  "configuration_updated_at": "2026-10-13T23:01:13.784872+00:00"
+}
