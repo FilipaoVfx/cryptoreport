@@ -77,7 +77,9 @@ def main():
                 if mobile_data.is_dir():
                     atomic(mobile_data / "pipeline-status.json", encoded(report))
             print(json.dumps(report, ensure_ascii=False, indent=2))
-            return 0 if report["status"] == "ok" else 1
+            # Atrasos y avisos degradan salud, pero no implican que el proceso
+            # falló. systemd diferencia un ciclo completado de un error real.
+            return (0 if report["status"] == "ok" else 1) if args.command == "status" else (1 if report["errors"] else 0)
         finally:
             bridge.close()
 
