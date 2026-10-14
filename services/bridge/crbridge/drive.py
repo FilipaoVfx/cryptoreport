@@ -44,7 +44,10 @@ class RcloneDrive:
             raise DriveError(f"rclone {args[0]}: {type(exc).__name__}; se reconciliará en el siguiente ciclo") from None
         if result.returncode:
             # No imprimir stderr: puede incluir URLs autenticadas o contenido remoto.
-            raise DriveError(f"rclone {args[0]} falló ({result.returncode}); revisar conexión/cuota")
+            message = result.stderr.decode(errors="replace").lower()
+            category = "drive_quota" if "quota" in message or "ratelimit" in message else (
+                "drive_auth" if "invalid_grant" in message or "unauthorized" in message else "drive_transport")
+            raise DriveError(f"rclone {args[0]}: {category} ({result.returncode})")
         return result.stdout
 
     def list(self, folder):

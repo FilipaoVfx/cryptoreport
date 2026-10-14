@@ -419,8 +419,11 @@ class Bridge:
                     self.errors.append(f"Conflicto de pendiente: {name}")
                     continue
                 self.state(row["id"], "uploaded", remote_id=items[0]["ID"])
-            except (DriveError, ValueError, KeyError, TypeError):
+            except (DriveError, ValueError, KeyError, TypeError) as exc:
                 self.errors.append(f"No se confirmó subida: {name}")
+                if isinstance(exc, DriveError) and any(k in str(exc) for k in ("drive_quota", "drive_auth")):
+                    self.errors.append(str(exc))
+                    break
 
     def index(self):
         # Incluir antiguos pendientes: envejecer fuera de 48 h no elimina la cola.
@@ -522,8 +525,8 @@ class Bridge:
             self.upload(pending, result_ids)
             self.index()
             self.put("last_sync_at", now().isoformat())
-        except (DriveError, ValueError, KeyError, TypeError, OSError):
-            self.errors.append("Ciclo incompleto; revisar Drive, control y conexión")
+        except (DriveError, ValueError, KeyError, TypeError, OSError) as exc:
+            self.errors.append(str(exc) if isinstance(exc, DriveError) else "Ciclo incompleto: " + type(exc).__name__)
         # Publicar también después de caída de Drive, si ya hay válidos importados.
         if self.get("publish_dirty"):
             try:
