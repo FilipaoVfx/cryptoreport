@@ -1,6 +1,8 @@
 # Servicio de transcripciones
 
-Obtiene de forma autónoma el texto, con sus tiempos, de cada video nuevo de **Nacho IC** y **KManuS88**. Corre en el VPS con un timer de systemd cada 15 minutos.
+Obtiene de forma autónoma el texto, con sus tiempos, de los videos de **José Luis Cava, Criptoniano, Nacho IC, KManuS88 y Healthy Pockets**. Corre en el VPS con un timer de systemd cada 15 minutos.
+
+El perfil operativo del 13 de octubre usa una ventana de 48 h, Scraper.Tech, yt-dlp y Supadata exclusivamente nativo con un máximo global de 20 créditos al mes; la generación de audio está desactivada. La puerta compartida de calidad y la recuperación conservan originales y versiones anteriores. Al terminar cada ciclo se inicia el [puente de Drive](../bridge/README.md), que carga también el histórico local, valida resultados de Scheduled y publica análisis sin inferencia por API. La [configuración de Scheduled](../../docs/automatizacion-drive/README.md) limita cada ejecución a dos trabajos cada seis horas. El esquema y las pruebas siguientes describen también opciones históricas del servicio; la generación de audio y la ventana de 72 h no corresponden al perfil actual.
 
 ```
 RSS de cada canal ──► videos nuevos (ventana 72 h) ──► 1. Scraper.Tech captions.php (es)   gratis (1.000/mes)

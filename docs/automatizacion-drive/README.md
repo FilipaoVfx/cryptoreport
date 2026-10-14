@@ -30,7 +30,7 @@ Una salida de Scheduled tiene `meta.status=pendiente_validacion`. Solo el servid
 
 ## Integración del servidor
 
-- El servidor usa el remote OAuth gdrive de rclone, comprobado contra la carpeta del proyecto. Sustituir su cliente OAuth compartido por uno propio; la conexión de ChatGPT es independiente.
+- El puente está implementado y su timer está activo. Usa el remote OAuth gdrive de rclone; el 13 de octubre su cliente compartido alcanzó la cuota. La carga inicial se completó con la conexión independiente de Google Drive de ChatGPT. Configurar un cliente OAuth propio y comprobar sincronización recurrente con `crbridge status`; un timer activo no acredita acceso a Drive.
 - Subir nuevos trabajos sin duplicarlos y conservando los originales localmente; actualizar el índice ligero sin tratarlo como registro de validación.
 - Revisar Resultados y Ejecuciones cada 15 minutos; un comprobante sirve para observar actividad, no para garantizar fidelidad del análisis.
 - Contrastar `job_id`, video, prompt/esquema y transcripción con el registro local. Aplicar el esquema y `cranalysis.validate.validate` al análisis.
@@ -44,4 +44,4 @@ Documentación oficial consultada el 13 de octubre de 2026:
 - [Scheduled tasks](https://learn.chatgpt.com/docs/automations): herramientas conectadas, instrucciones duraderas y creación desde ChatGPT.
 - [Uso y precios](https://learn.chatgpt.com/docs/pricing): la cuota de la suscripción y el saldo de la API se contabilizan por separado.
 
-El puente aplica validación e importación, carga inicial del histórico y recuperación de material. Detalles y estados: ../../services/bridge/README.md. No equivale a una certificación de siete días de operación autónoma.
+El puente aplica validación e importación, carga inicial del histórico y recuperación de material. [Detalles y estados](../../services/bridge/README.md). No equivale a una certificación de siete días de operación autónoma.

@@ -32,7 +32,7 @@ Scraper.Tech es principal; yt-dlp es respaldo gratuito; Supadata se usa exclusiv
 
 Scheduled recibe instrucciones 1.3 desde Control, dos intentos por ejecución, un reciente y uno histórico si existen ambos grupos. Detecta material dudoso y lo registra; no hay una herramienta de transcripción directa de ChatGPT comprobada en este entorno. El usuario debe comprobar la tarea guardada, horario y lectura del archivo actual; el servidor no controla la UI de Scheduled.
 
-Drive es transporte y conserva resultados; no equivale a respaldo completo del histórico. El respaldo SQLite local usa la API backup y no copia una base viva ignorando WAL. OAuth propio de rclone y respaldo externo completo siguen pendientes de configuración. El OAuth compartido disponible funciona hoy pero tiene retiro anunciado.
+Drive es transporte y conserva resultados; no equivale a respaldo completo del histórico. El respaldo SQLite local usa la API backup y no copia una base viva ignorando WAL. OAuth propio de rclone y respaldo externo completo siguen pendientes de configuración. El 13 de octubre, el cliente OAuth compartido de rclone alcanzó su cuota; la carga inicial se completó mediante la conexión independiente de Google Drive de ChatGPT. Esa carga no acredita sincronización recurrente: comprobar `crbridge status` y resolver la cuota o configurar el cliente propio.
 
 ## Verificación
 

@@ -59,4 +59,4 @@ brevemente resultado, errores y enlaces reales; no
 declares actualizada la app ni inventes consumo.
 ```
 
-La [instrucción operativa completa](scheduled-instructions.md) detalla carpetas, selección, análisis, controles y contratos JSON. La creación de la tarea se verifica en Scheduled; este archivo no demuestra que ya exista. El puente automático entre Drive y el servidor sigue pendiente.
+La [instrucción operativa completa](scheduled-instructions.md) detalla carpetas, selección, análisis, controles y contratos JSON. La creación de la tarea se verifica en Scheduled; este archivo no demuestra que ya exista. El [puente entre Drive y el servidor](../../services/bridge/README.md) está implementado y su timer está activo; la cuota del OAuth compartido impide certificar sincronización recurrente hasta resolver el acceso.
