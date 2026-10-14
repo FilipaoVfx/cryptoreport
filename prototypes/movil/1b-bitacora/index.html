@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#f3f1ea" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#1a1815" media="(prefers-color-scheme: dark)">
+<meta name="robots" content="noindex">
+<title>Bitácora · CryptoReport</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700&family=Literata:ital,opsz,wght@0,7..72,400;0,7..72,500;0,7..72,600;1,7..72,400&display=swap">
+<link rel="stylesheet" href="app.css">
+</head>
+<body data-screen="log">
+<a class="skip" href="#page">Saltar al contenido</a>
+
+<header class="topbar" id="topbar">
+  <button class="ib" type="button" data-act="back" aria-label="Volver"><svg class="i"><use href="#i-arrow-left"></use></svg></button>
+  <p class="topbar-title" id="topbar-title"></p>
+  <button class="ib" type="button" data-act="share-video" aria-label="Compartir con el minuto actual"><svg class="i"><use href="#i-share"></use></svg></button>
+</header>
+
+<div class="stage" id="stage" data-mode="none">
+  <div class="stage-player" id="player"></div>
+  <div class="pip-bar">
+    <button class="pip-btn" type="button" data-act="pip-toggle" id="pip-toggle" aria-label="Reproducir"><svg class="i"><use href="#i-play"></use></svg></button>
+    <button class="pip-btn" type="button" data-act="snap" data-snap="half" aria-label="Volver al vídeo grande"><svg class="i"><use href="#i-expand"></use></svg></button>
+    <button class="pip-btn pip-close" type="button" data-act="pip-close" aria-label="Cerrar el vídeo flotante"><svg class="i"><use href="#i-close"></use></svg></button>
+  </div>
+</div>
+
+<main id="page" tabindex="-1"></main>
+
+<section class="nb" id="nb" data-snap="half" aria-label="Cuaderno del vídeo" hidden>
+  <div class="nb-handle" id="nb-handle">
+    <button class="nb-grip" type="button" data-act="cycle" id="nb-grip" aria-label="Cuaderno a media altura. Pulsa para ampliarlo."><span></span></button>
+    <div class="now" id="now"></div>
+    <div class="lenses" role="radiogroup" aria-label="Lente del cuaderno" id="lenses"></div>
+  </div>
+  <div class="nb-body" id="nb-body"></div>
+</section>
+
+<nav class="cmd" id="cmd" aria-label="Navegación">
+  <button class="cmd-index" type="button" data-act="index" aria-haspopup="dialog"><svg class="i"><use href="#i-menu"></use></svg><span>Índice</span></button>
+  <a class="cmd-search" href="#/buscar"><svg class="i"><use href="#i-search"></use></svg><span>Buscar en la bitácora</span></a>
+</nav>
+
+<div class="index" id="index" role="dialog" aria-modal="true" aria-labelledby="index-title" hidden>
+  <div class="index-inner">
+    <div class="index-head"><h2 id="index-title">Índice</h2><button class="ib" type="button" data-act="index-close" aria-label="Cerrar índice"><svg class="i"><use href="#i-close"></use></svg></button></div>
+    <nav class="index-list" id="index-list"></nav>
+  </div>
+</div>
+
+<script src="../shared/core.js"></script>
+<script src="../shared/player.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#f6e6d8" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#1b1613" media="(prefers-color-scheme: dark)">
+<meta name="robots" content="noindex">
+<title>Portada · CryptoReport</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Libre+Franklin:wght@400;500;600;700&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;0,8..60,700;1,8..60,400;1,8..60,600&display=swap">
+<link rel="stylesheet" href="app.css">
+</head>
+<body data-screen="portada">
+<a class="skip" href="#edicion">Saltar al contenido</a>
+
+<header class="masthead" id="masthead">
+  <a class="mast-name" href="#/">CryptoReport</a>
+  <p class="mast-line" id="mast-line"></p>
+</header>
+
+<nav class="sections" id="sections" aria-label="Secciones">
+  <div class="sections-scroll" data-scroll-x>
+    <a href="#/" data-s="portada">Portada</a>
+    <a href="#/narrativas" data-s="narrativas">Narrativas</a>
+    <a href="#/desacuerdos" data-s="desacuerdos">Desacuerdos</a>
+    <a href="#/dossiers" data-s="dossiers">Dossiers</a>
+    <a href="#/videos" data-s="videos">Vídeos</a>
+    <a href="#/recortes" data-s="recortes">Recortes</a>
+  </div>
+  <a class="sections-search" href="#/buscar" aria-label="Buscar"><svg class="i"><use href="#i-search"></use></svg></a>
+</nav>
+
+<div class="nowbar" id="nowbar" hidden>
+  <button class="nowbar-btn" type="button" data-act="np-toggle" id="np-toggle" aria-label="Reproducir"><svg class="i"><use href="#i-play"></use></svg></button>
+  <button class="nowbar-text" type="button" data-act="np-top" id="np-text"></button>
+</div>
+
+<main id="edicion" tabindex="-1"></main>
+
+<a class="resume" id="resume" href="#/" hidden></a>
+
+<script src="../shared/core.js"></script>
+<script src="../shared/player.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
