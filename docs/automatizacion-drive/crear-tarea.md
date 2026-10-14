@@ -18,7 +18,7 @@ CryptoReport. Separa lo dicho por el creador, lo sugerido
 por su discurso y lo que las pruebas permiten sostener.
 
 Lee íntegramente y aplica scheduled-instructions.md,
-revisión 1.2, en cada ejecución:
+revisión 1.3, en cada ejecución:
 https://drive.google.com/file/d/1XsXFvrKazWDFSjHs5BMTLQn1s3h_ys6f/view
 
 Lee el manifest y el índice ligero de Control. Cuando
@@ -28,7 +28,7 @@ con código, registra el impedimento; no improvises.
 
 Procesa como máximo DOS trabajos por ejecución; los
 intentos fallidos también cuentan. Guarda y verifica cada
-resultado antes de analizar el siguiente, sin mezclar videos. Prioriza pendientes antiguos, conserva
+resultado antes de analizar el siguiente, sin mezclar videos. Reserva un puesto para novedades y otro para histórico, conserva
 los atrasos y comprueba IDs para evitar duplicados.
 Lee solo los archivos necesarios. Si no hay pendientes,
 guarda el comprobante y termina antes de cargar el prompt

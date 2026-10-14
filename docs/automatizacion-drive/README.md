@@ -1,6 +1,6 @@
 # Piloto de análisis con ChatGPT Scheduled y Google Drive
 
-Estado: instrucciones operativas revisadas después de dos pruebas manuales y una comparativa asistida. La tarea no está creada desde este entorno y la sincronización automática del servidor con Drive todavía no está implementada. La última salida pasa la validación del repo, pero no certifica ejecución desatendida o capacidad de Plus.
+Estado: instrucciones operativas revisadas después de dos pruebas manuales y una comparativa asistida. La tarea no se administra desde este entorno. El puente del servidor está implementado en services/bridge; consultar su estado real con crbridge status y systemd, sin inferir activación de esta documentación. La última salida pasa la validación del repo, pero no certifica ejecución desatendida o capacidad de Plus.
 
 Carpeta raíz: https://drive.google.com/drive/folders/1pglUIayp0Km1bmzUP98oKSdAMbKVou8m
 
@@ -9,7 +9,7 @@ Archivos principales: [instrucción completa](scheduled-instructions.md), [texto
 ## Activación por el usuario
 
 1. Abre ChatGPT en la web con tu cuenta Plus. Usa ChatGPT Work y habilita el plugin Google Drive en ese chat. Comprueba que la conexión corresponde a la cuenta que puede acceder a la carpeta. Autoriza las operaciones de lectura y subida necesarias desde los controles de la conexión, si aparecen.
-2. Selecciona GPT-6.1 Sol, razonamiento Medium y velocidad Standard, si están disponibles. Usa la revisión 1.2 de `control/scheduled-instructions.md`; requiere leer el prompt/esquema íntegros y comprobar citas, tiempos, referencias y cobertura antes de subir.
+2. Selecciona GPT-6.1 Sol, razonamiento Medium y velocidad Standard, si están disponibles. Usa la revisión 1.3 de `control/scheduled-instructions.md`; requiere leer el prompt/esquema íntegros y comprobar citas, tiempos, referencias y cobertura antes de subir.
 3. Las pruebas manuales y su verificación están documentadas en `piloto-largo-modelo-2026-10-13.md` y `sol-verificado-2026-10-13.md`. No equivalen a una ejecución automática. El modelo identificado por el usuario como Sol conserva `model: null` en el archivo; no inventar metadatos técnicos.
 4. Crea una tarea independiente llamada `CryptoReport — análisis de narrativas`, cada seis horas en `America/Bogota` (00:00, 06:00, 12:00, 18:00). Su prompt debe ordenar leer y aplicar en cada ejecución [scheduled-instructions.md](https://drive.google.com/file/d/1XsXFvrKazWDFSjHs5BMTLQn1s3h_ys6f/view), usando Google Drive y conservando sus límites. No dependas de archivos locales del servidor ni de recordar la conversación anterior.
 5. Abre Scheduled y confirma nombre, prompt, conexión, horario, zona y estado activo. Revisa la primera ejecución automática: debe dejar un comprobante incluso si la prueba manual ya consumió el único pendiente.
@@ -28,9 +28,9 @@ El hash del esquema usa el mismo método que el analizador actual: SHA-256 de `j
 
 Una salida de Scheduled tiene `meta.status=pendiente_validacion`. Solo el servidor podrá declararla válida, importar el análisis y publicar. No incluir rutas locales controladas por la salida externa.
 
-## Trabajo restante del servidor
+## Integración del servidor
 
-- Autorizar Drive con una identidad propia del servidor; la conexión de ChatGPT no concede credenciales al proceso Python.
+- El servidor usa el remote OAuth gdrive de rclone, comprobado contra la carpeta del proyecto. Sustituir su cliente OAuth compartido por uno propio; la conexión de ChatGPT es independiente.
 - Subir nuevos trabajos sin duplicarlos y conservando los originales localmente; actualizar el índice ligero sin tratarlo como registro de validación.
 - Revisar Resultados y Ejecuciones cada 15 minutos; un comprobante sirve para observar actividad, no para garantizar fidelidad del análisis.
 - Contrastar `job_id`, video, prompt/esquema y transcripción con el registro local. Aplicar el esquema y `cranalysis.validate.validate` al análisis.
@@ -43,3 +43,5 @@ Documentación oficial consultada el 13 de octubre de 2026:
 
 - [Scheduled tasks](https://learn.chatgpt.com/docs/automations): herramientas conectadas, instrucciones duraderas y creación desde ChatGPT.
 - [Uso y precios](https://learn.chatgpt.com/docs/pricing): la cuota de la suscripción y el saldo de la API se contabilizan por separado.
+
+El puente aplica validación e importación, carga inicial del histórico y recuperación de material. Detalles y estados: ../../services/bridge/README.md. No equivale a una certificación de siete días de operación autónoma.
