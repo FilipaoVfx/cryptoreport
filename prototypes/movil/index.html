@@ -1,0 +1,287 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#f3f2ee">
+<meta name="robots" content="noindex">
+<title>Propuestas móviles · CryptoReport</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@400;500;600;700;800&display=swap">
+<style>
+  :root {
+    --bg: #f3f2ee; --card: #ffffff; --ink: #18181a; --ink-2: #48484d; --muted: #6a6a70; --line: #deddd6;
+    --a1: #2741c9; --a2: #0e5a63; --a3: #a5491b; --a4: #3b7d0f; --focus: #2741c9;
+    --sans: "Schibsted Grotesk", ui-sans-serif, system-ui, sans-serif;
+    color-scheme: light;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #121214; --card: #1b1b1e; --ink: #f0efea; --ink-2: #c9c8c2; --muted: #9b9a94; --line: #2d2d31; --a1: #9aa9ff; --a2: #7fc8cf; --a3: #f09a63; --a4: #b5f56a; --focus: #9aa9ff; color-scheme: dark; }
+  }
+  *, *::before, *::after { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font: 400 16px/1.5 var(--sans); -webkit-font-smoothing: antialiased; }
+  a { color: inherit; }
+  h1, h2, h3, p { margin: 0; }
+  :focus-visible { outline: 2px solid var(--focus); outline-offset: 3px; border-radius: 8px; }
+  .wrap { max-width: 1120px; margin: 0 auto; padding: 32px 18px 64px; }
+  header h1 { font-size: clamp(30px, 6vw, 48px); line-height: 1.04; font-weight: 800; letter-spacing: -0.03em; max-width: 18ch; text-wrap: balance; }
+  header p { margin-top: 12px; font-size: 17px; color: var(--ink-2); max-width: 62ch; }
+  .facts { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 18px; }
+  .facts span { font-size: 14px; font-weight: 600; padding: 6px 12px; border-radius: 999px; background: var(--card); border: 1px solid var(--line); }
+  .approach { margin-top: 44px; }
+  .approach-h { display: flex; align-items: baseline; gap: 14px; padding-bottom: 12px; border-bottom: 2px solid var(--ink); }
+  .approach-h .n { font-size: 15px; font-weight: 800; color: var(--accent); font-variant-numeric: tabular-nums; }
+  .approach-h h2 { font-size: 24px; font-weight: 800; letter-spacing: -0.02em; }
+  .approach-h p { margin-left: auto; font-size: 14px; color: var(--muted); text-align: right; max-width: 34ch; }
+  .pair { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-top: 18px; }
+  .v { display: grid; grid-template-columns: 168px 1fr; gap: 18px; padding: 16px; border-radius: 18px; background: var(--card); border: 1px solid var(--line); }
+  .shot { display: block; border-radius: 14px; overflow: hidden; border: 1px solid var(--line); aspect-ratio: 390 / 844; background: var(--bg); }
+  .shot img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .v h3 { font-size: 22px; font-weight: 800; letter-spacing: -0.02em; }
+  .v h3 small { font-size: 13px; font-weight: 700; color: var(--accent); margin-left: 6px; letter-spacing: 0; }
+  .v .idea { margin-top: 4px; font-size: 15.5px; color: var(--ink-2); }
+  .v ul { margin: 12px 0 0; padding: 0; list-style: none; display: grid; gap: 7px; font-size: 14.5px; color: var(--ink-2); }
+  .v li { padding-left: 14px; position: relative; }
+  .v li::before { content: ""; position: absolute; left: 0; top: 0.62em; width: 6px; height: 6px; border-radius: 50%; background: var(--accent); }
+  .open { display: inline-flex; align-items: center; gap: 8px; margin-top: 14px; min-height: 44px; padding: 0 18px; border-radius: 12px; background: var(--ink); color: var(--bg); font-weight: 700; font-size: 15px; text-decoration: none; }
+  .open:hover { background: var(--accent); color: var(--bg); }
+  .open svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+  .trio { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; margin-top: 18px; }
+  .trio .v { grid-template-columns: 1fr; }
+  .trio .shot { max-width: 260px; }
+  .v.solo { grid-template-columns: 200px 200px 1fr; margin-top: 18px; align-items: start; }
+  .v.solo .shot { max-width: 200px; }
+  @media (max-width: 920px) { .v.solo { grid-template-columns: 1fr 1fr; } .v.solo > div { grid-column: 1 / -1; } .v.solo .shot { max-width: none; } }
+  .tone-box { margin-top: 18px; padding: 20px; border-radius: 18px; background: var(--card); border: 1px solid var(--line); display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; font-size: 14.5px; color: var(--ink-2); }
+  .tone-box h3 { font-size: 15px; font-weight: 800; color: var(--ink); margin-bottom: 4px; }
+  .sw { display: inline-flex; align-items: center; gap: 6px; font-weight: 700; }
+  .sw i { width: 12px; height: 12px; border-radius: 3px; display: inline-block; }
+  .round-h { margin-top: 56px; font-size: 15px; font-weight: 800; color: var(--muted); padding-bottom: 8px; border-bottom: 1px solid var(--line); }
+  .new { display: inline-block; margin-left: 8px; padding: 2px 8px; border-radius: 999px; font-size: 12px; font-weight: 800; background: var(--accent); color: var(--bg); vertical-align: middle; }
+  @media (max-width: 920px) { .trio, .tone-box { grid-template-columns: 1fr; } .trio .v { grid-template-columns: 112px 1fr; } }
+  .tasks { margin-top: 48px; padding: 22px; border-radius: 18px; background: var(--card); border: 1px solid var(--line); }
+  .tasks h2 { font-size: 22px; font-weight: 800; letter-spacing: -0.02em; }
+  .tasks > p { margin-top: 6px; color: var(--ink-2); max-width: 70ch; }
+  .tasks ol { margin: 14px 0 0; padding-left: 22px; display: grid; gap: 8px; }
+  .tasks li { padding-left: 4px; }
+  .tasks li b { font-weight: 700; }
+  .notes { margin-top: 28px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; font-size: 14.5px; color: var(--ink-2); }
+  .notes h3 { font-size: 15px; font-weight: 800; color: var(--ink); margin-bottom: 4px; }
+  @media (max-width: 920px) { .pair { grid-template-columns: 1fr; } .notes { grid-template-columns: 1fr; } .approach-h { flex-wrap: wrap; } .approach-h p { margin-left: 0; text-align: left; width: 100%; } }
+  @media (max-width: 480px) { .v { grid-template-columns: 112px 1fr; gap: 14px; padding: 14px; } .v h3 { font-size: 20px; } .v ul { font-size: 14px; } }
+</style>
+</head>
+<body>
+<main class="wrap">
+  <header>
+    <h1>Propuestas móviles para CryptoReport</h1>
+    <p>Arriba, la tercera ronda: la Nébula con termómetros de urania y fuego y el sismógrafo en un cajón lateral. Debajo, la segunda ronda (tres iteraciones de Bitácora con tono alcista y bajista) y las seis propuestas iniciales. Ábrelas en el móvil: están pensadas para 360–430 px.</p>
+    <div class="facts" id="facts"><span>24 vídeos con transcripción</span><span>2 análisis completos (Nacho IC, 9 y 12 oct)</span><span>Un cambio de postura real detectado</span></div>
+  </header>
+
+  <section class="approach" style="--accent: var(--a4)">
+    <div class="approach-h"><span class="n">3.ª ronda</span><h2>Nébula · Urania</h2><p>La Nébula que elegiste, con termómetros y el sismógrafo a mano.</p></div>
+    <article class="v solo">
+      <a class="shot" href="b4-urania/" aria-label="Abrir Nébula Urania"><img src="data/board/b4-urania.webp" alt="Ranking de altcoins con el termómetro de fuego de Ethereum"></a>
+      <a class="shot" href="b4-urania/" aria-label="Abrir Nébula Urania con el cajón del sismógrafo"><img src="data/board/b4-urania-cajon.webp" alt="Cajón lateral con la aguja del archivo, termómetros por creador y sismógrafos"></a>
+      <div>
+        <h3>Urania<small>B4 · Nébula + termómetros + sismógrafo</small><span class="new">Nueva</span></h3>
+        <p class="idea">Verde de urania fosforescente para lo alcista y fuego para lo bajista, en todas partes.</p>
+        <ul>
+          <li>Termómetro en cada activo, narrativa, ficha y en el Diario: la urania crece a la derecha con las menciones alcistas, el fuego a la izquierda con las bajistas, y la aguja marca el saldo.</li>
+          <li>La urania brilla y respira; el fuego tiene llamas que titilan. La tarjeta #01 y los insights más alcista y más bajista laten con su color.</li>
+          <li>Botón «Sismógrafo» arriba a la izquierda (o desliza desde el borde): aguja de los últimos 3 días, termómetro por creador y un carrusel con el sismógrafo de cada vídeo, con pausa.</li>
+          <li>Con «reducir movimiento» activado todo queda quieto, y el color siempre va con flecha y palabra.</li>
+        </ul>
+        <a class="open" href="b4-urania/">Abrir Urania <svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+      </div>
+    </article>
+  </section>
+
+  <section class="approach" style="--accent: var(--a3)">
+    <div class="approach-h"><span class="n">2.ª ronda</span><h2>Bitácora, con señales alcistas y bajistas</h2><p>Verde cuando el texto empuja al alza; rojo cuando empuja a la baja. Siempre con flecha y palabra.</p></div>
+    <div class="trio">
+      <article class="v">
+        <a class="shot" href="b1-pulso/" aria-label="Abrir Bitácora Pulso"><img src="data/board/b1-pulso.webp" alt="Diario de Bitácora Pulso con el pulso de cada vídeo"></a>
+        <div>
+          <h3>Pulso<small>B1</small></h3>
+          <p class="idea">La Bitácora que elegiste, ahora con pulso: misma estructura, tono en todas partes.</p>
+          <ul>
+            <li>Cada vídeo del diario con su onda verde/roja y el % de señales al alza.</li>
+            <li>Subrayado verde o rojo en la transcripción y la palabra que dispara la señal.</li>
+            <li>«Ahora suena alcista» mientras reproduces; mapa de calor divergente por activo.</li>
+            <li>Aviso cuando el título insinúa un tono y el vídeo suena a otro.</li>
+          </ul>
+          <a class="open" href="b1-pulso/">Abrir Pulso <svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+        </div>
+      </article>
+      <article class="v">
+        <a class="shot" href="b2-nebula/" aria-label="Abrir Bitácora Nébula"><img src="data/board/b2-nebula.webp" alt="Ranking de altcoins con tono en la Nébula"></a>
+        <div>
+          <h3>Nébula<small>B2 · híbrido con G</small></h3>
+          <p class="idea">El ranking y las menciones de la G, con el cuaderno de la Bitácora detrás.</p>
+          <ul>
+            <li>Altcoins · Macro · Bolsa, filtros de creador y periodo, ranking por vídeos, menciones o tono.</li>
+            <li>Cada activo: cuántas menciones caen en frases alcistas o bajistas y sus dos frases extremas.</li>
+            <li>Ficha de menciones que abre el cuaderno anotado en el segundo exacto.</li>
+            <li>Insights: lo más alcista, lo más bajista, cambios de postura, títulos que no cuadran.</li>
+          </ul>
+          <a class="open" href="b2-nebula/">Abrir Nébula <svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+        </div>
+      </article>
+      <article class="v">
+        <a class="shot" href="b3-sismografo/" aria-label="Abrir Bitácora Sismógrafo"><img src="data/board/b3-sismografo.webp" alt="Aguja del archivo y sismógrafos por vídeo"></a>
+        <div>
+          <h3>Sismógrafo<small>B3</small></h3>
+          <p class="idea">El tono como instrumento: aguja, sismógrafos y un fondo que se tiñe.</p>
+          <ul>
+            <li>Aguja del archivo (últimos 3 días) y una por creador.</li>
+            <li>Cada vídeo como sismógrafo, con su frase más alcista y más bajista.</li>
+            <li>Aguja en vivo mientras ves el vídeo y lente «Señales» con cada momento cargado.</li>
+            <li>Termómetros por activo: la aguja se va al rojo o al verde según sus menciones.</li>
+          </ul>
+          <a class="open" href="b3-sismografo/">Abrir Sismógrafo <svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+        </div>
+      </article>
+    </div>
+    <div class="tone-box">
+      <div><h3>Qué marca el color</h3><p><span class="sw"><i style="background:#1b7546"></i>Alcista</span> · <span class="sw"><i style="background:#b0281f"></i>Bajista</span> · <span class="sw"><i style="background:#8a5f00"></i>Mixta</span> · gris sin carga. Se aplica a afirmaciones, citas, títulos, fragmentos, menciones de cada activo y narrativas.</p></div>
+      <div><h3>Cómo se calcula</h3><p>Un léxico de mercado revisado a mano sobre estas transcripciones, con reglas: negaciones («no hay ninguna crisis» suma al alza), indicadores inversos (si suben el dólar o los bonos se lee bajista para Bitcoin) y encuadres contrarios («¿ya están todos bajistas?»).</p></div>
+      <div><h3>Qué no dice</h3><p>Señala la connotación del discurso, no si acierta. Cada señal enseña las palabras que la disparan. No se usó ningún modelo de pago: todo sale de los datos ya guardados.</p></div>
+    </div>
+  </section>
+
+  <h2 class="round-h">1.ª ronda · las seis propuestas iniciales</h2>
+
+  <section class="approach" style="--accent: var(--a1)">
+    <div class="approach-h"><span class="n">1</span><h2>Vídeo con cuaderno de análisis</h2><p>Poco aprendizaje; el vídeo manda y el cuaderno se construye debajo.</p></div>
+    <div class="pair">
+      <article class="v">
+        <a class="shot" href="1a-libreta/" aria-label="Abrir Libreta"><img src="data/board/1a-libreta.webp" alt="Ficha de vídeo de Libreta con hallazgos principales"></a>
+        <div>
+          <h3>Libreta<small>1A</small></h3>
+          <p class="idea">La versión familiar: pestañas abajo, vídeo arriba, cuaderno en tres vistas.</p>
+          <ul>
+            <li>Pestañas Vídeos · Narrativas · Activos · Guardados.</li>
+            <li>Reproductor fijo que se convierte en minirreproductor al salir.</li>
+            <li>Destilado / Transcripción / Análisis; hojas inferiores que no tapan el vídeo.</li>
+            <li>Ranking de activos por Altcoins, Macro y Bolsa.</li>
+          </ul>
+          <a class="open" href="1a-libreta/">Abrir Libreta <svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+        </div>
+      </article>
+      <article class="v">
+        <a class="shot" href="1b-bitacora/" aria-label="Abrir Bitácora"><img src="data/board/1b-bitacora.webp" alt="Cuaderno de Bitácora con la transcripción anotada"></a>
+        <div>
+          <h3>Bitácora<small>1B</small></h3>
+          <p class="idea">El archivo como diario y el cuaderno como hoja que se arrastra sobre el vídeo.</p>
+          <ul>
+            <li>Sin pestañas: barra de comandos con Índice y búsqueda.</li>
+            <li>Transcripción anotada: lo extraído, subrayado; notas del sistema al margen, desplegables.</li>
+            <li>Hoja de tres alturas; al ampliarla, el vídeo flota.</li>
+            <li>Activos como mapa de calor por día; marcadores con nota propia.</li>
+          </ul>
+          <a class="open" href="1b-bitacora/">Abrir Bitácora <svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+        </div>
+      </article>
+    </div>
+  </section>
+
+  <section class="approach" style="--accent: var(--a2)">
+    <div class="approach-h"><span class="n">2</span><h2>Sala de edición de narrativas</h2><p>De una voz a varias: comparar vídeos sin perder la fuente.</p></div>
+    <div class="pair">
+      <article class="v">
+        <a class="shot" href="2a-portada/" aria-label="Abrir Portada"><img src="data/board/2a-portada.webp" alt="Portada editorial con la narrativa principal"></a>
+        <div>
+          <h3>Portada<small>2A</small></h3>
+          <p class="idea">La sala como diario financiero: portada, secciones y lectura con fuentes.</p>
+          <ul>
+            <li>Secciones en texto arriba; sin barra inferior.</li>
+            <li>Narrativa principal, vídeos recientes y desacuerdos detectados.</li>
+            <li>Vídeo activo, selector de fuentes, síntesis enlazada y 5 capítulos.</li>
+            <li>Dossiers por activo como artículos con índice.</li>
+          </ul>
+          <a class="open" href="2a-portada/">Abrir Portada <svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+        </div>
+      </article>
+      <article class="v">
+        <a class="shot" href="2b-moviola/" aria-label="Abrir Moviola"><img src="data/board/2b-moviola.webp" alt="Mesa de montaje con visor, pistas y planos"></a>
+        <div>
+          <h3>Moviola<small>2B</small></h3>
+          <p class="idea">Mesa de montaje: el tema se compara clip a clip en una línea de tiempo.</p>
+          <ul>
+            <li>Consola de tres botones con «Montaje» en el centro.</li>
+            <li>Una pista por creador; marcas rojas entre clips que cambian de postura.</li>
+            <li>Capítulos y síntesis como planos que se pasan uno a uno.</li>
+            <li>Fuentes en cubetas y fichas de activos en baraja.</li>
+          </ul>
+          <a class="open" href="2b-moviola/">Abrir Moviola <svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+        </div>
+      </article>
+    </div>
+  </section>
+
+  <section class="approach" style="--accent: var(--a3)">
+    <div class="approach-h"><span class="n">3</span><h2>Reactor audiovisual</h2><p>Sin dashboard: se entra en un vídeo y se destila la frase.</p></div>
+    <div class="pair">
+      <article class="v">
+        <a class="shot" href="3a-constelacion/" aria-label="Abrir Constelación"><img src="data/board/3a-constelacion.webp" alt="Escena destilada con la frase y sus conexiones"></a>
+        <div>
+          <h3>Constelación<small>3A</small></h3>
+          <p class="idea">La frase en el centro y cuatro conexiones luminosas, reveladas paso a paso.</p>
+          <ul>
+            <li>Barra de tiempo con una marca por afirmación; cinta de lo que se afirma ahora.</li>
+            <li>Destilar en 5 pasos hasta la lectura crítica.</li>
+            <li>Órbita circular de vídeos por activo y hoja de lectura.</li>
+            <li>Modo lista equivalente para lectura lineal.</li>
+          </ul>
+          <a class="open" href="3a-constelacion/">Abrir Constelación <svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+        </div>
+      </article>
+      <article class="v">
+        <a class="shot" href="3b-alambique/" aria-label="Abrir Alambique"><img src="data/board/3b-alambique.webp" alt="Feed vertical con el botón Destilar"></a>
+        <div>
+          <h3>Alambique<small>3B</small></h3>
+          <p class="idea">Un vídeo por pantalla; destilar hace gotear la frase capa a capa.</p>
+          <ul>
+            <li>Riel lateral: Destilar, Guardar, Lista, Compartir; flechas para pasar de vídeo.</li>
+            <li>Columna de destilación con riel de progreso; conexiones que se abren en línea.</li>
+            <li>Órbita como carrusel; Explorar a pantalla completa.</li>
+            <li>Al volver, el vídeo sigue en el mismo segundo.</li>
+          </ul>
+          <a class="open" href="3b-alambique/">Abrir Alambique <svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+        </div>
+      </article>
+    </div>
+  </section>
+
+  <section class="tasks">
+    <h2>Las cinco tareas para compararlas</h2>
+    <p>Las del documento. Pruébalas en cada propuesta y fíjate en cuál te desorienta menos.</p>
+    <ol>
+      <li><b>Encontrar qué dijo un creador sobre un activo</b>, por ejemplo Hyperliquid o Cosmos.</li>
+      <li><b>Ver el fragmento que sostiene una conclusión</b> y escucharlo en su segundo.</li>
+      <li><b>Distinguir la interpretación del sistema de la afirmación original.</b></li>
+      <li><b>Consultar otro vídeo con una postura distinta</b>: el 9 oct Nacho dice «he dejado de hacer cortos para empezar a construir largos»; el 12 oct, «estoy en short».</li>
+      <li><b>Volver al vídeo inicial conservando el momento de reproducción.</b></li>
+    </ol>
+  </section>
+
+  <div class="notes">
+    <div><h3>Datos reales, sin inventar</h3><p>Las afirmaciones, citas y tiempos salen de los dos análisis guardados. Los demás vídeos muestran su transcripción y el estado «análisis pendiente». Nada aparece como verificado: no se consultaron fuentes externas.</p></div>
+    <div><h3>Reproductor</h3><p>Los vídeos se reproducen desde YouTube y saltan al segundo citado. En algunos móviles hay que tocar el vídeo la primera vez. Si YouTube no carga, cada interfaz sigue funcionando con un reloj sincronizado.</p></div>
+    <div><h3>Estados del producto</h3><p>Cada propuesta incluye una pantalla de estados: vídeo detectado, análisis pendiente, sin transcripción, inaccesible y error de carga. Los que hoy no existen en el archivo van marcados como ejemplo.</p></div>
+  </div>
+</main>
+<script>
+  // Fecha de la foto de datos, leída del propio índice (sin bloquear la página si falla).
+  fetch('data/index.json', { cache: 'no-cache' }).then((r) => r.json()).then((d) => {
+    const when = new Date(d.generatedAt);
+    const el = document.createElement('span');
+    el.textContent = `Datos del ${when.getDate()}/${when.getMonth() + 1}, ${when.getHours()}:${String(when.getMinutes()).padStart(2, '0')}`;
+    document.getElementById('facts').appendChild(el);
+  }).catch(() => {});
+</script>
+</body>
+</html>

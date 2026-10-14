@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0b0717">
+<meta name="robots" content="noindex">
+<title>Nébula Urania · CryptoReport</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Urbanist:wght@400;500;600;700;800&family=Literata:ital,opsz,wght@0,7..72,400;0,7..72,500;0,7..72,600;1,7..72,400&display=swap">
+<link rel="stylesheet" href="app.css">
+</head>
+<body data-screen="explorar">
+<a class="skip" href="#page">Saltar al contenido</a>
+
+<header class="nh" id="nh">
+  <button class="nh-seis" type="button" data-act="drawer" aria-haspopup="dialog" aria-controls="drawer" aria-label="Abrir el sismógrafo"><svg class="i"><use href="#i-wave"></use></svg><span>Sismógrafo</span></button>
+  <a class="nh-brand" href="#/" aria-label="CryptoReport, explorar">
+    <svg class="nh-mark" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.5 20.5 7v10L12 21.5 3.5 17V7z"/><path d="M12 7.5 16.5 10v4L12 16.5 7.5 14v-4z"/></svg>
+    <span>cryptoreport</span><small>Nébula · Urania</small>
+  </a>
+  <a class="nh-btn" href="#/buscar" aria-label="Buscar en todo el archivo"><svg class="i"><use href="#i-search"></use></svg></a>
+  <a class="nh-link" href="../index.html">Propuestas</a>
+</header>
+
+<header class="topbar" id="topbar">
+  <button class="ib" type="button" data-act="back" aria-label="Volver"><svg class="i"><use href="#i-arrow-left"></use></svg></button>
+  <p class="topbar-title" id="topbar-title"></p>
+  <button class="ib" type="button" data-act="share-video" aria-label="Compartir con el minuto actual"><svg class="i"><use href="#i-share"></use></svg></button>
+</header>
+
+<div class="stage" id="stage" data-mode="none">
+  <div class="stage-player" id="player"></div>
+  <div class="pip-bar">
+    <button class="pip-btn" type="button" data-act="pip-toggle" id="pip-toggle" aria-label="Reproducir"><svg class="i"><use href="#i-play"></use></svg></button>
+    <button class="pip-btn" type="button" data-act="snap" data-snap="half" aria-label="Volver al vídeo grande"><svg class="i"><use href="#i-expand"></use></svg></button>
+    <button class="pip-btn pip-close" type="button" data-act="pip-close" aria-label="Cerrar el vídeo flotante"><svg class="i"><use href="#i-close"></use></svg></button>
+  </div>
+</div>
+
+<main id="page" tabindex="-1"></main>
+
+<section class="nb" id="nb" data-snap="half" aria-label="Cuaderno del vídeo" hidden>
+  <div class="nb-handle" id="nb-handle">
+    <button class="nb-grip" type="button" data-act="cycle" id="nb-grip" aria-label="Cuaderno a media altura. Pulsa para ampliarlo."><span></span></button>
+    <div class="now" id="now"></div>
+    <button class="nb-pulse" type="button" id="nb-pulse" data-act="pulse" aria-label="Pulso del vídeo: toca para saltar a ese momento"></button>
+    <div class="lenses" role="radiogroup" aria-label="Lente del cuaderno" id="lenses"></div>
+  </div>
+  <div class="nb-body" id="nb-body"></div>
+</section>
+
+<nav class="dock" id="dock" aria-label="Secciones">
+  <a href="#/" data-d="explorar"><svg class="i"><use href="#i-grid"></use></svg><span>Explorar</span></a>
+  <a href="#/diario" data-d="diario"><svg class="i"><use href="#i-calendar"></use></svg><span>Diario</span></a>
+  <a href="#/guardados" data-d="guardados"><svg class="i"><use href="#i-bookmark"></use></svg><span>Guardados</span></a>
+</nav>
+
+<div class="scrim" id="scrim" hidden></div>
+<div class="dscrim" id="dscrim" hidden></div>
+<aside class="drawer" id="drawer" role="dialog" aria-modal="true" aria-labelledby="drawer-title" hidden>
+  <div class="drawer-head"><h2 id="drawer-title"><svg class="i"><use href="#i-wave"></use></svg>Sismógrafo</h2><button class="ib" type="button" data-act="drawer-close" aria-label="Cerrar el sismógrafo"><svg class="i"><use href="#i-close"></use></svg></button></div>
+  <div class="drawer-body" id="drawer-body"></div>
+</aside>
+<section class="ficha" id="ficha" role="dialog" aria-modal="true" aria-labelledby="ficha-title" hidden>
+  <div class="ficha-head"><h2 id="ficha-title">Ficha de menciones</h2><button class="ib" type="button" data-act="ficha-close" aria-label="Cerrar la ficha"><svg class="i"><use href="#i-close"></use></svg></button></div>
+  <div class="ficha-body" id="ficha-body"></div>
+</section>
+
+<script src="../shared/core.js"></script>
+<script src="../shared/player.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

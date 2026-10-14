@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#05070b">
+<meta name="robots" content="noindex">
+<title>Constelación · CryptoReport</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Red+Hat+Text:wght@400;500;600;700&family=Red+Hat+Mono:wght@500&family=Instrument+Serif:ital@0;1&display=swap">
+<link rel="stylesheet" href="app.css">
+</head>
+<body data-level="video">
+<a class="skip" href="#stage">Saltar al contenido</a>
+<div class="ambient" id="ambient" aria-hidden="true"></div>
+
+<header class="top">
+  <button class="top-btn" type="button" data-act="tray" data-tray="explorar" aria-haspopup="dialog"><svg class="i"><use href="#i-grid"></use></svg><span>Explorar</span></button>
+  <p class="brand">CryptoReport</p>
+  <button class="top-btn" type="button" data-act="list" id="list-btn" aria-pressed="false"><svg class="i"><use href="#i-list"></use></svg><span>Lista</span></button>
+</header>
+
+<div class="screen" id="screen">
+  <div class="video" id="video"><div id="player" class="player-host"></div></div>
+  <div class="controls" id="controls">
+    <button class="ctl" type="button" data-act="toggle" id="ctl-play" aria-label="Reproducir"><svg class="i"><use href="#i-play"></use></svg></button>
+    <button class="ctl" type="button" data-act="skip" data-d="-10" aria-label="Atrás 10 segundos"><svg class="i"><use href="#i-back10"></use></svg></button>
+    <div class="scrub" id="scrub" role="slider" tabindex="0" aria-label="Posición del vídeo" aria-valuemin="0" aria-valuemax="0" aria-valuenow="0">
+      <div class="scrub-track"><div class="scrub-fill" id="scrub-fill"></div></div>
+      <div class="ticks" id="ticks"></div>
+    </div>
+    <span class="time" id="time">0:00</span>
+    <button class="ctl ctl-label" type="button" data-act="tray" data-tray="fuentes"><svg class="i"><use href="#i-film"></use></svg><span>Fuentes</span></button>
+  </div>
+  <main class="stage" id="stage" tabindex="-1"></main>
+</div>
+
+<div class="scrim" id="scrim" hidden></div>
+<section class="tray" id="tray" role="dialog" aria-modal="true" aria-labelledby="tray-title" hidden>
+  <div class="tray-head"><h2 id="tray-title"></h2><button class="ib" type="button" data-act="tray-close" aria-label="Cerrar"><svg class="i"><use href="#i-close"></use></svg></button></div>
+  <div class="tray-body" id="tray-body"></div>
+</section>
+<section class="reader" id="reader" role="dialog" aria-modal="true" aria-labelledby="reader-title" hidden>
+  <div class="reader-head"><button class="pill-back" type="button" data-act="reader-close"><svg class="i"><use href="#i-arrow-left"></use></svg> Volver a la órbita</button></div>
+  <article class="reader-body" id="reader-body"></article>
+</section>
+
+<script src="../shared/core.js"></script>
+<script src="../shared/player.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
