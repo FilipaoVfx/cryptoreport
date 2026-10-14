@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import json
+import hashlib
 import time
 from datetime import datetime, timedelta
 from pathlib import Path
@@ -10,6 +11,7 @@ from . import channel_pages, feeds
 from .providers import (OK, PENDING, PROVIDER_DOWN, QUOTA, RUNNING, UNAVAILABLE, ScraperTech, Supadata,
                         build_providers, generation_cost, timed)
 from .store import Store, fmt_ts, iso, now_utc, write_transcript
+from .quality import assess
 
 FEED_ALERT_AFTER = 3
 PAGES_FALLBACK = "vía páginas del canal"  # marca en summary['feeds'] cuando el RSS cayó y se usó el respaldo
@@ -113,6 +115,16 @@ def save_success(row, name: str, outcome, config, store: Store, providers: list,
     is_short = None if row["is_short"] is None else bool(row["is_short"])
     duration = meta.get("duration_s")
     published_at = row["published_at"]
+    quality = candidate_quality(outcome, duration, config.language)
+    if not quality["valid"]:
+        store.update(video_id, status="pending", attempts=attempts,
+                     next_attempt_at=iso(now_utc()+timedelta(hours=1)),
+                     last_error="quality: " + ",".join(quality["reasons"]), supadata_job=None)
+        summary["pending"].append(video_id)
+        # Si se pagó generación, no repetirla por una salida inválida.
+        if name == GENERATE:
+            store.kv_set(f"nogen:{video_id}", "generación inválida; requiere revisión")
+        return "pending"
     if meta.get("published_at") and iso(meta["published_at"]) != published_at:
         published_at = iso(meta["published_at"])  # la fecha de la página del canal era aproximada
         store.update(video_id, published_at=published_at)
@@ -134,6 +146,94 @@ def save_success(row, name: str, outcome, config, store: Store, providers: list,
         item["warning"] = f"cobertura {coverage:.0%}"
     summary["transcribed"].append(item)
     return "ok"
+
+
+def candidate_quality(outcome, duration=None, language="es"):
+    return assess({"video": {"duration_s": duration}, "transcript": {
+        "language": outcome.language, "segments": outcome.segments}}, language)
+
+
+def recover_transcripts(config, store, providers, down, summary):
+    """Dos recuperaciones por ciclo. Conserva original y no repite candidatos idénticos."""
+    requested = {}
+    requests_file = config.data_dir / "recovery-requests.json"
+    if requests_file.exists():
+        try:
+            requested = {r["video_id"]: r for r in json.loads(requests_file.read_text())["requests"]}
+        except (ValueError, KeyError, TypeError):
+            summary["errors"].append("recovery-requests.json inválido")
+    repaired = 0
+    for row in store.db.execute("SELECT * FROM videos WHERE transcript_path IS NOT NULL ORDER BY published_at DESC").fetchall():
+        if repaired >= 2:
+            break
+        path = Path(row["transcript_path"])
+        try:
+            raw = path.read_bytes()
+            doc = json.loads(raw)
+        except (OSError, ValueError):
+            raw = path.read_bytes() if path.exists() else b""
+            doc = {"video": {"duration_s": row["duration_s"]},
+                   "transcript": {"language": config.language, "segments": []}}
+        digest = hashlib.sha256(raw).hexdigest()
+        request = requested.get(row["video_id"])
+        if request and request.get("transcript_sha256") != digest:
+            request = None
+        quality = assess(doc, config.language)
+        if quality["valid"] and not request:
+            continue
+        key = f"recovery:{row['video_id']}:{digest}"
+        record = json.loads(store.kv_get(key, "{}"))
+        if record.get("attempts", 0) >= 2:
+            continue
+        if record.get("next_at") and datetime.fromisoformat(record["next_at"]) > now_utc():
+            continue
+        repaired += 1
+        reasons, usable_attempt = [], False
+        for provider in providers:
+            if provider.name in down:
+                continue
+            if getattr(provider, "paid", False):
+                if store.requests_since(now_utc().replace(day=1,hour=0,minute=0,second=0), "supadata") >= config.supadata_monthly_credits:
+                    reasons.append("supadata: presupuesto agotado")
+                    continue
+            try:
+                # Una petición native puede cobrar aunque el parser falle.
+                # Reservar antes de la red y conciliar tras respuesta válida.
+                reserved = getattr(provider, "paid", False)
+                if reserved:
+                    store.log_attempt(row["video_id"], provider.name, "reserved", "reserva native de recuperación", 1, 0)
+                    reservation = store.db.execute("SELECT last_insert_rowid()").fetchone()[0]
+                outcome, elapsed = timed(provider, row["video_id"], config.language)
+            except (OSError, ValueError, TypeError, KeyError):
+                reasons.append(f"{provider.name}: respuesta inválida")
+                continue
+            if reserved:
+                charged = max(1, outcome.requests_used) if outcome.status == "error" else outcome.requests_used
+                store.db.execute("UPDATE attempts SET outcome=?,detail=?,requests=?,elapsed_s=? WHERE id=?",
+                      (outcome.status, "recuperación: "+outcome.detail, charged,elapsed,reservation))
+                store.db.commit()
+            else:
+                store.log_attempt(row["video_id"], provider.name, outcome.status, "recuperación: " + outcome.detail,
+                                  outcome.requests_used, elapsed)
+            usable_attempt |= outcome.status in {OK, PENDING, UNAVAILABLE}
+            if outcome.status in PROVIDER_DOWN:
+                down[provider.name] = outcome.status
+            q = candidate_quality(outcome, doc["video"].get("duration_s"), config.language)
+            if outcome.status != OK or not q["valid"]:
+                reasons.append(f"{provider.name}: {outcome.status}; {','.join(q['reasons'])}")
+                continue
+            if outcome.segments == doc["transcript"]["segments"]:
+                reasons.append(f"{provider.name}: mismos segmentos, sin reparación demostrada")
+                continue
+            archive = config.data_dir / "transcript-versions" / row["channel_slug"] / f"{row['video_id']}__{digest}.json"
+            archive.parent.mkdir(parents=True, exist_ok=True)
+            archive.write_bytes(raw)
+            save_success(row, provider.name, outcome, config, store, providers, down, summary,
+                         row["attempts"], {"duration_s": doc["video"].get("duration_s")})
+            reasons.append(f"{provider.name}: recuperada, original conservado")
+            break
+        store.kv_set(key, json.dumps({"attempts": record.get("attempts", 0)+int(usable_attempt),
+                      "next_at": iso(now_utc()+timedelta(hours=6)), "detail": reasons}))
 
 
 def _finish(row, store: Store, summary: dict, status: str, attempts: int, detail: str) -> str:
@@ -226,32 +326,69 @@ def process_video(row, config, store: Store, providers: list, down: dict, summar
 
     month_start = now_utc().replace(day=1, hour=0, minute=0, second=0)
     outcomes = []
+    caption_meta = None
     for provider in providers:
         if provider.name in down:
             continue
         if getattr(provider, "paid", False):
             # Si otro proveedor ya confirmó que aún no hay subtítulos, preguntar a uno de pago solo gasta (el 206
             # de Supadata también se cobra). Y nunca por encima del tope mensual.
-            if any(o.status in (PENDING, UNAVAILABLE) for _, o in outcomes):
+            if any(o.status == UNAVAILABLE for _, o in outcomes):
+                continue
+            if any(o.status == PENDING for _, o in outcomes) and now_utc() - datetime.fromisoformat(row["published_at"]) < timedelta(hours=2):
+                continue
+            native_attempts = store.db.execute("SELECT COUNT(*) FROM attempts WHERE video_id=? AND provider='supadata'", (video_id,)).fetchone()[0]
+            if native_attempts >= 2:
                 continue
             if store.requests_since(month_start, provider.name) >= config.supadata_monthly_credits:
                 down[provider.name] = f"{QUOTA}: tope mensual de {config.supadata_monthly_credits} créditos"
                 continue
-        outcome, elapsed = timed(provider, video_id, config.language)
-        store.log_attempt(video_id, provider.name, outcome.status, outcome.detail, outcome.requests_used, elapsed)
+        try:
+            reserved = getattr(provider, "paid", False)
+            if reserved:
+                store.log_attempt(video_id, provider.name, "reserved", "reserva native", 1, 0)
+                reservation = store.db.execute("SELECT last_insert_rowid()").fetchone()[0]
+            outcome, elapsed = timed(provider, video_id, config.language)
+        except (OSError, ValueError, KeyError, TypeError) as exc:
+            from .providers import Outcome
+            outcome, elapsed = Outcome("error", f"respuesta inválida: {type(exc).__name__}", requests_used=1), 0
+        if reserved:
+            charged = max(1, outcome.requests_used) if outcome.status == "error" else outcome.requests_used
+            store.db.execute("UPDATE attempts SET outcome=?,detail=?,requests=?,elapsed_s=? WHERE id=?",
+                       (outcome.status,outcome.detail,charged,elapsed,reservation))
+            store.db.commit()
+        else:
+            store.log_attempt(video_id, provider.name, outcome.status, outcome.detail, outcome.requests_used, elapsed)
         outcomes.append((provider.name, outcome))
+        health_key = f"health:{provider.name}"
+        health = json.loads(store.kv_get(health_key, "{}"))
+        failures = health.get("failures", 0) + 1 if outcome.status == "error" else 0
+        cooldown = outcome.status in PROVIDER_DOWN or failures >= 3
+        store.kv_set(health_key, json.dumps({"failures": failures,
+                     "until": iso(now_utc()+timedelta(minutes=30)) if cooldown else None,
+                     "last_status": outcome.status}))
+        if cooldown:
+            down[provider.name] = f"{outcome.status}: pausa de 30 min"
         if outcome.status in PROVIDER_DOWN:
             down[provider.name] = f"{outcome.status}: {outcome.detail}"
             continue
         if outcome.status == OK:
-            break
+            if caption_meta is None:
+                scraper = _available(providers, down, ScraperTech)
+                caption_meta = scraper.metadata(video_id) if scraper else {}
+                if scraper:
+                    store.log_attempt(video_id, scraper.name, "metadata", _meta_detail(caption_meta), 1, 0)
+            q = candidate_quality(outcome, caption_meta.get("duration_s"), config.language)
+            if q["valid"]:
+                break
+            outcome.status, outcome.detail = "error", "transcripción inválida: " + ",".join(q["reasons"])
 
     if not outcomes:
         return "skipped"  # todos los proveedores caídos en esta ejecución: no cuenta como intento
 
     success = next(((name, o) for name, o in outcomes if o.status == OK), None)
     if success:
-        return save_success(row, success[0], success[1], config, store, providers, down, summary, attempts)
+        return save_success(row, success[0], success[1], config, store, providers, down, summary, attempts, caption_meta)
 
     statuses = {o.status for _, o in outcomes}
     detail = "; ".join(f"{name}: {o.status} {o.detail}".strip() for name, o in outcomes)
@@ -339,10 +476,15 @@ def run(config, notifier, only_video: str | None = None) -> dict:
             rows = [store.get(only_video)]
         providers = build_providers(config)
         down: dict[str, str] = {}
+        for provider in providers:
+            health = json.loads(store.kv_get(f"health:{provider.name}", "{}"))
+            if health.get("until") and datetime.fromisoformat(health["until"]) > now_utc():
+                down[provider.name] = "cooldown: fallos previos; pausa temporal"
         for row in rows:
             process_video(row, config, store, providers, down, summary)
         if only_video is None:
             repair_durations(config, store, providers, down, summary)
+            recover_transcripts(config, store, providers, down, summary)
         summary["providers_down"] = dict(down)
         month_start = now_utc().replace(day=1, hour=0, minute=0, second=0)
         summary["scrapertech_requests_month"] = store.requests_since(month_start, "scrapertech")

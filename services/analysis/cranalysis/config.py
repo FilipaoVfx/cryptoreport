@@ -36,6 +36,7 @@ class Config:
     transcripts_dir: Path
     output_dir: Path
     include_shorts: bool
+    allow_api_analysis: bool = False
 
 
 def load_config() -> Config:
@@ -57,4 +58,5 @@ def load_config() -> Config:
         transcripts_dir=Path(os.environ.get("CRA_TRANSCRIPTS_DIR", data / "transcripts")),
         output_dir=Path(os.environ.get("CRA_OUTPUT_DIR", data / "analysis")),
         include_shorts=os.environ.get("CRA_INCLUDE_SHORTS", "true").lower() in {"1", "true", "yes", "si", "sí"},
+        allow_api_analysis=os.environ.get("CRA_ALLOW_API_ANALYSIS", "false").lower() in {"1", "true", "yes", "si", "sí"},
     )
