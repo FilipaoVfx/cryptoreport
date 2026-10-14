@@ -2,7 +2,7 @@
 
 El [system prompt de análisis](prompts/narrative-analysis.system.md) define el rol de **analista especulativo** de CryptoReport. Reconstruye la tesis del creador, analiza sus recursos persuasivos, contrasta las afirmaciones cuando hay fuentes y propone escenarios con condiciones observables e invalidación.
 
-Estado: integración probada con OpenAI (`gpt-6.1-sol`), sin conectar todavía al timer.
+Estado: integración probada con OpenAI (`gpt-6.1-sol`), sin conectar todavía al timer. Desde el 13 de octubre, `run` bloquea las llamadas por API antes de crear un cliente; `CRA_ALLOW_API_ANALYSIS` es `false` por defecto. La operación elegida por el usuario es [ChatGPT Scheduled con Drive](../../docs/automatizacion-drive/README.md). `pending`, `dry-run` y `validate` siguen disponibles sin inferencia.
 
 Los [dos análisis reales guardados el 12 oct, con sus resultados completos y procedencia](../../docs/validaciones/analisis-narrativas-2026-10-12/README.md), están respaldados en el repositorio. Los originales del servicio permanecen en `/var/lib/cryptoreport-transcripts/analysis/nacho/`.
 

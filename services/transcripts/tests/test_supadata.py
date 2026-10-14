@@ -80,7 +80,7 @@ class FakeScraper(ScraperTech):
 class FakeSupadata(Supadata):
     def __init__(self, native=None, generated=None, polled=None, used=0):
         super().__init__("k")
-        self.native, self.generated, self.polled, self.used = native, generated, polled, used
+        self.native, self.generated, self.polled, self.used = native or Outcome(PENDING, "sin pista", requests_used=1), generated, polled, used
         self.calls = {"fetch": 0, "generate": 0, "poll": 0}
 
     def fetch(self, video_id, language):
@@ -135,7 +135,7 @@ class OptionA(unittest.TestCase):
         self.assertEqual(supadata.calls, {"fetch": 0, "generate": 0, "poll": 0})
 
     def test_generate_after_six_hours_saves_ai_transcript(self):
-        supadata = FakeSupadata(generated=Outcome(OK, segments=SEGS, language="es", track_kind="ai", requests_used=2))
+        supadata = FakeSupadata(generated=Outcome(OK, segments=[dict(SEGS[0], dur=30)], language="es", track_kind="ai", requests_used=2))
         scraper = FakeScraper(Outcome(PENDING, "sin pista"), {"duration_s": 30.0, "audio_tracks": ["es.4"]})
         self.assertEqual(self.run_once(scraper, supadata, age_hours=7), "ok")
         row = self.store.get("vid1")
@@ -170,7 +170,7 @@ class OptionA(unittest.TestCase):
     def test_running_job_is_polled_next_cycle_without_paying_again(self):
         scraper = FakeScraper(Outcome(PENDING, "sin pista"), {"duration_s": 1300.0, "audio_tracks": []})
         supadata = FakeSupadata(generated=Outcome(RUNNING, "trabajo active", job_id="job-1", requests_used=44),
-                                polled=Outcome(OK, segments=SEGS, language="es", track_kind="ai"))
+                                polled=Outcome(OK, segments=[dict(SEGS[0], dur=1300)], language="es", track_kind="ai"))
         self.assertEqual(self.run_once(scraper, supadata, age_hours=7), "pending")
         self.assertEqual(self.store.get("vid1")["supadata_job"], "job-1")
         self.store.update("vid1", next_attempt_at=iso(now_utc()))

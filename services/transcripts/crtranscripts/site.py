@@ -13,6 +13,7 @@ from pathlib import Path
 
 from .pipeline import PAGES_FALLBACK
 from .store import Store, now_utc
+from .quality import assess, analysis_matches
 
 MAX_CYCLES = 192  # dos días de ciclos de 15 min
 ANALYSIS_WEB_DIR = "analysis"
@@ -44,6 +45,12 @@ def collect_analyses(analysis_dir: Path) -> dict[str, dict]:
             continue
         meta, analysis = doc.get("meta") or {}, doc.get("analysis") or {}
         if meta.get("status") != "ok" or not (meta.get("validation") or {}).get("ok"):
+            continue
+        transcript = analysis_dir.parent / "transcripts" / path.parent.name / path.name
+        try:
+            if not analysis_matches(doc, transcript.read_bytes()):
+                continue
+        except OSError:
             continue
         claims = analysis.get("afirmaciones") or []
         found[meta.get("video_id")] = {
@@ -90,6 +97,12 @@ def build_data(config, store: Store, analyses: dict[str, dict] | None = None) ->
     for r in store.db.execute("SELECT * FROM videos WHERE status = 'ok' ORDER BY published_at DESC"):
         published, fetched = datetime.fromisoformat(r["published_at"]), datetime.fromisoformat(r["fetched_at"])
         path = Path(r["transcript_path"])
+        try:
+            document = json.loads(path.read_text(encoding="utf-8"))
+            if not assess(document, config.language)["valid"]:
+                continue
+        except (OSError, ValueError):
+            continue
         try:
             rel = path.relative_to(config.transcripts_dir)
         except ValueError:

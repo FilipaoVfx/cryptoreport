@@ -1,0 +1,2 @@
+# Transporte: rclone instalado en el servidor. Sin SDKs de modelos.
+jsonschema>=4.23,<5

@@ -1,4 +1,7 @@
 [
+  {"slug": "cava", "name": "José Luis Cava", "channel_id": "UCvCCLJkQpRg0NdT3zNcI08A"},
+  {"slug": "criptoniano", "name": "Criptoniano", "channel_id": "UCol2SAumrg57UhPXwjtVVVQ"},
   {"slug": "nacho", "name": "Nacho IC", "channel_id": "UCZLtNl1TyvNJ9K8OYKT43Cw"},
-  {"slug": "kmanu", "name": "KManuS88", "channel_id": "UC0Ym7ckYtSsgcbZX1VvYMQQ"}
+  {"slug": "kmanu", "name": "KManuS88", "channel_id": "UC0Ym7ckYtSsgcbZX1VvYMQQ"},
+  {"slug": "healthy", "name": "Healthy Pockets", "channel_id": "UC7rmCjnXx6JNr_Rm4n37cFA"}
 ]
