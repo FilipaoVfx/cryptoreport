@@ -1,0 +1,118 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Activo de la Biblioteca",
+  "description": "Unidad de la Biblioteca de medios y activos: identidad estable, versiones direccionadas por contenido (SHA-256), procedencia, linaje, calidad y política de acceso y retención. Los videos de YouTube son siempre referencias: no se descargan ni se almacenan.",
+  "type": "object",
+  "required": ["asset_id", "kind", "title", "created_at", "current_version", "versions", "lineage", "access"],
+  "additionalProperties": false,
+  "properties": {
+    "asset_id": {"$ref": "common.schema.json#/$defs/AssetId"},
+    "kind": {"enum": ["video", "audio", "transcript", "analysis", "chunk_set", "prompt", "schema", "instructions", "receipt", "vector_index"]},
+    "title": {"type": "string", "minLength": 1, "maxLength": 300},
+    "video_id": {"$ref": "common.schema.json#/$defs/VideoId"},
+    "channel": {"$ref": "common.schema.json#/$defs/ChannelSlug"},
+    "created_at": {"$ref": "common.schema.json#/$defs/Timestamp"},
+    "updated_at": {"$ref": "common.schema.json#/$defs/Timestamp"},
+    "current_version": {"anyOf": [{"$ref": "common.schema.json#/$defs/Sha256"}, {"type": "null"}]},
+    "versions": {
+      "type": "array",
+      "minItems": 1,
+      "items": {"$ref": "#/$defs/Version"}
+    },
+    "lineage": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["relation", "asset_id"],
+        "additionalProperties": false,
+        "properties": {
+          "relation": {"enum": ["derived_from", "validated_by", "supersedes", "published_as", "indexed_in", "produced_by_job"]},
+          "asset_id": {"type": "string", "minLength": 3, "maxLength": 200},
+          "version": {"$ref": "common.schema.json#/$defs/Sha256"}
+        }
+      }
+    },
+    "labels": {"type": "object", "additionalProperties": {"type": "string", "maxLength": 100}},
+    "access": {
+      "type": "object",
+      "required": ["visibility", "retention"],
+      "additionalProperties": false,
+      "properties": {
+        "visibility": {"enum": ["public_source", "internal", "restricted"], "description": "public_source: contenido ya público en origen (metadatos de YouTube); internal: transcripciones y análisis; restricted: comprobantes y prompts."},
+        "retention": {
+          "type": "object",
+          "required": ["policy"],
+          "additionalProperties": false,
+          "properties": {
+            "policy": {"enum": ["keep_all", "keep_last_n", "days"]},
+            "value": {"type": "integer", "minimum": 1}
+          }
+        },
+        "legal_hold": {"type": "boolean"}
+      }
+    }
+  },
+  "allOf": [
+    {"if": {"properties": {"kind": {"const": "video"}}}, "then": {"properties": {"versions": {"items": {"properties": {"storage": {"properties": {"mode": {"const": "reference"}}}}}}}, "required": ["video_id"]}},
+    {"if": {"properties": {"kind": {"const": "audio"}}}, "then": {"properties": {"access": {"properties": {"retention": {"properties": {"policy": {"const": "days"}, "value": {"maximum": 7}}, "required": ["policy", "value"]}}}}}},
+    {"if": {"properties": {"kind": {"enum": ["transcript", "analysis", "chunk_set"]}}}, "then": {"required": ["video_id", "channel"]}}
+  ],
+  "$defs": {
+    "Version": {
+      "type": "object",
+      "required": ["version", "created_at", "created_by", "status", "storage", "provenance"],
+      "additionalProperties": false,
+      "properties": {
+        "version": {"$ref": "common.schema.json#/$defs/Sha256"},
+        "created_at": {"$ref": "common.schema.json#/$defs/Timestamp"},
+        "created_by": {"$ref": "common.schema.json#/$defs/Actor"},
+        "status": {"enum": ["current", "superseded", "quarantined", "tombstoned"]},
+        "storage": {
+          "type": "object",
+          "required": ["mode", "uri", "media_type"],
+          "additionalProperties": false,
+          "properties": {
+            "mode": {"enum": ["reference", "local", "object"]},
+            "uri": {"type": "string", "minLength": 3, "maxLength": 500},
+            "bytes": {"type": ["integer", "null"], "minimum": 0},
+            "media_type": {"type": "string", "pattern": "^[a-z]+/[A-Za-z0-9.+-]+$"}
+          }
+        },
+        "quality": {
+          "type": "object",
+          "required": ["verdict"],
+          "additionalProperties": false,
+          "properties": {
+            "verdict": {"enum": ["valid", "warning", "invalid", "unknown"]},
+            "report_id": {"$ref": "common.schema.json#/$defs/Uuid"},
+            "reasons": {"type": "array", "items": {"type": "string"}}
+          }
+        },
+        "provenance": {
+          "type": "object",
+          "required": ["source"],
+          "additionalProperties": false,
+          "properties": {
+            "source": {"enum": ["youtube", "scrapertech", "ytdlp", "supadata", "supadata-generate", "chatgpt-scheduled", "openai", "anthropic", "repo", "drive_receipt", "panel"]},
+            "model": {"type": ["string", "null"]},
+            "model_verified": {"type": "boolean"},
+            "prompt_version": {"$ref": "common.schema.json#/$defs/SemVer"},
+            "prompt_sha256": {"$ref": "common.schema.json#/$defs/Sha256"},
+            "schema_sha256": {"$ref": "common.schema.json#/$defs/Sha256"},
+            "transcript_sha256": {"$ref": "common.schema.json#/$defs/Sha256"},
+            "job_id": {"$ref": "common.schema.json#/$defs/JobId"},
+            "import_mode": {"enum": ["automatic", "reviewed", "manual", "api", null]},
+            "track_kind": {"enum": ["unknown", "asr", "ai"]},
+            "language": {"type": "string", "maxLength": 10},
+            "fetched_at": {"$ref": "common.schema.json#/$defs/Timestamp"},
+            "git_commit": {"type": "string", "pattern": "^[0-9a-f]{7,40}(-dirty)?$"}
+          }
+        },
+        "status_reason": {"type": "string", "maxLength": 300}
+      },
+      "allOf": [
+        {"if": {"properties": {"status": {"enum": ["quarantined", "tombstoned"]}}}, "then": {"required": ["status_reason"]}}
+      ]
+    }
+  }
+}

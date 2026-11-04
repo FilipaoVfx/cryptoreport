@@ -1,0 +1,1924 @@
+openapi: 3.1.1
+info:
+  title: API del panel de administración y observabilidad de Urania/Diario
+  version: 1.0.0
+  summary: Salud, ejecuciones, trazas, parámetros versionados, Biblioteca, feedback, intervenciones y auditoría.
+  description: |
+    API del servicio independiente `cr-panel`. Lee el estado operativo en solo lectura (state.sqlite,
+    bridge/state.sqlite, pipeline-status.json), consulta la telemetría (Jaeger API v3, VictoriaMetrics,
+    VictoriaLogs) y escribe únicamente en su propia base (panel.sqlite) y en los archivos de control
+    declarados en el catálogo de intervenciones.
+
+    Reglas de contrato que comprueba `herramientas/validate_contracts.py`:
+    - `x-cr-min-role`: rol mínimo (viewer < reviewer < operator < admin; auditor solo amplía viewer con auditoría).
+    - `x-cr-audit`: acción registrada en la cadena de auditoría; obligatoria en toda operación que cambia estado.
+    - Las operaciones que cambian estado exigen las cabeceras `Idempotency-Key` y `X-CSRF-Token`,
+      salvo las marcadas con `x-cr-read-only: true`.
+    - `x-cr-phase`: fase de la hoja de ruta en que la operación queda disponible.
+    - Errores en `application/problem+json` (RFC 9457).
+servers:
+  - url: https://panel.2-25-233-186.sslip.io/api/v1
+    description: Producción propuesta (vhost propio con TLS de Let's Encrypt)
+  - url: http://127.0.0.1:8750/api/v1
+    description: Proceso local detrás de nginx (solo loopback)
+security:
+  - session: []
+tags:
+  - name: salud
+    description: Estado agregado, alertas, umbrales y series de métricas.
+  - name: ejecuciones
+    description: Libro de ejecuciones, spans y logs por run_id.
+  - name: trabajos
+    description: Cola del puente y su historial de transiciones.
+  - name: agentes
+    description: Agentes registrados y su rendimiento.
+  - name: evaluaciones
+    description: Validador, trayectorias, autorater y evaluación humana.
+  - name: feedback
+    description: Valoraciones 👍/👎 versionadas.
+  - name: intervenciones
+    description: Catálogo y ciclo de vida de las intervenciones manuales.
+  - name: configuracion
+    description: Parámetros, versiones de configuración y solicitudes de cambio.
+  - name: herramientas
+    description: Registro de herramientas, enrutamiento y guardas.
+  - name: biblioteca
+    description: Activos, versiones, calidad, búsqueda e índices vectoriales.
+  - name: auditoria
+    description: Cadena de auditoría y su verificación.
+  - name: sesion
+    description: Inicio y cierre de sesión, cuenta actual y usuarios.
+  - name: eventos
+    description: Flujo de eventos en tiempo real (SSE).
+paths:
+  /health:
+    get:
+      tags: [salud]
+      operationId: getHealth
+      summary: Informe de salud agregado de la portada.
+      x-cr-min-role: viewer
+      x-cr-phase: 2
+      responses:
+        '200':
+          description: Informe vigente.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/HealthReport'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+        '403': {$ref: '#/components/responses/Forbidden'}
+  /pipeline-status:
+    get:
+      tags: [salud]
+      operationId: getPipelineStatus
+      summary: pipeline-status.json tal cual lo escribe el puente (contrato v1).
+      x-cr-min-role: viewer
+      x-cr-phase: 2
+      responses:
+        '200':
+          description: Último informe del puente.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/PipelineStatus'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+        '403': {$ref: '#/components/responses/Forbidden'}
+  /thresholds:
+    get:
+      tags: [salud]
+      operationId: getThresholds
+      summary: Registro de umbrales vigente.
+      x-cr-min-role: viewer
+      x-cr-phase: 2
+      responses:
+        '200':
+          description: Umbrales.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/Thresholds'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+        '403': {$ref: '#/components/responses/Forbidden'}
+  /alerts:
+    get:
+      tags: [salud]
+      operationId: listAlerts
+      summary: Alertas por estado y severidad.
+      x-cr-min-role: viewer
+      x-cr-phase: 2
+      parameters:
+        - name: state
+          in: query
+          schema: {enum: [firing, acknowledged, resolved, silenced]}
+        - name: severity
+          in: query
+          schema: {enum: [warning, critical]}
+        - {$ref: '#/components/parameters/Cursor'}
+        - {$ref: '#/components/parameters/Limit'}
+      responses:
+        '200':
+          description: Página de alertas.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/AlertPage'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+        '403': {$ref: '#/components/responses/Forbidden'}
+  /alerts/{alert_id}/acknowledge:
+    post:
+      tags: [salud]
+      operationId: acknowledgeAlert
+      summary: Reconocer una alerta (no la resuelve).
+      x-cr-min-role: operator
+      x-cr-audit: alert.acknowledge
+      x-cr-phase: 2
+      parameters:
+        - {$ref: '#/components/parameters/AlertId'}
+        - {$ref: '#/components/parameters/IdempotencyKey'}
+        - {$ref: '#/components/parameters/CsrfToken'}
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              properties:
+                note: {type: string, maxLength: 500}
+      responses:
+        '200':
+          description: Alerta reconocida.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/Alert'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+        '403': {$ref: '#/components/responses/Forbidden'}
+        '404': {$ref: '#/components/responses/NotFound'}
+        '409': {$ref: '#/components/responses/Conflict'}
+        '422': {$ref: '#/components/responses/Unprocessable'}
+  /alerts/{alert_id}/silence:
+    post:
+      tags: [salud]
+      operationId: silenceAlert
+      summary: Silenciar una alerta hasta una fecha, con motivo.
+      x-cr-min-role: operator
+      x-cr-audit: alert.silence
+      x-cr-phase: 2
+      parameters:
+        - {$ref: '#/components/parameters/AlertId'}
+        - {$ref: '#/components/parameters/IdempotencyKey'}
+        - {$ref: '#/components/parameters/CsrfToken'}
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/SilenceInput'}
+      responses:
+        '200':
+          description: Alerta silenciada.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/Alert'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+        '403': {$ref: '#/components/responses/Forbidden'}
+        '404': {$ref: '#/components/responses/NotFound'}
+        '422': {$ref: '#/components/responses/Unprocessable'}
+  /metrics/{metric_name}/series:
+    get:
+      tags: [salud]
+      operationId: getMetricSeries
+      summary: Serie temporal de una métrica del registro de nombres.
+      description: El nombre debe existir en registros/semconv.json; el panel consulta VictoriaMetrics con el selector {__name__="..."}.
+      x-cr-min-role: viewer
+      x-cr-phase: 2
+      parameters:
+        - name: metric_name
+          in: path
+          required: true
+          schema: {type: string, pattern: '^(cr|gen_ai)(\.[a-z0-9_]+)+$'}
+        - name: from
+          in: query
+          required: true
+          schema: {$ref: './esquemas/common.schema.json#/$defs/Timestamp'}
+        - name: to
+          in: query
+          required: true
+          schema: {$ref: './esquemas/common.schema.json#/$defs/Timestamp'}
+        - name: step
+          in: query
+          schema: {type: integer, minimum: 60, maximum: 86400, default: 900}
+        - name: aggregation
+          in: query
+          schema: {enum: [sum, rate, p50, p90, p95, max, last]}
+        - name: group_by
+          in: query
+          schema: {type: array, items: {type: string, pattern: '^[a-z][a-z0-9_]*(\.[a-z0-9_]+)+$'}, maxItems: 3}
+      responses:
+        '200':
+          description: Serie.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/MetricSeries'}
+        '400': {$ref: '#/components/responses/BadRequest'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+        '403': {$ref: '#/components/responses/Forbidden'}
+        '404': {$ref: '#/components/responses/NotFound'}
+  /runs:
+    get:
+      tags: [ejecuciones]
+      operationId: listRuns
+      summary: Libro de ejecuciones.
+      x-cr-min-role: viewer
+      x-cr-phase: 2
+      parameters:
+        - name: service
+          in: query
+          schema: {$ref: './esquemas/common.schema.json#/$defs/ServiceName'}
+        - name: outcome
+          in: query
+          schema: {enum: [running, ok, degraded, failed, busy, skipped]}
+        - name: since
+          in: query
+          schema: {$ref: './esquemas/common.schema.json#/$defs/Timestamp'}
+        - {$ref: '#/components/parameters/Cursor'}
+        - {$ref: '#/components/parameters/Limit'}
+      responses:
+        '200':
+          description: Página de ejecuciones, de la más reciente a la más antigua.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/RunPage'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+        '403': {$ref: '#/components/responses/Forbidden'}
+  /runs/{run_id}:
+    get:
+      tags: [ejecuciones]
+      operationId: getRun
+      summary: Una ejecución.
+      x-cr-min-role: viewer
+      x-cr-phase: 2
+      parameters:
+        - {$ref: '#/components/parameters/RunId'}
+      responses:
+        '200':
+          description: Ejecución.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/RunRecord'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+        '403': {$ref: '#/components/responses/Forbidden'}
+        '404': {$ref: '#/components/responses/NotFound'}
+  /runs/{run_id}/spans:
+    get:
+      tags: [ejecuciones]
+      operationId: getRunSpans
+      summary: Spans de la traza de la ejecución (Jaeger API v3 normalizada).
+      x-cr-min-role: viewer
+      x-cr-phase: 2
+      parameters:
+        - {$ref: '#/components/parameters/RunId'}
+      responses:
+        '200':
+          description: Spans ordenados por start_time.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/SpanList'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+        '403': {$ref: '#/components/responses/Forbidden'}
+        '404': {$ref: '#/components/responses/NotFound'}
+        '503': {$ref: '#/components/responses/Unavailable'}
+  /runs/{run_id}/logs:
+    get:
+      tags: [ejecuciones]
+      operationId: getRunLogs
+      summary: Logs estructurados de la ejecución (VictoriaLogs por cr.run.id).
+      x-cr-min-role: viewer
+      x-cr-phase: 2
+      parameters:
+        - {$ref: '#/components/parameters/RunId'}
+        - name: severity
+          in: query
+          schema: {enum: [DEBUG, INFO, WARN, ERROR, FATAL]}
+      responses:
+        '200':
+          description: Líneas de log.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/LogList'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+        '403': {$ref: '#/components/responses/Forbidden'}
+        '404': {$ref: '#/components/responses/NotFound'}
+        '503': {$ref: '#/components/responses/Unavailable'}
+  /jobs:
+    get:
+      tags: [trabajos]
+      operationId: listJobs
+      summary: Trabajos del puente.
+      x-cr-min-role: viewer
+      x-cr-phase: 2
+      parameters:
+        - name: state
+          in: query
+          schema: {$ref: './esquemas/job.schema.json#/$defs/JobState'}
+        - name: channel
+          in: query
+          schema: {$ref: './esquemas/common.schema.json#/$defs/ChannelSlug'}
+        - {$ref: '#/components/parameters/Cursor'}
+        - {$ref: '#/components/parameters/Limit'}
+      responses:
+        '200':
+          description: Página de trabajos.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/JobPage'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+        '403': {$ref: '#/components/responses/Forbidden'}
+  /jobs/{job_id}:
+    get:
+      tags: [trabajos]
+      operationId: getJob
+      summary: Un trabajo con su historial de transiciones.
+      x-cr-min-role: viewer
+      x-cr-phase: 2
+      parameters:
+        - {$ref: '#/components/parameters/JobId'}
+      responses:
+        '200':
+          description: Trabajo.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/Job'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+        '403': {$ref: '#/components/responses/Forbidden'}
+        '404': {$ref: '#/components/responses/NotFound'}
+  /agents:
+    get:
+      tags: [agentes]
+      operationId: listAgents
+      summary: Agentes registrados con su rendimiento de 7 días.
+      x-cr-min-role: viewer
+      x-cr-phase: 2
+      responses:
+        '200':
+          description: Agentes.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/AgentList'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+        '403': {$ref: '#/components/responses/Forbidden'}
+  /agents/{tool_id}/runs:
+    get:
+      tags: [agentes]
+      operationId: listAgentRuns
+      summary: Ejecuciones de un agente (reconstruidas desde sus comprobantes).
+      x-cr-min-role: viewer
+      x-cr-phase: 2
+      parameters:
+        - {$ref: '#/components/parameters/ToolId'}
+        - {$ref: '#/components/parameters/Cursor'}
+        - {$ref: '#/components/parameters/Limit'}
+      responses:
+        '200':
+          description: Página de ejecuciones del agente.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/RunPage'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+        '403': {$ref: '#/components/responses/Forbidden'}
+        '404': {$ref: '#/components/responses/NotFound'}
+  /evaluations:
+    get:
+      tags: [evaluaciones]
+      operationId: listEvaluations
+      summary: Resultados de evaluación.
+      x-cr-min-role: viewer
+      x-cr-phase: 2
+      parameters:
+        - name: name
+          in: query
+          schema: {$ref: './esquemas/evaluation-result.schema.json#/$defs/EvaluationName'}
+        - name: kind
+          in: query
+          schema: {enum: [validator, trajectory, autorater, human, search, tagging]}
+        - name: target_id
+          in: query
+          schema: {type: string, maxLength: 200}
+        - {$ref: '#/components/parameters/Cursor'}
+        - {$ref: '#/components/parameters/Limit'}
+      responses:
+        '200':
+          description: Página de evaluaciones.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/EvaluationPage'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+        '403': {$ref: '#/components/responses/Forbidden'}
+  /evaluations/{evaluation_id}:
+    get:
+      tags: [evaluaciones]
+      operationId: getEvaluation
+      summary: Una evaluación.
+      x-cr-min-role: viewer
+      x-cr-phase: 2
+      parameters:
+        - name: evaluation_id
+          in: path
+          required: true
+          schema: {$ref: './esquemas/common.schema.json#/$defs/Uuid'}
+      responses:
+        '200':
+          description: Evaluación.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/EvaluationResult'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+        '403': {$ref: '#/components/responses/Forbidden'}
+        '404': {$ref: '#/components/responses/NotFound'}
+  /feedback:
+    get:
+      tags: [feedback]
+      operationId: listFeedback
+      summary: Valoraciones por objeto, signo y fecha.
+      x-cr-min-role: viewer
+      x-cr-phase: 2
+      parameters:
+        - name: target_id
+          in: query
+          schema: {type: string, maxLength: 200}
+        - name: rating
+          in: query
+          schema: {enum: [up, down]}
+        - name: since
+          in: query
+          schema: {$ref: './esquemas/common.schema.json#/$defs/Timestamp'}
+        - {$ref: '#/components/parameters/Cursor'}
+        - {$ref: '#/components/parameters/Limit'}
+      responses:
+        '200':
+          description: Página de feedback.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/FeedbackPage'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+        '403': {$ref: '#/components/responses/Forbidden'}
+    post:
+      tags: [feedback]
+      operationId: createFeedback
+      summary: Registrar un 👍 o 👎 sobre una versión concreta.
+      description: Un 👎 con severidad blocking crea además una intervención quarantine_asset en estado requested.
+      x-cr-min-role: reviewer
+      x-cr-audit: feedback.create
+      x-cr-phase: 2
+      parameters:
+        - {$ref: '#/components/parameters/IdempotencyKey'}
+        - {$ref: '#/components/parameters/CsrfToken'}
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/FeedbackInput'}
+      responses:
+        '201':
+          description: Feedback creado.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/Feedback'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+        '403': {$ref: '#/components/responses/Forbidden'}
+        '404': {$ref: '#/components/responses/NotFound'}
+        '409': {$ref: '#/components/responses/Conflict'}
+        '422': {$ref: '#/components/responses/Unprocessable'}
+  /intervention-types:
+    get:
+      tags: [intervenciones]
+      operationId: listInterventionTypes
+      summary: Catálogo de intervenciones disponibles para el rol actual.
+      x-cr-min-role: viewer
+      x-cr-phase: 2
+      responses:
+        '200':
+          description: Catálogo.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/InterventionCatalog'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+        '403': {$ref: '#/components/responses/Forbidden'}
+  /interventions:
+    get:
+      tags: [intervenciones]
+      operationId: listInterventions
+      summary: Intervenciones por estado y tipo.
+      x-cr-min-role: viewer
+      x-cr-phase: 2
+      parameters:
+        - name: state
+          in: query
+          schema: {enum: [requested, pending_approval, approved, executing, succeeded, failed, rejected, cancelled, reverted]}
+        - name: type
+          in: query
+          schema: {type: string, pattern: '^[a-z][a-z0-9_]+$'}
+        - {$ref: '#/components/parameters/Cursor'}
+        - {$ref: '#/components/parameters/Limit'}
+      responses:
+        '200':
+          description: Página de intervenciones.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/InterventionPage'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+        '403': {$ref: '#/components/responses/Forbidden'}
+    post:
+      tags: [intervenciones]
+      operationId: requestIntervention
+      summary: Solicitar una intervención (con dry_run para ver precondiciones, efecto y coste).
+      description: El rol efectivo es el min_role del tipo en el catálogo; si exige segunda persona queda en pending_approval.
+      x-cr-min-role: reviewer
+      x-cr-audit: intervention.request
+      x-cr-phase: 2
+      parameters:
+        - {$ref: '#/components/parameters/IdempotencyKey'}
+        - {$ref: '#/components/parameters/CsrfToken'}
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/InterventionInput'}
+      responses:
+        '202':
+          description: Intervención aceptada (o vista previa si dry_run).
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/Intervention'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+        '403': {$ref: '#/components/responses/Forbidden'}
+        '409': {$ref: '#/components/responses/Conflict'}
+        '422': {$ref: '#/components/responses/Unprocessable'}
+  /interventions/{intervention_id}:
+    get:
+      tags: [intervenciones]
+      operationId: getIntervention
+      summary: Una intervención.
+      x-cr-min-role: viewer
+      x-cr-phase: 2
+      parameters:
+        - {$ref: '#/components/parameters/InterventionId'}
+      responses:
+        '200':
+          description: Intervención.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/Intervention'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+        '403': {$ref: '#/components/responses/Forbidden'}
+        '404': {$ref: '#/components/responses/NotFound'}
+  /interventions/{intervention_id}/approve:
+    post:
+      tags: [intervenciones]
+      operationId: approveIntervention
+      summary: Aprobar como segunda persona (nunca quien la solicitó).
+      x-cr-min-role: reviewer
+      x-cr-audit: intervention.approve
+      x-cr-phase: 2
+      parameters:
+        - {$ref: '#/components/parameters/InterventionId'}
+        - {$ref: '#/components/parameters/IdempotencyKey'}
+        - {$ref: '#/components/parameters/CsrfToken'}
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/DecisionInput'}
+      responses:
+        '200':
+          description: Intervención aprobada; se ejecuta en segundo plano.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/Intervention'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+        '403': {$ref: '#/components/responses/Forbidden'}
+        '404': {$ref: '#/components/responses/NotFound'}
+        '409': {$ref: '#/components/responses/Conflict'}
+  /interventions/{intervention_id}/reject:
+    post:
+      tags: [intervenciones]
+      operationId: rejectIntervention
+      summary: Rechazar una intervención pendiente.
+      x-cr-min-role: reviewer
+      x-cr-audit: intervention.reject
+      x-cr-phase: 2
+      parameters:
+        - {$ref: '#/components/parameters/InterventionId'}
+        - {$ref: '#/components/parameters/IdempotencyKey'}
+        - {$ref: '#/components/parameters/CsrfToken'}
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/DecisionInput'}
+      responses:
+        '200':
+          description: Intervención rechazada.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/Intervention'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+        '403': {$ref: '#/components/responses/Forbidden'}
+        '404': {$ref: '#/components/responses/NotFound'}
+        '409': {$ref: '#/components/responses/Conflict'}
+        '422': {$ref: '#/components/responses/Unprocessable'}
+  /interventions/{intervention_id}/cancel:
+    post:
+      tags: [intervenciones]
+      operationId: cancelIntervention
+      summary: Cancelar una intervención aún no ejecutada.
+      x-cr-min-role: reviewer
+      x-cr-audit: intervention.cancel
+      x-cr-phase: 2
+      parameters:
+        - {$ref: '#/components/parameters/InterventionId'}
+        - {$ref: '#/components/parameters/IdempotencyKey'}
+        - {$ref: '#/components/parameters/CsrfToken'}
+      responses:
+        '200':
+          description: Intervención cancelada.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/Intervention'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+        '403': {$ref: '#/components/responses/Forbidden'}
+        '404': {$ref: '#/components/responses/NotFound'}
+        '409': {$ref: '#/components/responses/Conflict'}
+  /interventions/{intervention_id}/revert:
+    post:
+      tags: [intervenciones]
+      operationId: revertIntervention
+      summary: Deshacer una intervención reversible con su tipo undo.
+      x-cr-min-role: operator
+      x-cr-audit: intervention.revert
+      x-cr-phase: 2
+      parameters:
+        - {$ref: '#/components/parameters/InterventionId'}
+        - {$ref: '#/components/parameters/IdempotencyKey'}
+        - {$ref: '#/components/parameters/CsrfToken'}
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/DecisionInput'}
+      responses:
+        '202':
+          description: Intervención de deshacer creada.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/Intervention'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+        '403': {$ref: '#/components/responses/Forbidden'}
+        '404': {$ref: '#/components/responses/NotFound'}
+        '409': {$ref: '#/components/responses/Conflict'}
+        '422': {$ref: '#/components/responses/Unprocessable'}
+  /parameters:
+    get:
+      tags: [configuracion]
+      operationId: listParameters
+      summary: Catálogo de parámetros con valores vigentes.
+      x-cr-min-role: viewer
+      x-cr-phase: 2
+      responses:
+        '200':
+          description: Catálogo.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/ParameterCatalog'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+        '403': {$ref: '#/components/responses/Forbidden'}
+  /config/active:
+    get:
+      tags: [configuracion]
+      operationId: getActiveConfig
+      summary: Versión de configuración activa (ETag = "v<versión>").
+      x-cr-min-role: viewer
+      x-cr-phase: 2
+      responses:
+        '200':
+          description: Versión activa.
+          headers:
+            ETag:
+              description: Versión activa entre comillas, p. ej. "v12".
+              schema: {type: string, pattern: '^"v[0-9]+"$'}
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/ConfigVersion'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+        '403': {$ref: '#/components/responses/Forbidden'}
+  /config/versions:
+    get:
+      tags: [configuracion]
+      operationId: listConfigVersions
+      summary: Historial de versiones de configuración.
+      x-cr-min-role: viewer
+      x-cr-phase: 2
+      parameters:
+        - {$ref: '#/components/parameters/Cursor'}
+        - {$ref: '#/components/parameters/Limit'}
+      responses:
+        '200':
+          description: Página de versiones.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/ConfigVersionPage'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+        '403': {$ref: '#/components/responses/Forbidden'}
+  /config/versions/{version}:
+    get:
+      tags: [configuracion]
+      operationId: getConfigVersion
+      summary: Una versión de configuración.
+      x-cr-min-role: viewer
+      x-cr-phase: 2
+      parameters:
+        - {$ref: '#/components/parameters/ConfigVersionNumber'}
+      responses:
+        '200':
+          description: Versión.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/ConfigVersion'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+        '403': {$ref: '#/components/responses/Forbidden'}
+        '404': {$ref: '#/components/responses/NotFound'}
+  /config/versions/{version}/rollback:
+    post:
+      tags: [configuracion]
+      operationId: rollbackConfig
+      summary: Crear una solicitud de cambio que restaura una versión anterior.
+      x-cr-min-role: operator
+      x-cr-audit: config.rollback
+      x-cr-phase: 2
+      parameters:
+        - {$ref: '#/components/parameters/ConfigVersionNumber'}
+        - {$ref: '#/components/parameters/IdempotencyKey'}
+        - {$ref: '#/components/parameters/CsrfToken'}
+        - {$ref: '#/components/parameters/IfMatch'}
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/DecisionInput'}
+      responses:
+        '201':
+          description: Solicitud de reversión creada.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/ConfigChange'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+        '403': {$ref: '#/components/responses/Forbidden'}
+        '404': {$ref: '#/components/responses/NotFound'}
+        '412': {$ref: '#/components/responses/PreconditionFailed'}
+        '422': {$ref: '#/components/responses/Unprocessable'}
+        '428': {$ref: '#/components/responses/PreconditionRequired'}
+  /config/change-requests:
+    get:
+      tags: [configuracion]
+      operationId: listConfigChanges
+      summary: Solicitudes de cambio.
+      x-cr-min-role: viewer
+      x-cr-phase: 2
+      parameters:
+        - name: state
+          in: query
+          schema: {enum: [draft, validating, validation_failed, pending_approval, approved, applied, rejected, rolled_back, cancelled]}
+        - {$ref: '#/components/parameters/Cursor'}
+        - {$ref: '#/components/parameters/Limit'}
+      responses:
+        '200':
+          description: Página de solicitudes.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/ConfigChangePage'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+        '403': {$ref: '#/components/responses/Forbidden'}
+    post:
+      tags: [configuracion]
+      operationId: proposeConfigChange
+      summary: Proponer un cambio sobre la versión activa (If-Match obligatorio).
+      x-cr-min-role: operator
+      x-cr-audit: config.propose
+      x-cr-phase: 2
+      parameters:
+        - {$ref: '#/components/parameters/IdempotencyKey'}
+        - {$ref: '#/components/parameters/CsrfToken'}
+        - {$ref: '#/components/parameters/IfMatch'}
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/ConfigChangeInput'}
+      responses:
+        '201':
+          description: Solicitud creada en draft.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/ConfigChange'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+        '403': {$ref: '#/components/responses/Forbidden'}
+        '412': {$ref: '#/components/responses/PreconditionFailed'}
+        '422': {$ref: '#/components/responses/Unprocessable'}
+        '428': {$ref: '#/components/responses/PreconditionRequired'}
+  /config/change-requests/{change_id}:
+    get:
+      tags: [configuracion]
+      operationId: getConfigChange
+      summary: Una solicitud de cambio.
+      x-cr-min-role: viewer
+      x-cr-phase: 2
+      parameters:
+        - {$ref: '#/components/parameters/ChangeId'}
+      responses:
+        '200':
+          description: Solicitud.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/ConfigChange'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+        '403': {$ref: '#/components/responses/Forbidden'}
+        '404': {$ref: '#/components/responses/NotFound'}
+  /config/change-requests/{change_id}/validate:
+    post:
+      tags: [configuracion]
+      operationId: validateConfigChange
+      summary: Ejecutar las validaciones automáticas (esquema, sobre, techos, guardas, pruebas offline, puerta de evaluación, coste).
+      x-cr-min-role: operator
+      x-cr-audit: config.validate
+      x-cr-phase: 2
+      parameters:
+        - {$ref: '#/components/parameters/ChangeId'}
+        - {$ref: '#/components/parameters/IdempotencyKey'}
+        - {$ref: '#/components/parameters/CsrfToken'}
+      responses:
+        '200':
+          description: Solicitud con validations actualizadas.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/ConfigChange'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+        '403': {$ref: '#/components/responses/Forbidden'}
+        '404': {$ref: '#/components/responses/NotFound'}
+        '409': {$ref: '#/components/responses/Conflict'}
+  /config/change-requests/{change_id}/approve:
+    post:
+      tags: [configuracion]
+      operationId: approveConfigChange
+      summary: Aprobar (409 si quien aprueba es quien propuso).
+      x-cr-min-role: operator
+      x-cr-audit: config.approve
+      x-cr-phase: 2
+      parameters:
+        - {$ref: '#/components/parameters/ChangeId'}
+        - {$ref: '#/components/parameters/IdempotencyKey'}
+        - {$ref: '#/components/parameters/CsrfToken'}
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/DecisionInput'}
+      responses:
+        '200':
+          description: Solicitud aprobada.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/ConfigChange'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+        '403': {$ref: '#/components/responses/Forbidden'}
+        '404': {$ref: '#/components/responses/NotFound'}
+        '409': {$ref: '#/components/responses/Conflict'}
+  /config/change-requests/{change_id}/reject:
+    post:
+      tags: [configuracion]
+      operationId: rejectConfigChange
+      summary: Rechazar una solicitud.
+      x-cr-min-role: operator
+      x-cr-audit: config.reject
+      x-cr-phase: 2
+      parameters:
+        - {$ref: '#/components/parameters/ChangeId'}
+        - {$ref: '#/components/parameters/IdempotencyKey'}
+        - {$ref: '#/components/parameters/CsrfToken'}
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/DecisionInput'}
+      responses:
+        '200':
+          description: Solicitud rechazada.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/ConfigChange'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+        '403': {$ref: '#/components/responses/Forbidden'}
+        '404': {$ref: '#/components/responses/NotFound'}
+        '409': {$ref: '#/components/responses/Conflict'}
+        '422': {$ref: '#/components/responses/Unprocessable'}
+  /config/change-requests/{change_id}/apply:
+    post:
+      tags: [configuracion]
+      operationId: applyConfigChange
+      summary: Activar una solicitud aprobada como nueva versión (If-Match obligatorio).
+      description: Riesgo high o critical exige rol admin además de la aprobación; el panel recorta al techo del host (G-16).
+      x-cr-min-role: operator
+      x-cr-audit: config.apply
+      x-cr-phase: 2
+      parameters:
+        - {$ref: '#/components/parameters/ChangeId'}
+        - {$ref: '#/components/parameters/IdempotencyKey'}
+        - {$ref: '#/components/parameters/CsrfToken'}
+        - {$ref: '#/components/parameters/IfMatch'}
+      responses:
+        '200':
+          description: Nueva versión activa.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/ConfigVersion'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+        '403': {$ref: '#/components/responses/Forbidden'}
+        '404': {$ref: '#/components/responses/NotFound'}
+        '409': {$ref: '#/components/responses/Conflict'}
+        '412': {$ref: '#/components/responses/PreconditionFailed'}
+        '428': {$ref: '#/components/responses/PreconditionRequired'}
+  /prompts:
+    get:
+      tags: [configuracion]
+      operationId: listPrompts
+      summary: Prompts e instrucciones versionados con su puerta de evaluación.
+      x-cr-min-role: viewer
+      x-cr-phase: 2
+      responses:
+        '200':
+          description: Prompts.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/PromptList'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+        '403': {$ref: '#/components/responses/Forbidden'}
+  /prompts/{prompt_name}/versions:
+    post:
+      tags: [configuracion]
+      operationId: createPromptVersion
+      summary: Crear un borrador de versión de prompt (no se activa sin solicitud de cambio y PV-13).
+      x-cr-min-role: admin
+      x-cr-audit: asset.version_create
+      x-cr-phase: 3
+      parameters:
+        - {$ref: '#/components/parameters/PromptName'}
+        - {$ref: '#/components/parameters/IdempotencyKey'}
+        - {$ref: '#/components/parameters/CsrfToken'}
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/PromptVersionInput'}
+      responses:
+        '201':
+          description: Borrador creado.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/PromptVersion'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+        '403': {$ref: '#/components/responses/Forbidden'}
+        '404': {$ref: '#/components/responses/NotFound'}
+        '409': {$ref: '#/components/responses/Conflict'}
+        '422': {$ref: '#/components/responses/Unprocessable'}
+  /prompts/{prompt_name}/versions/{version}:
+    get:
+      tags: [configuracion]
+      operationId: getPromptVersion
+      summary: Texto y metadatos de una versión de prompt.
+      x-cr-min-role: reviewer
+      x-cr-phase: 2
+      parameters:
+        - {$ref: '#/components/parameters/PromptName'}
+        - {$ref: '#/components/parameters/Version'}
+      responses:
+        '200':
+          description: Versión.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/PromptVersion'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+        '403': {$ref: '#/components/responses/Forbidden'}
+        '404': {$ref: '#/components/responses/NotFound'}
+  /tools:
+    get:
+      tags: [herramientas]
+      operationId: listTools
+      summary: Registro de herramientas.
+      x-cr-min-role: viewer
+      x-cr-phase: 2
+      responses:
+        '200':
+          description: Registro.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/ToolRegistry'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+        '403': {$ref: '#/components/responses/Forbidden'}
+  /tools/{tool_id}:
+    get:
+      tags: [herramientas]
+      operationId: getTool
+      summary: Una herramienta con su salud actual.
+      x-cr-min-role: viewer
+      x-cr-phase: 2
+      parameters:
+        - {$ref: '#/components/parameters/ToolId'}
+      responses:
+        '200':
+          description: Herramienta.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/ToolDetail'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+        '403': {$ref: '#/components/responses/Forbidden'}
+        '404': {$ref: '#/components/responses/NotFound'}
+  /routing:
+    get:
+      tags: [herramientas]
+      operationId: getRouting
+      summary: Política de enrutamiento, fallback y reintentos.
+      x-cr-min-role: viewer
+      x-cr-phase: 2
+      responses:
+        '200':
+          description: Política.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/RoutingPolicy'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+        '403': {$ref: '#/components/responses/Forbidden'}
+  /guardrails:
+    get:
+      tags: [herramientas]
+      operationId: getGuardrails
+      summary: Guardas activas con su estado de aplicación y pruebas.
+      x-cr-min-role: viewer
+      x-cr-phase: 2
+      responses:
+        '200':
+          description: Guardas.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/GuardrailPolicy'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+        '403': {$ref: '#/components/responses/Forbidden'}
+  /library/assets:
+    get:
+      tags: [biblioteca]
+      operationId: listAssets
+      summary: Activos por tipo, canal y calidad.
+      x-cr-min-role: viewer
+      x-cr-phase: 2
+      parameters:
+        - name: kind
+          in: query
+          schema: {enum: [video, audio, transcript, analysis, chunk_set, prompt, schema, instructions, receipt, vector_index]}
+        - name: channel
+          in: query
+          schema: {$ref: './esquemas/common.schema.json#/$defs/ChannelSlug'}
+        - name: quality
+          in: query
+          schema: {enum: [valid, warning, invalid, unknown]}
+        - name: status
+          in: query
+          schema: {enum: [current, superseded, quarantined, tombstoned]}
+        - {$ref: '#/components/parameters/Cursor'}
+        - {$ref: '#/components/parameters/Limit'}
+      responses:
+        '200':
+          description: Página de activos.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/AssetPage'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+        '403': {$ref: '#/components/responses/Forbidden'}
+  /library/assets/{asset_id}:
+    get:
+      tags: [biblioteca]
+      operationId: getAsset
+      summary: Un activo con versiones y linaje.
+      x-cr-min-role: viewer
+      x-cr-phase: 2
+      parameters:
+        - {$ref: '#/components/parameters/AssetId'}
+      responses:
+        '200':
+          description: Activo.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/Asset'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+        '403': {$ref: '#/components/responses/Forbidden'}
+        '404': {$ref: '#/components/responses/NotFound'}
+  /library/assets/{asset_id}/versions/{version}/content:
+    get:
+      tags: [biblioteca]
+      operationId: getAssetContent
+      summary: Contenido de una versión (JSON o texto). Las descargas de activos restricted quedan auditadas.
+      x-cr-min-role: viewer
+      x-cr-audit: asset.export
+      x-cr-phase: 2
+      parameters:
+        - {$ref: '#/components/parameters/AssetId'}
+        - {$ref: '#/components/parameters/Version'}
+      responses:
+        '200':
+          description: Contenido.
+          content:
+            application/json:
+              schema: {type: object}
+            text/markdown:
+              schema: {type: string}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+        '403': {$ref: '#/components/responses/Forbidden'}
+        '404': {$ref: '#/components/responses/NotFound'}
+  /library/assets/{asset_id}/diff:
+    get:
+      tags: [biblioteca]
+      operationId: diffAssetVersions
+      summary: Diferencias entre dos versiones (por segmentos en transcripciones, por puntero JSON en análisis).
+      x-cr-min-role: viewer
+      x-cr-phase: 2
+      parameters:
+        - {$ref: '#/components/parameters/AssetId'}
+        - name: from
+          in: query
+          required: true
+          schema: {$ref: './esquemas/common.schema.json#/$defs/Sha256'}
+        - name: to
+          in: query
+          required: true
+          schema: {$ref: './esquemas/common.schema.json#/$defs/Sha256'}
+      responses:
+        '200':
+          description: Diferencias.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/AssetDiff'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+        '403': {$ref: '#/components/responses/Forbidden'}
+        '404': {$ref: '#/components/responses/NotFound'}
+  /library/assets/{asset_id}/quality:
+    get:
+      tags: [biblioteca]
+      operationId: getAssetQuality
+      summary: Informe de calidad de la versión vigente.
+      x-cr-min-role: viewer
+      x-cr-phase: 2
+      parameters:
+        - {$ref: '#/components/parameters/AssetId'}
+      responses:
+        '200':
+          description: Informe.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/QualityReport'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+        '403': {$ref: '#/components/responses/Forbidden'}
+        '404': {$ref: '#/components/responses/NotFound'}
+  /library/search:
+    post:
+      tags: [biblioteca]
+      operationId: searchLibrary
+      summary: Búsqueda léxica, semántica o híbrida; degrada a léxica si el índice vectorial no está listo.
+      x-cr-min-role: viewer
+      x-cr-read-only: true
+      x-cr-phase: 2
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/SearchRequest'}
+      responses:
+        '200':
+          description: Resultados.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/SearchResponse'}
+        '400': {$ref: '#/components/responses/BadRequest'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+        '403': {$ref: '#/components/responses/Forbidden'}
+        '422': {$ref: '#/components/responses/Unprocessable'}
+  /library/vector-indexes:
+    get:
+      tags: [biblioteca]
+      operationId: listVectorIndexes
+      summary: Estado de los índices vectoriales.
+      x-cr-min-role: viewer
+      x-cr-phase: 2
+      responses:
+        '200':
+          description: Índices.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/VectorIndexList'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+        '403': {$ref: '#/components/responses/Forbidden'}
+  /library/vector-indexes/{index_id}:
+    get:
+      tags: [biblioteca]
+      operationId: getVectorIndex
+      summary: Estado de un índice vectorial.
+      x-cr-min-role: viewer
+      x-cr-phase: 3
+      parameters:
+        - name: index_id
+          in: path
+          required: true
+          schema: {type: string, pattern: '^vector_index:[a-z0-9][a-z0-9.-]{1,60}$'}
+      responses:
+        '200':
+          description: Índice.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/VectorIndexStatus'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+        '403': {$ref: '#/components/responses/Forbidden'}
+        '404': {$ref: '#/components/responses/NotFound'}
+  /audit/events:
+    get:
+      tags: [auditoria]
+      operationId: listAuditEvents
+      summary: Eventos de auditoría (operadores y revisores ven solo los suyos desde /me).
+      x-cr-min-role: auditor
+      x-cr-phase: 2
+      parameters:
+        - name: actor
+          in: query
+          schema: {type: string, pattern: '^[a-z0-9][a-z0-9._-]{1,63}$'}
+        - name: action
+          in: query
+          schema: {type: string, maxLength: 40}
+        - name: target_id
+          in: query
+          schema: {type: string, maxLength: 200}
+        - name: since
+          in: query
+          schema: {$ref: './esquemas/common.schema.json#/$defs/Timestamp'}
+        - {$ref: '#/components/parameters/Cursor'}
+        - {$ref: '#/components/parameters/Limit'}
+      responses:
+        '200':
+          description: Página de eventos.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/AuditPage'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+        '403': {$ref: '#/components/responses/Forbidden'}
+  /audit/verify:
+    get:
+      tags: [auditoria]
+      operationId: verifyAuditChain
+      summary: Recalcular la cadena de hashes en un rango.
+      x-cr-min-role: auditor
+      x-cr-audit: audit.verify
+      x-cr-phase: 2
+      parameters:
+        - name: from_seq
+          in: query
+          schema: {type: integer, minimum: 1}
+        - name: to_seq
+          in: query
+          schema: {type: integer, minimum: 1}
+      responses:
+        '200':
+          description: Resultado de la verificación.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/AuditVerification'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+        '403': {$ref: '#/components/responses/Forbidden'}
+  /session:
+    post:
+      tags: [sesion]
+      operationId: login
+      summary: Iniciar sesión (contraseña argon2id y TOTP obligatorio para operator y admin).
+      security: []
+      x-cr-audit: session.login
+      x-cr-rate-limit: 5/min por IP y por cuenta
+      x-cr-phase: 2
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/LoginInput'}
+      responses:
+        '204':
+          description: Sesión creada; cookie crpanel_session HttpOnly, Secure, SameSite=Strict.
+          headers:
+            Set-Cookie:
+              description: Cookie de sesión.
+              schema: {type: string}
+        '400': {$ref: '#/components/responses/BadRequest'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+        '429': {$ref: '#/components/responses/TooManyRequests'}
+    delete:
+      tags: [sesion]
+      operationId: logout
+      summary: Cerrar sesión.
+      x-cr-min-role: viewer
+      x-cr-audit: session.logout
+      x-cr-phase: 2
+      parameters:
+        - {$ref: '#/components/parameters/IdempotencyKey'}
+        - {$ref: '#/components/parameters/CsrfToken'}
+      responses:
+        '204':
+          description: Sesión cerrada.
+        '401': {$ref: '#/components/responses/Unauthorized'}
+        '403': {$ref: '#/components/responses/Forbidden'}
+  /me:
+    get:
+      tags: [sesion]
+      operationId: getMe
+      summary: Cuenta actual y roles.
+      x-cr-min-role: viewer
+      x-cr-phase: 2
+      responses:
+        '200':
+          description: Cuenta.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/User'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+        '403': {$ref: '#/components/responses/Forbidden'}
+  /users:
+    get:
+      tags: [sesion]
+      operationId: listUsers
+      summary: Cuentas del panel.
+      x-cr-min-role: admin
+      x-cr-phase: 2
+      responses:
+        '200':
+          description: Cuentas.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/UserList'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+        '403': {$ref: '#/components/responses/Forbidden'}
+    post:
+      tags: [sesion]
+      operationId: createUser
+      summary: Crear una cuenta (el alta de TOTP se completa en el primer acceso).
+      x-cr-min-role: admin
+      x-cr-audit: user.create
+      x-cr-phase: 2
+      parameters:
+        - {$ref: '#/components/parameters/IdempotencyKey'}
+        - {$ref: '#/components/parameters/CsrfToken'}
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/UserInput'}
+      responses:
+        '201':
+          description: Cuenta creada.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/User'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+        '403': {$ref: '#/components/responses/Forbidden'}
+        '409': {$ref: '#/components/responses/Conflict'}
+        '422': {$ref: '#/components/responses/Unprocessable'}
+  /users/{user_id}:
+    patch:
+      tags: [sesion]
+      operationId: updateUser
+      summary: Cambiar roles o desactivar una cuenta (nunca la propia).
+      x-cr-min-role: admin
+      x-cr-audit: user.role_change
+      x-cr-phase: 2
+      parameters:
+        - name: user_id
+          in: path
+          required: true
+          schema: {type: string, pattern: '^[a-z0-9][a-z0-9._-]{1,63}$'}
+        - {$ref: '#/components/parameters/IdempotencyKey'}
+        - {$ref: '#/components/parameters/CsrfToken'}
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/UserPatch'}
+      responses:
+        '200':
+          description: Cuenta actualizada.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/User'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+        '403': {$ref: '#/components/responses/Forbidden'}
+        '404': {$ref: '#/components/responses/NotFound'}
+        '409': {$ref: '#/components/responses/Conflict'}
+        '422': {$ref: '#/components/responses/Unprocessable'}
+  /events/stream:
+    get:
+      tags: [eventos]
+      operationId: streamEvents
+      summary: Eventos en tiempo real (Server-Sent Events) con reanudación por Last-Event-ID.
+      description: Cada evento lleva en data un StreamEvent en JSON; se emite heartbeat cada 25 s.
+      x-cr-min-role: viewer
+      x-cr-phase: 2
+      x-cr-event-schema: {$ref: './esquemas/common.schema.json#/$defs/StreamEvent'}
+      parameters:
+        - name: Last-Event-ID
+          in: header
+          schema: {type: string, maxLength: 64}
+      responses:
+        '200':
+          description: Flujo text/event-stream.
+          content:
+            text/event-stream:
+              schema: {type: string}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+        '403': {$ref: '#/components/responses/Forbidden'}
+components:
+  securitySchemes:
+    session:
+      type: apiKey
+      in: cookie
+      name: crpanel_session
+      description: Sesión de persona (HttpOnly, Secure, SameSite=Strict, caducidad deslizante de 8 h y absoluta de 24 h).
+    serviceToken:
+      type: http
+      scheme: bearer
+      description: Token de servicio de solo lectura (rol viewer) para el tablero de pared y scripts; nunca para mutaciones.
+  parameters:
+    Cursor:
+      name: cursor
+      in: query
+      schema: {type: string, maxLength: 512}
+    Limit:
+      name: limit
+      in: query
+      schema: {type: integer, minimum: 1, maximum: 500, default: 50}
+    IdempotencyKey:
+      name: Idempotency-Key
+      in: header
+      required: true
+      description: Clave única por intención; repetir la petición con la misma clave devuelve el mismo resultado.
+      schema: {type: string, minLength: 8, maxLength: 128}
+    CsrfToken:
+      name: X-CSRF-Token
+      in: header
+      required: true
+      description: Token anti-CSRF ligado a la sesión (patrón synchronizer token).
+      schema: {type: string, minLength: 16, maxLength: 128}
+    IfMatch:
+      name: If-Match
+      in: header
+      required: true
+      description: ETag de la versión de configuración activa sobre la que se trabaja.
+      schema: {type: string, pattern: '^"v[0-9]+"$'}
+    AlertId:
+      name: alert_id
+      in: path
+      required: true
+      schema: {$ref: './esquemas/common.schema.json#/$defs/Uuid'}
+    RunId:
+      name: run_id
+      in: path
+      required: true
+      schema: {$ref: './esquemas/common.schema.json#/$defs/RunId'}
+    JobId:
+      name: job_id
+      in: path
+      required: true
+      schema: {$ref: './esquemas/common.schema.json#/$defs/JobId'}
+    ToolId:
+      name: tool_id
+      in: path
+      required: true
+      schema: {type: string, pattern: '^[a-z][a-z0-9_]{1,40}$'}
+    InterventionId:
+      name: intervention_id
+      in: path
+      required: true
+      schema: {$ref: './esquemas/common.schema.json#/$defs/Uuid'}
+    ChangeId:
+      name: change_id
+      in: path
+      required: true
+      schema: {$ref: './esquemas/common.schema.json#/$defs/Uuid'}
+    ConfigVersionNumber:
+      name: version
+      in: path
+      required: true
+      schema: {type: integer, minimum: 1}
+    PromptName:
+      name: prompt_name
+      in: path
+      required: true
+      schema: {enum: [narrative-analysis, scheduled-instructions, autorater]}
+    AssetId:
+      name: asset_id
+      in: path
+      required: true
+      schema: {$ref: './esquemas/common.schema.json#/$defs/AssetId'}
+    Version:
+      name: version
+      in: path
+      required: true
+      schema: {$ref: './esquemas/common.schema.json#/$defs/Sha256'}
+  responses:
+    BadRequest:
+      description: Petición mal formada.
+      content:
+        application/problem+json:
+          schema: {$ref: '#/components/schemas/Problem'}
+    Unauthorized:
+      description: Sin sesión válida.
+      content:
+        application/problem+json:
+          schema: {$ref: '#/components/schemas/Problem'}
+    Forbidden:
+      description: Rol insuficiente o CSRF inválido.
+      content:
+        application/problem+json:
+          schema: {$ref: '#/components/schemas/Problem'}
+    NotFound:
+      description: No existe.
+      content:
+        application/problem+json:
+          schema: {$ref: '#/components/schemas/Problem'}
+    Conflict:
+      description: Transición de estado no permitida, autoaprobación o clave de idempotencia reutilizada con otro cuerpo.
+      content:
+        application/problem+json:
+          schema: {$ref: '#/components/schemas/Problem'}
+    PreconditionFailed:
+      description: If-Match no coincide con la versión activa.
+      content:
+        application/problem+json:
+          schema: {$ref: '#/components/schemas/Problem'}
+    PreconditionRequired:
+      description: Falta If-Match.
+      content:
+        application/problem+json:
+          schema: {$ref: '#/components/schemas/Problem'}
+    Unprocessable:
+      description: El cuerpo no cumple el contrato o una guarda lo bloquea.
+      content:
+        application/problem+json:
+          schema: {$ref: '#/components/schemas/Problem'}
+    TooManyRequests:
+      description: Límite de peticiones superado.
+      headers:
+        Retry-After:
+          description: Segundos hasta poder reintentar.
+          schema: {type: integer, minimum: 1}
+      content:
+        application/problem+json:
+          schema: {$ref: '#/components/schemas/Problem'}
+    Unavailable:
+      description: El backend de telemetría no responde; el panel sigue sirviendo el libro de ejecuciones.
+      content:
+        application/problem+json:
+          schema: {$ref: '#/components/schemas/Problem'}
+  schemas:
+    Problem: {$ref: './esquemas/common.schema.json#/$defs/Problem'}
+    User: {$ref: './esquemas/common.schema.json#/$defs/User'}
+    HealthReport: {$ref: './esquemas/health-report.schema.json'}
+    PipelineStatus: {$ref: './esquemas/pipeline-status.schema.json'}
+    Thresholds: {$ref: './esquemas/thresholds.schema.json'}
+    Alert: {$ref: './esquemas/alert.schema.json'}
+    RunRecord: {$ref: './esquemas/run-record.schema.json'}
+    SpanRecord: {$ref: './esquemas/span-record.schema.json'}
+    LogRecord: {$ref: './esquemas/log-record.schema.json'}
+    Job: {$ref: './esquemas/job.schema.json'}
+    EvaluationResult: {$ref: './esquemas/evaluation-result.schema.json'}
+    Feedback: {$ref: './esquemas/feedback.schema.json'}
+    Intervention: {$ref: './esquemas/intervention.schema.json'}
+    InterventionCatalog: {$ref: './esquemas/intervention-catalog.schema.json'}
+    ParameterCatalog: {$ref: './esquemas/parameter-catalog.schema.json'}
+    ConfigVersion: {$ref: './esquemas/config-version.schema.json'}
+    ConfigChange: {$ref: './esquemas/config-change.schema.json'}
+    ToolRegistry: {$ref: './esquemas/tool-registry.schema.json'}
+    RoutingPolicy: {$ref: './esquemas/routing-policy.schema.json'}
+    GuardrailPolicy: {$ref: './esquemas/guardrail-policy.schema.json'}
+    Asset: {$ref: './esquemas/asset.schema.json'}
+    QualityReport: {$ref: './esquemas/quality-report.schema.json'}
+    VectorIndexStatus: {$ref: './esquemas/vector-index-status.schema.json'}
+    SearchRequest: {$ref: './esquemas/search.schema.json#/$defs/SearchRequest'}
+    SearchResponse: {$ref: './esquemas/search.schema.json#/$defs/SearchResponse'}
+    AuditEvent: {$ref: './esquemas/audit-event.schema.json'}
+    MetricSeries:
+      type: object
+      required: [metric, unit, aggregation, points]
+      additionalProperties: false
+      properties:
+        metric: {type: string}
+        unit: {type: string}
+        aggregation: {enum: [sum, rate, p50, p90, p95, max, last]}
+        points:
+          type: array
+          items:
+            type: object
+            required: [t, v]
+            additionalProperties: false
+            properties:
+              t: {$ref: './esquemas/common.schema.json#/$defs/Timestamp'}
+              v: {type: [number, 'null']}
+              labels: {type: object, additionalProperties: {type: string}}
+    SpanList:
+      type: object
+      required: [trace_id, spans]
+      additionalProperties: false
+      properties:
+        trace_id: {$ref: './esquemas/common.schema.json#/$defs/TraceId'}
+        spans: {type: array, items: {$ref: '#/components/schemas/SpanRecord'}}
+        source: {enum: [jaeger, ledger_only]}
+    LogList:
+      type: object
+      required: [items]
+      additionalProperties: false
+      properties:
+        items: {type: array, items: {$ref: '#/components/schemas/LogRecord'}}
+    AgentList:
+      type: object
+      required: [items]
+      additionalProperties: false
+      properties:
+        items:
+          type: array
+          items:
+            type: object
+            required: [tool_id, title, lifecycle, model_verified, runs_7d, runs_error_7d]
+            additionalProperties: false
+            properties:
+              tool_id: {type: string}
+              title: {type: string}
+              lifecycle: {enum: [proposed, sandbox, shadow, active, degraded_known, disabled, retired]}
+              model_verified: {type: boolean}
+              gcr_7d: {type: ['number', 'null'], minimum: 0, maximum: 1}
+              first_pass_gcr_7d: {type: ['number', 'null'], minimum: 0, maximum: 1}
+              runs_7d: {type: integer, minimum: 0}
+              runs_error_7d: {type: integer, minimum: 0}
+              last_run_at: {$ref: './esquemas/common.schema.json#/$defs/Timestamp'}
+    FeedbackInput:
+      type: object
+      required: [target, rating, surface]
+      additionalProperties: false
+      properties:
+        target: {$ref: './esquemas/common.schema.json#/$defs/TargetRef'}
+        rating: {enum: [up, down]}
+        reasons:
+          type: array
+          uniqueItems: true
+          items: {enum: [cita_incorrecta, afirmacion_inventada, omision_relevante, tono_erroneo, verificacion_incorrecta, mencion_ambigua, escenario_debil, transcripcion_erronea, otro]}
+        severity: {enum: [minor, major, blocking]}
+        comment: {type: string, maxLength: 1000}
+        retracts: {$ref: './esquemas/common.schema.json#/$defs/Uuid'}
+        surface: {enum: [panel, urania, site]}
+    InterventionInput:
+      type: object
+      required: [type, target, reason, dry_run]
+      additionalProperties: false
+      properties:
+        type: {type: string, pattern: '^[a-z][a-z0-9_]+$'}
+        target: {$ref: './esquemas/common.schema.json#/$defs/TargetRef'}
+        reason: {type: string, minLength: 10, maxLength: 500}
+        parameters: {type: object, additionalProperties: {type: [string, integer, boolean]}}
+        dry_run: {type: boolean}
+    DecisionInput:
+      type: object
+      additionalProperties: false
+      properties:
+        comment: {type: string, minLength: 3, maxLength: 500}
+    SilenceInput:
+      type: object
+      required: [until, reason]
+      additionalProperties: false
+      properties:
+        until: {$ref: './esquemas/common.schema.json#/$defs/Timestamp'}
+        reason: {type: string, minLength: 10, maxLength: 300}
+    ConfigChangeInput:
+      type: object
+      required: [changes, reason]
+      additionalProperties: false
+      properties:
+        changes:
+          type: array
+          minItems: 1
+          items:
+            type: object
+            required: [key, to]
+            additionalProperties: false
+            properties:
+              key: {$ref: './esquemas/parameter-catalog.schema.json#/$defs/ParameterKey'}
+              to: {}
+        reason: {type: string, minLength: 10, maxLength: 1000}
+    PromptList:
+      type: object
+      required: [items]
+      additionalProperties: false
+      properties:
+        items:
+          type: array
+          items:
+            type: object
+            required: [name, active_version, versions]
+            additionalProperties: false
+            properties:
+              name: {enum: [narrative-analysis, scheduled-instructions, autorater]}
+              active_version: {$ref: './esquemas/common.schema.json#/$defs/Sha256'}
+              versions:
+                type: array
+                items:
+                  type: object
+                  required: [version, created_at, source, eval_gate]
+                  additionalProperties: false
+                  properties:
+                    version: {$ref: './esquemas/common.schema.json#/$defs/Sha256'}
+                    semver: {$ref: './esquemas/common.schema.json#/$defs/SemVer'}
+                    created_at: {$ref: './esquemas/common.schema.json#/$defs/Timestamp'}
+                    source: {enum: [repo, panel]}
+                    eval_gate: {enum: [pending, passed, failed, not_required]}
+    PromptVersionInput:
+      type: object
+      required: [text, semver, base_version, notes]
+      additionalProperties: false
+      properties:
+        text: {type: string, minLength: 100, maxLength: 200000}
+        semver: {$ref: './esquemas/common.schema.json#/$defs/SemVer'}
+        base_version: {$ref: './esquemas/common.schema.json#/$defs/Sha256'}
+        notes: {type: string, minLength: 10, maxLength: 2000}
+    PromptVersion:
+      type: object
+      required: [name, version, semver, created_at, created_by, source, eval_gate]
+      additionalProperties: false
+      properties:
+        name: {enum: [narrative-analysis, scheduled-instructions, autorater]}
+        version: {$ref: './esquemas/common.schema.json#/$defs/Sha256'}
+        semver: {$ref: './esquemas/common.schema.json#/$defs/SemVer'}
+        created_at: {$ref: './esquemas/common.schema.json#/$defs/Timestamp'}
+        created_by: {$ref: './esquemas/common.schema.json#/$defs/Actor'}
+        source: {enum: [repo, panel]}
+        eval_gate: {enum: [pending, passed, failed, not_required]}
+        text: {type: string}
+    ToolDetail:
+      type: object
+      required: [tool, health]
+      additionalProperties: false
+      properties:
+        tool: {$ref: './esquemas/tool-registry.schema.json#/$defs/Tool'}
+        health:
+          type: object
+          required: [status]
+          additionalProperties: false
+          properties:
+            status: {enum: [up, cooldown, down, blocked_known, disabled, unknown]}
+            cooldown_until: {$ref: './esquemas/common.schema.json#/$defs/Timestamp'}
+            consecutive_failures: {type: integer, minimum: 0}
+            last_outcomes:
+              type: array
+              maxItems: 20
+              items:
+                type: object
+                required: [at, outcome]
+                additionalProperties: false
+                properties:
+                  at: {$ref: './esquemas/common.schema.json#/$defs/Timestamp'}
+                  outcome: {type: string}
+                  elapsed_s: {type: number, minimum: 0}
+    AssetDiff:
+      type: object
+      required: [asset_id, from, to, mode, changes]
+      additionalProperties: false
+      properties:
+        asset_id: {$ref: './esquemas/common.schema.json#/$defs/AssetId'}
+        from: {$ref: './esquemas/common.schema.json#/$defs/Sha256'}
+        to: {$ref: './esquemas/common.schema.json#/$defs/Sha256'}
+        mode: {enum: [segments, json_pointer, text]}
+        changes:
+          type: array
+          items:
+            type: object
+            required: [op, path]
+            additionalProperties: false
+            properties:
+              op: {enum: [add, remove, replace]}
+              path: {type: string}
+              before: {}
+              after: {}
+    AuditVerification:
+      type: object
+      required: [ok, checked, first_bad_seq, head_seq, head_hash]
+      additionalProperties: false
+      properties:
+        ok: {type: boolean}
+        checked: {type: integer, minimum: 0}
+        first_bad_seq: {type: ['integer', 'null'], minimum: 1}
+        head_seq: {type: integer, minimum: 0}
+        head_hash: {$ref: './esquemas/common.schema.json#/$defs/Sha256'}
+    LoginInput:
+      type: object
+      required: [username, password]
+      additionalProperties: false
+      properties:
+        username: {type: string, pattern: '^[a-z0-9][a-z0-9._-]{1,63}$'}
+        password: {type: string, minLength: 12, maxLength: 256}
+        totp: {type: string, pattern: '^[0-9]{6}$'}
+    UserInput:
+      type: object
+      required: [id, display_name, roles]
+      additionalProperties: false
+      properties:
+        id: {type: string, pattern: '^[a-z0-9][a-z0-9._-]{1,63}$'}
+        display_name: {type: string, maxLength: 80}
+        roles: {type: array, minItems: 1, uniqueItems: true, items: {$ref: './esquemas/common.schema.json#/$defs/Role'}}
+    UserPatch:
+      type: object
+      minProperties: 1
+      additionalProperties: false
+      properties:
+        roles: {type: array, minItems: 1, uniqueItems: true, items: {$ref: './esquemas/common.schema.json#/$defs/Role'}}
+        disabled: {type: boolean}
+    UserList:
+      type: object
+      required: [items]
+      additionalProperties: false
+      properties:
+        items: {type: array, items: {$ref: '#/components/schemas/User'}}
+    VectorIndexList:
+      type: object
+      required: [items]
+      additionalProperties: false
+      properties:
+        items: {type: array, items: {$ref: '#/components/schemas/VectorIndexStatus'}}
+    AlertPage:
+      type: object
+      required: [items, page]
+      additionalProperties: false
+      properties:
+        items: {type: array, items: {$ref: '#/components/schemas/Alert'}}
+        page: {$ref: './esquemas/common.schema.json#/$defs/PageInfo'}
+    RunPage:
+      type: object
+      required: [items, page]
+      additionalProperties: false
+      properties:
+        items: {type: array, items: {$ref: '#/components/schemas/RunRecord'}}
+        page: {$ref: './esquemas/common.schema.json#/$defs/PageInfo'}
+    JobPage:
+      type: object
+      required: [items, page]
+      additionalProperties: false
+      properties:
+        items: {type: array, items: {$ref: '#/components/schemas/Job'}}
+        page: {$ref: './esquemas/common.schema.json#/$defs/PageInfo'}
+    EvaluationPage:
+      type: object
+      required: [items, page]
+      additionalProperties: false
+      properties:
+        items: {type: array, items: {$ref: '#/components/schemas/EvaluationResult'}}
+        page: {$ref: './esquemas/common.schema.json#/$defs/PageInfo'}
+    FeedbackPage:
+      type: object
+      required: [items, page]
+      additionalProperties: false
+      properties:
+        items: {type: array, items: {$ref: '#/components/schemas/Feedback'}}
+        page: {$ref: './esquemas/common.schema.json#/$defs/PageInfo'}
+    InterventionPage:
+      type: object
+      required: [items, page]
+      additionalProperties: false
+      properties:
+        items: {type: array, items: {$ref: '#/components/schemas/Intervention'}}
+        page: {$ref: './esquemas/common.schema.json#/$defs/PageInfo'}
+    ConfigVersionPage:
+      type: object
+      required: [items, page]
+      additionalProperties: false
+      properties:
+        items: {type: array, items: {$ref: '#/components/schemas/ConfigVersion'}}
+        page: {$ref: './esquemas/common.schema.json#/$defs/PageInfo'}
+    ConfigChangePage:
+      type: object
+      required: [items, page]
+      additionalProperties: false
+      properties:
+        items: {type: array, items: {$ref: '#/components/schemas/ConfigChange'}}
+        page: {$ref: './esquemas/common.schema.json#/$defs/PageInfo'}
+    AssetPage:
+      type: object
+      required: [items, page]
+      additionalProperties: false
+      properties:
+        items: {type: array, items: {$ref: '#/components/schemas/Asset'}}
+        page: {$ref: './esquemas/common.schema.json#/$defs/PageInfo'}
+    AuditPage:
+      type: object
+      required: [items, page]
+      additionalProperties: false
+      properties:
+        items: {type: array, items: {$ref: '#/components/schemas/AuditEvent'}}
+        page: {$ref: './esquemas/common.schema.json#/$defs/PageInfo'}

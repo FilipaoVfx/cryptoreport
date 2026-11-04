@@ -1,0 +1,38 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Feedback 👍/👎",
+  "description": "Valoración humana de un objeto concreto y versionado. Es inmutable: para retirarla se crea otra que la retracta. Un 👎 exige motivos y severidad; blocking abre la intervención quarantine_asset.",
+  "type": "object",
+  "required": ["feedback_id", "created_at", "actor", "target", "rating", "surface"],
+  "additionalProperties": false,
+  "properties": {
+    "feedback_id": {"$ref": "common.schema.json#/$defs/Uuid"},
+    "created_at": {"$ref": "common.schema.json#/$defs/Timestamp"},
+    "actor": {
+      "allOf": [
+        {"$ref": "common.schema.json#/$defs/Actor"},
+        {"properties": {"kind": {"const": "user"}}}
+      ]
+    },
+    "target": {
+      "allOf": [
+        {"$ref": "common.schema.json#/$defs/TargetRef"},
+        {"required": ["kind", "id", "version"], "properties": {"kind": {"enum": ["analysis", "claim", "evidence", "segment", "tone_label", "topic_mention", "transcript"]}}}
+      ]
+    },
+    "rating": {"enum": ["up", "down"]},
+    "reasons": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {"enum": ["cita_incorrecta", "afirmacion_inventada", "omision_relevante", "tono_erroneo", "verificacion_incorrecta", "mencion_ambigua", "escenario_debil", "transcripcion_erronea", "otro"]}
+    },
+    "severity": {"enum": ["minor", "major", "blocking"]},
+    "comment": {"type": "string", "maxLength": 1000},
+    "retracts": {"$ref": "common.schema.json#/$defs/Uuid"},
+    "surface": {"enum": ["panel", "urania", "site"]}
+  },
+  "allOf": [
+    {"if": {"properties": {"rating": {"const": "down"}}}, "then": {"required": ["reasons", "severity"], "properties": {"reasons": {"minItems": 1}}}},
+    {"if": {"properties": {"reasons": {"contains": {"const": "otro"}}}, "required": ["reasons"]}, "then": {"required": ["comment"]}}
+  ]
+}

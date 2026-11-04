@@ -1,0 +1,10 @@
+{
+  "id": "000000000000412",
+  "type": "job.state_changed",
+  "at": "2026-10-14T05:20:46Z",
+  "data": {
+    "job_id": "i2LUeRtROdg__32dfbdf3a68ff76dc72c3a2850d50f47685b60bd9a0cfe9d8e0fe6e5aee0015c",
+    "from": "uploaded",
+    "to": "blocked"
+  }
+}

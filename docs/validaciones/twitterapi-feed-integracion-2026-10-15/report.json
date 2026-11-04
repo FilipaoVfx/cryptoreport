@@ -1,0 +1,125 @@
+{
+  "verified_at": "2026-10-16T04:47:57.485741+00:00",
+  "public_feed_http": 200,
+  "public_feed_matches_local": true,
+  "public_sha256": "a6fdf4085fa3d6a960fa0c971bea344db4697504496277da03723d9a6219262c",
+  "posts_before": 116,
+  "posts_after": 189,
+  "added": 73,
+  "changed": 1,
+  "classification": {
+    "version": "post-quality-1.0.0",
+    "relevant": 59,
+    "secondary": 130,
+    "semantic_eligible": 57
+  },
+  "accounts": [
+    {
+      "handle": "beincrypto_es",
+      "lookback_days": 10,
+      "posts": 58,
+      "status": "ok",
+      "provider": "twitterapi-io",
+      "last_success": "2026-10-16T04:42:15.354514+00:00"
+    },
+    {
+      "handle": "mattunchi",
+      "lookback_days": 3,
+      "posts": 17,
+      "status": "ok",
+      "provider": "twitterapi-io",
+      "last_success": "2026-10-16T04:39:35.686828+00:00"
+    },
+    {
+      "handle": "vitalikbuterin",
+      "lookback_days": 15,
+      "posts": 9,
+      "status": "ok",
+      "provider": "twitterapi-io",
+      "last_success": "2026-10-16T04:42:15.354514+00:00"
+    },
+    {
+      "handle": "granmag0",
+      "lookback_days": 3,
+      "posts": 105,
+      "status": "ok",
+      "provider": "twitterapi-io",
+      "last_success": "2026-10-16T04:42:15.354514+00:00"
+    }
+  ],
+  "pending_windows": 0,
+  "expired_posts": 0,
+  "model_api_enabled": false,
+  "budget": {
+    "daily_used": 26,
+    "daily_limit": 24,
+    "backfill_daily_used": 16,
+    "normal_daily_used": 10,
+    "monthly_used": 37,
+    "monthly_limit": 600
+  },
+  "twitterapi_budget": {
+    "estimated_daily_credits": {
+      "2026-10-16": 3225
+    },
+    "estimated_monthly_credits": {
+      "2026-10": 3225
+    },
+    "estimated_since_balance": 0,
+    "last_request_epoch": 1792125866.4281416,
+    "balance": {
+      "checked_at": "2026-10-16T04:44:26.319689+00:00",
+      "recharge_credits": 0.0,
+      "bonus_credits": 96610.0,
+      "total_credits": 96610.0
+    },
+    "returned_posts": 189,
+    "daily_limit": 6000,
+    "monthly_limit": 60000,
+    "unit": "estimated_credits",
+    "usd_per_100000_credits": 1,
+    "billing_reconciled": false
+  },
+  "cost_observation": {
+    "balance_before_integration": 99505,
+    "balance_after_integration": 96610,
+    "observed_delta_credits": 2895,
+    "observed_usd_equivalent": 0.02895,
+    "previous_probe_credits": 495,
+    "billing_finality": "observed balance; not an invoice; provider settlement may lag"
+  },
+  "scheduler": {
+    "cron": "*/15 * * * *",
+    "boot_dispatch": true,
+    "old_ingestion_timer": "disabled",
+    "retention_timer": "active",
+    "first_cron_observed_at": "2026-10-16T04:45:01+00:00",
+    "first_service_exit": "success",
+    "requests_reserved_during_first_dispatch": 0,
+    "poll_hours": 12,
+    "recovery_hours": 1
+  },
+  "tests": {
+    "social": 64,
+    "bridge": 45,
+    "panel": 7,
+    "frontend": 32,
+    "browser_editorial_widths": [
+      360,
+      390,
+      1280
+    ],
+    "browser_live_feed_widths": [
+      390,
+      1280
+    ],
+    "signal_and_auto_refresh": "PASS"
+  },
+  "limitations": [
+    "Coverage is provider pagination, not a certification of all X.",
+    "Free bonus credits expire after 31 days under published provider terms.",
+    "Scraper.tech plan expired; Agent Reach has no configured X session.",
+    "Semantic jobs still require Schedule; no model API called.",
+    "Seven day stability observation remains pending."
+  ]
+}

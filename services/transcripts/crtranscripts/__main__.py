@@ -20,6 +20,8 @@ from .pipeline import run
 from .providers import Supadata
 from .site import export_site
 from .store import Store, iso, now_utc
+from .observability import record,RUN_ID
+import uuid
 
 
 def _lock(config):
@@ -28,6 +30,7 @@ def _lock(config):
     try:
         fcntl.flock(handle, fcntl.LOCK_EX | fcntl.LOCK_NB)
     except BlockingIOError:
+        record(config.data_dir,"extractor.lock_wait",component="extractor",outcome="waiting")
         print("Ya hay una ejecución en curso; se omite esta.")
         sys.exit(0)
     return handle
@@ -133,14 +136,23 @@ def main(argv: list[str] | None = None) -> int:
     if args.command == "site":
         return cmd_site(config)
     _handle = _lock(config)
+    run_id=uuid.uuid4().hex
+    RUN_ID.set(run_id)
+    record(config.data_dir,"extractor.started",component="extractor",run_id=run_id)
+    outcome="ok"
     try:
         if args.command == "run":
             return cmd_run(config, notifier)
         return cmd_fetch(config, notifier, args)
     except Exception as err:  # noqa: BLE001 - se avisa y systemd marca la unidad como fallida
+        outcome="error"
+        record(config.data_dir,"extractor.error",component="extractor",run_id=run_id,outcome="error",detail={"category":type(err).__name__})
         traceback.print_exc()
         notifier.send(f"💥 Error inesperado en '{args.command}': {type(err).__name__}: {err}"[:500])
         return 1
+    finally:
+        record(config.data_dir,"extractor.finished",component="extractor",run_id=run_id,outcome=outcome)
+        _handle.close()
 
 
 if __name__ == "__main__":

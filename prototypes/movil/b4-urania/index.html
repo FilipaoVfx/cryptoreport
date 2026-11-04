@@ -20,14 +20,14 @@
     <svg class="nh-mark" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.5 20.5 7v10L12 21.5 3.5 17V7z"/><path d="M12 7.5 16.5 10v4L12 16.5 7.5 14v-4z"/></svg>
     <span>cryptoreport</span><small>Nébula · Urania</small>
   </a>
-  <a class="nh-btn" href="#/buscar" aria-label="Buscar en todo el archivo"><svg class="i"><use href="#i-search"></use></svg></a>
+  <a class="nh-btn" href="#/buscar" aria-label="Buscar videos y análisis"><svg class="i"><use href="#i-search"></use></svg></a>
   <a class="nh-link" href="../index.html">Propuestas</a>
 </header>
 
 <header class="topbar" id="topbar">
   <button class="ib" type="button" data-act="back" aria-label="Volver"><svg class="i"><use href="#i-arrow-left"></use></svg></button>
   <p class="topbar-title" id="topbar-title"></p>
-  <button class="ib" type="button" data-act="share-video" aria-label="Compartir con el minuto actual"><svg class="i"><use href="#i-share"></use></svg></button>
+  <button class="ib signal-trigger" id="signal-trigger" type="button" data-act="signal-mode" aria-pressed="false" aria-controls="signal-panel" aria-label="Activar Signal mode"><svg class="i"><use href="#i-wave"></use></svg><span>Signal</span></button>
 </header>
 
 <div class="stage" id="stage" data-mode="none">
@@ -44,8 +44,23 @@
 <section class="nb" id="nb" data-snap="half" aria-label="Cuaderno del vídeo" hidden>
   <div class="nb-handle" id="nb-handle">
     <button class="nb-grip" type="button" data-act="cycle" id="nb-grip" aria-label="Cuaderno a media altura. Pulsa para ampliarlo."><span></span></button>
+    <div class="reading-tools"><button id="video-toggle" type="button" data-act="video-toggle" aria-expanded="false" aria-controls="stage">Ver video</button><button id="video-pin" type="button" data-act="video-pin" aria-pressed="false" hidden>Fijar al salir</button><details class="reading-source" id="reading-source"><summary>Fuente</summary><div class="source-popover" id="source-meta"></div></details></div>
     <div class="now" id="now"></div>
-    <button class="nb-pulse" type="button" id="nb-pulse" data-act="pulse" aria-label="Pulso del vídeo: toca para saltar a ese momento"></button>
+    <section class="signal-panel" id="signal-panel" aria-label="Signal mode: navegar por el pulso del video">
+      <div class="signal-head"><b>Signal mode</b><span id="signal-tone"></span></div>
+      <button class="nb-pulse" type="button" id="nb-pulse" data-act="pulse" aria-label="Pulso del video: toca una señal para saltar a ese momento"></button>
+      <div class="signal-position">
+        <output id="signal-time" for="signal-seek">0:00</output>
+        <div class="signal-scrubber" id="signal-scrubber" style="--seek:0%">
+          <span class="signal-track" aria-hidden="true"><span></span></span>
+          <span class="signal-preview" id="signal-preview" aria-hidden="true">0:00</span>
+          <label class="sr" for="signal-seek">Buscar un momento del video</label>
+          <input id="signal-seek" type="range" min="0" max="1" step="1" value="0">
+        </div>
+        <span id="signal-duration"></span>
+      </div>
+      <p class="signal-legend"><span>↑ Verde: al alza</span><span>↓ Rojo: a la baja</span><small>Tono del texto</small></p>
+    </section>
     <div class="lenses" role="radiogroup" aria-label="Lente del cuaderno" id="lenses"></div>
   </div>
   <div class="nb-body" id="nb-body"></div>
@@ -54,7 +69,7 @@
 <nav class="dock" id="dock" aria-label="Secciones">
   <a href="#/" data-d="explorar"><svg class="i"><use href="#i-grid"></use></svg><span>Explorar</span></a>
   <a href="#/diario" data-d="diario"><svg class="i"><use href="#i-calendar"></use></svg><span>Diario</span></a>
-  <a href="#/guardados" data-d="guardados"><svg class="i"><use href="#i-bookmark"></use></svg><span>Guardados</span></a>
+  <a href="#/feed" data-d="feed"><svg class="i"><use href="#i-text"></use></svg><span>Feed</span></a>
 </nav>
 
 <div class="scrim" id="scrim" hidden></div>
@@ -70,6 +85,10 @@
 
 <script src="../shared/core.js"></script>
 <script src="../shared/player.js"></script>
+<script src="radar.js"></script>
+<script src="theses.js"></script>
+<script src="feed.js"></script>
+<script src="editorial.js"></script>
 <script src="app.js"></script>
 </body>
 </html>

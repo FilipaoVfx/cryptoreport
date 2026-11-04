@@ -1,0 +1,25 @@
+{
+  "feedback_id": "b2bc6236-d240-43e0-af2b-b76f7766fc93",
+  "created_at": "2026-10-15T10:02:00Z",
+  "actor": {
+    "kind": "user",
+    "id": "revisor-1",
+    "display_name": "Cuenta de revisión 1",
+    "roles": [
+      "reviewer"
+    ]
+  },
+  "target": {
+    "kind": "claim",
+    "id": "analysis:agFTCuv80XE",
+    "version": "d96416ddc27e8a77f9d1e9b80ce4c996e2c108b0fa90b561f3f1558613eac93a",
+    "path": "/afirmaciones/7"
+  },
+  "rating": "down",
+  "reasons": [
+    "afirmacion_inventada"
+  ],
+  "severity": "blocking",
+  "comment": "El creador no dice «URGENTE»; el título del análisis lo inventa.",
+  "surface": "panel"
+}

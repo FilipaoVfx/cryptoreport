@@ -1,0 +1,43 @@
+{
+  "descripcion": "chunk_id es <video_id>:<12 hex>:<secuencia de 4 cifras>.",
+  "error_esperado": {
+    "keyword": "pattern",
+    "ruta": "/chunk_id"
+  },
+  "instancia": {
+    "chunk_id": "OwrAjFdTQ4s-3",
+    "video_id": "OwrAjFdTQ4s",
+    "channel": "nacho",
+    "transcript_sha256": "fd6c08dad186b10431bf1fb0d35142c715b453d2d58f2ed83e4aa96d0c54f75f",
+    "seq": 3,
+    "segment_range": {
+      "first": 63,
+      "last": 84
+    },
+    "start_s": 247.12,
+    "end_s": 334.9,
+    "overlap_segments": 1,
+    "text_sha256": "21f36fdcfb6d6ed0770c27c4c26e42d29c4c8852b2b00f26c692e0ccd7a85147",
+    "token_count": 298,
+    "char_count": 1342,
+    "language": "es",
+    "tags": {
+      "topics": [
+        "bitcoin"
+      ],
+      "tone": "bajista"
+    },
+    "chunker": {
+      "strategy": "segment_window",
+      "version": "1.0.0",
+      "target_tokens": 300,
+      "max_tokens": 512
+    },
+    "embedding": {
+      "status": "embedded",
+      "model": "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2",
+      "dimension": 384,
+      "embedded_at": "2026-11-03T02:10:00Z"
+    }
+  }
+}

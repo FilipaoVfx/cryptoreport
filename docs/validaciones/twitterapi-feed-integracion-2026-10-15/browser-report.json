@@ -1,0 +1,18 @@
+[
+  {
+    "width": 390,
+    "status": "Última extracción: 15 oct, 23:42 · actualización automática",
+    "rendered": 24,
+    "exceptions": 0
+  },
+  {
+    "width": 1280,
+    "status": "Última extracción: 15 oct, 23:42 · actualización automática",
+    "rendered": 24,
+    "exceptions": 0
+  },
+  {
+    "monitor": "rendered using real collected health; isolated browser route, no server auth bypass",
+    "exceptions": 0
+  }
+]

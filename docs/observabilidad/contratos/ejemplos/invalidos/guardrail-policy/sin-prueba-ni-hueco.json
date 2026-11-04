@@ -1,0 +1,14 @@
+{
+  "descripcion": "Una guarda en enforce sin pruebas declara el hueco.",
+  "error_esperado": {
+    "keyword": "required",
+    "ruta": "/guardrails/[id=G-13]"
+  },
+  "base": "registros/guardrails.json",
+  "parche": [
+    {
+      "op": "remove",
+      "path": "/guardrails/[id=G-13]/gap"
+    }
+  ]
+}

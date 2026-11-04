@@ -1,0 +1,26 @@
+{
+  "intervention_id": "66564b06-85e2-476d-84bd-1dee0d93bd4c",
+  "type": "import_reviewed",
+  "state": "pending_approval",
+  "requested_at": "2026-10-15T09:00:00Z",
+  "requested_by": {
+    "kind": "user",
+    "id": "revisor-1",
+    "display_name": "Cuenta de revisión 1",
+    "roles": [
+      "reviewer"
+    ]
+  },
+  "target": {
+    "kind": "job",
+    "id": "i2LUeRtROdg__32dfbdf3a68ff76dc72c3a2850d50f47685b60bd9a0cfe9d8e0fe6e5aee0015c"
+  },
+  "reason": "Resultado corregido a mano: dos citas parafraseadas sustituidas por literales.",
+  "parameters": {
+    "result": "/var/lib/cryptoreport-transcripts/bridge/reviewed/i2LUeRtROdg.json",
+    "source_file_id": "drive-file-id-omitido"
+  },
+  "dry_run": false,
+  "idempotency_key": "import-i2LUeRtROdg-20261015",
+  "approvals": []
+}

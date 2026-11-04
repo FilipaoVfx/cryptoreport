@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#040817">
+<meta name="robots" content="noindex">
+<title>Feed · D Radar</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="../base.css">
+<style>
+  :root { --bg: #040817; --ink: #eef3ff; --muted: #8e9bc4; --accent: #d4ff3a; --on-accent: #0a1200; --sans: "Space Grotesk", ui-sans-serif, system-ui, sans-serif;
+    --glass: rgba(150, 180, 255, .06); --glass-hi: rgba(170, 200, 255, .16); --glass-line: rgba(180, 205, 255, .22); --sheet: rgba(6, 12, 34, .8); }
+  .aurora i:nth-child(1) { background: #1747ff; left: -20%; top: -15%; opacity: .6; }
+  .aurora i:nth-child(2) { background: #00c2d1; right: -25%; top: 35%; opacity: .35; }
+  .aurora i:nth-child(3) { background: #7a2cff; left: -5%; bottom: -25%; opacity: .4; }
+  body::after { content: ""; position: fixed; inset: 0; z-index: -1; pointer-events: none; background-image: radial-gradient(rgba(255,255,255,.08) 1px, transparent 1px); background-size: 22px 22px; -webkit-mask: linear-gradient(#000, transparent 60%); mask: linear-gradient(#000, transparent 60%); }
+
+  .top { display: flex; align-items: center; justify-content: space-between; padding: 18px 2px 10px; }
+  .top h1 { margin: 0; font-size: 15px; font-weight: 700; letter-spacing: .2em; text-transform: uppercase; }
+  .top h1 span { color: var(--accent); }
+  .reset { min-height: 36px; padding: 0 12px; border-radius: 999px; font-size: 12px; font-weight: 600; }
+
+  .radar { position: relative; height: 230px; border-radius: 28px; overflow: hidden; }
+  .radar::after { content: ""; position: absolute; inset: 50% auto auto 50%; width: 560px; height: 560px; margin: -280px; border-radius: 50%; pointer-events: none;
+    background: conic-gradient(from 0deg, rgba(212,255,58,.22), transparent 18%); animation: sweep 6s linear infinite; }
+  .radar .rings { position: absolute; inset: 0; background: radial-gradient(circle at 50% 50%, transparent 0 48px, rgba(180,205,255,.12) 49px 50px, transparent 51px 98px, rgba(180,205,255,.1) 99px 100px, transparent 101px 150px, rgba(180,205,255,.08) 151px 152px, transparent 153px); }
+  @keyframes sweep { to { transform: rotate(360deg); } }
+  .bub { position: absolute; z-index: 2; display: grid; place-items: center; align-content: center; width: var(--s); height: var(--s); margin: calc(var(--s) / -2); left: var(--x); top: var(--y); border-radius: 50%; border: 1px solid var(--glass-line);
+    background: radial-gradient(circle at 30% 25%, rgba(255,255,255,.35), rgba(255,255,255,.06) 55%), color-mix(in srgb, var(--accent) var(--heat), rgba(20,40,110,.4));
+    -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); box-shadow: inset 0 1px 0 rgba(255,255,255,.5), 0 8px 24px rgba(0,0,0,.35);
+    font-weight: 700; font-size: calc(var(--s) / 4.2); line-height: 1; animation: float 6s ease-in-out infinite alternate; animation-delay: var(--dl); color: var(--ink); }
+  .bub small { font-size: .55em; font-weight: 600; opacity: .8; }
+  .bub[aria-pressed="true"] { outline: 3px solid var(--accent); outline-offset: 3px; color: var(--on-accent); background: var(--accent); }
+  @keyframes float { to { transform: translate(6px, -8px); } }
+  .legend { position: absolute; left: 14px; bottom: 10px; z-index: 2; font-size: 11px; color: var(--muted); }
+
+  .bento { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); grid-auto-rows: 74px; grid-auto-flow: dense; gap: 8px; margin-top: 12px; }
+  .b { min-width: 0; padding: 12px; border-radius: 20px; overflow: hidden; display: flex; flex-direction: column; gap: 6px; cursor: pointer; animation: pop .45s cubic-bezier(.2,.8,.2,1) both; animation-delay: var(--d); }
+  .b:active { transform: scale(.98); }
+  .L { grid-column: span 4; grid-row: span 3; }
+  .M { grid-column: span 2; grid-row: span 3; }
+  .S { grid-column: span 2; grid-row: span 2; }
+  .W { grid-column: span 4; grid-row: span 2; }
+  .b-h { display: flex; align-items: center; gap: 6px; font-size: 11px; color: var(--muted); }
+  .b-h b { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--ink); font-size: 12px; }
+  .b-x { flex: 1; min-height: 0; font-size: 14px; line-height: 1.4; white-space: pre-line; overflow-wrap: anywhere; overflow: hidden; -webkit-mask: linear-gradient(#000 70%, transparent); mask: linear-gradient(#000 70%, transparent); }
+  .b-x a { color: var(--accent); pointer-events: none; }
+  .L .b-x { font-size: 17px; }
+  .W .b-x { font-size: 20px; font-weight: 600; line-height: 1.2; letter-spacing: -.01em; }
+  .b.news { border-color: color-mix(in srgb, var(--ac) 60%, transparent); }
+  .b.news .b-h::after { content: "NOTICIA"; padding: 2px 6px; border-radius: 5px; background: var(--ac); color: #050a1f; font-size: 9px; font-weight: 700; letter-spacing: .08em; }
+  .data { cursor: default; justify-content: space-between; background: linear-gradient(150deg, rgba(212,255,58,.16), rgba(170,200,255,.04)); }
+  .data .k { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: .1em; }
+  .data .v { font-size: 34px; font-weight: 700; line-height: 1; color: var(--accent); }
+  .data .v small { font-size: 13px; color: var(--ink); font-weight: 600; }
+  .data .spark { display: flex; align-items: flex-end; gap: 2px; height: 22px; }
+  .data .spark i { flex: 1; background: var(--accent); opacity: .7; border-radius: 1px; }
+  .more { display: block; margin: 20px auto; min-height: 44px; padding: 0 20px; border-radius: 999px; }
+  @keyframes pop { from { opacity: 0; transform: scale(.94); } }
+  @media (prefers-reduced-motion: reduce) { .radar::after, .bub, .b { animation: none; } }
+</style>
+</head>
+<body>
+<div class="aurora" aria-hidden="true"><i></i><i></i><i></i></div>
+<main class="wrap">
+  <header class="top"><h1>Radar <span>X</span></h1><button class="reset glass" id="reset" type="button" hidden>Quitar filtro</button></header>
+  <section class="radar glass" id="radar" aria-label="Activos más mencionados"><div class="rings"></div><span class="legend">Tamaño = menciones · toca para filtrar</span></section>
+  <div class="bento" id="bento" aria-live="polite"></div>
+  <button class="more glass" id="more" type="button" hidden>Cargar más</button>
+</main>
+<script src="../../b4-urania/feed.js"></script>
+<script src="../common.js"></script>
+<script>
+(async () => {
+  const { esc, rel, avatar, text } = FL;
+  let st;
+  try { st = await FL.load(); } catch (e) { document.getElementById('bento').innerHTML = '<p>No pudimos cargar el Feed.</p>'; return; }
+  const posts = st.relevant, counts = FL.assetCounts(posts).slice(0, 7);
+  let asset = null, limit = 24;
+  // Burbujas repartidas en espiral alrededor del centro; tamaño por menciones.
+  const top = counts[0]?.[1] || 1;
+  const spots = [[50, 50], [24, 32], [76, 30], [22, 74], [78, 72], [50, 16], [50, 86]];
+  const radar = document.getElementById('radar');
+  const bubbles = () => {
+    radar.querySelectorAll('.bub').forEach((b) => b.remove());
+    radar.insertAdjacentHTML('beforeend', counts.map(([s, n], i) => { const size = 44 + Math.round(70 * Math.sqrt(n / top));
+      return `<button type="button" class="bub" data-asset="${esc(s)}" aria-pressed="${asset === s}" style="--s:${size}px;--x:${spots[i][0]}%;--y:${spots[i][1]}%;--heat:${Math.round(10 + 50 * n / top)}%;--dl:${-i * 0.9}s">$${esc(s)}<small>${n}</small></button>`; }).join(''));
+  };
+  const post = (p, size, i) => {
+    const a = st.accounts.get(p.author_handle), news = /noticia/i.test(a.label || '');
+    return `<article role="button" tabindex="0" class="b glass ${size}${news ? ' news' : ''}" data-id="${esc(p.id)}" style="--ac:${a.tone};--d:${(i % 12) * 40}ms"><span class="b-h">${avatar(a)}<b>${esc(a.name || a.handle)}</b>${esc(rel(p.published_at))}</span><span class="b-x">${text(p)}</span></article>`;
+  };
+  const dataTiles = (list) => {
+    const out = [], by = new Map();
+    for (const p of list) by.set(p.author_handle, (by.get(p.author_handle) || 0) + 1);
+    const lead = [...by].sort((x, y) => y[1] - x[1])[0];
+    if (lead) { const a = st.accounts.get(lead[0]);
+      out.push(`<div class="b glass data S" style="--d:0ms"><span class="k">Más activo · ventana</span><span class="v">${lead[1]}<small> posts</small></span><span class="b-h">${avatar(a)}<b>${esc(a.name || a.handle)}</b></span></div>`); }
+    const hours = Array(12).fill(0);
+    for (const p of list) { const h = Math.floor((Date.now() - Date.parse(p.published_at)) / 7200000); if (h < 12) hours[11 - h]++; }
+    const mx = Math.max(1, ...hours);
+    out.push(`<div class="b glass data S" style="--d:0ms"><span class="k">Ritmo · 24 h</span><span class="v">${hours.reduce((x, y) => x + y, 0)}</span><span class="spark">${hours.map((n) => `<i style="height:${Math.max(8, n / mx * 100)}%"></i>`).join('')}</span></div>`);
+    return out;
+  };
+  // Patrón de tamaños: cada post recibe una pieza según su largo, con datos intercalados.
+  const sizeOf = (p) => p.text.length > 320 ? 'L' : p.text.length < 70 && !/https?:/.test(p.text) ? 'W' : p.text.length > 160 ? 'M' : 'S';
+  const paint = () => {
+    const list = posts.filter((p) => !asset || p.quality?.assets?.includes(asset));
+    const tiles = [], extra = dataTiles(list);
+    list.slice(0, limit).forEach((p, i) => { tiles.push(post(p, sizeOf(p), i)); if (i === 2 && extra[0]) tiles.push(extra[0]); if (i === 6 && extra[1]) tiles.push(extra[1]); });
+    document.getElementById('bento').innerHTML = tiles.join('') || '<p>Nada con este filtro.</p>';
+    document.getElementById('more').hidden = list.length <= limit;
+    document.getElementById('reset').hidden = !asset;
+  };
+  radar.addEventListener('click', (e) => { const b = e.target.closest('[data-asset]'); if (!b) return; asset = asset === b.dataset.asset ? null : b.dataset.asset; bubbles(); limit = 24; paint(); });
+  document.getElementById('reset').addEventListener('click', () => { asset = null; bubbles(); paint(); });
+  const bento = document.getElementById('bento');
+  bento.addEventListener('click', (e) => { const c = e.target.closest('[data-id]'); if (!c) return; const p = st.all.find((x) => x.id === c.dataset.id); FL.sheet(p, st.accounts.get(p.author_handle)); });
+  bento.addEventListener('keydown', (e) => { if ((e.key === 'Enter' || e.key === ' ') && e.target.dataset.id) { e.preventDefault(); e.target.click(); } });
+  const more = document.getElementById('more');
+  more.addEventListener('click', () => { limit += 24; paint(); });
+  new IntersectionObserver((en) => { if (en[0].isIntersecting && !more.hidden) { limit += 24; paint(); } }, { rootMargin: '500px' }).observe(more);
+  bubbles(); paint();
+})();
+</script>
+</body>
+</html>

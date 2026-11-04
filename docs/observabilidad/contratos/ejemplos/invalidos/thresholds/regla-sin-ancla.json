@@ -1,0 +1,14 @@
+{
+  "descripcion": "Un umbral que sale de una regla existente cita su ancla de código.",
+  "error_esperado": {
+    "keyword": "required",
+    "ruta": "/thresholds/[id=SH-01]/source"
+  },
+  "base": "registros/umbrales.json",
+  "parche": [
+    {
+      "op": "remove",
+      "path": "/thresholds/[id=SH-01]/source/anchor"
+    }
+  ]
+}

@@ -1,0 +1,14 @@
+{
+  "descripcion": "Una cadena apagada indica la guarda que la mantiene apagada.",
+  "error_esperado": {
+    "keyword": "required",
+    "ruta": "/chains/[id=analysis.api]"
+  },
+  "base": "registros/enrutamiento.json",
+  "parche": [
+    {
+      "op": "remove",
+      "path": "/chains/[id=analysis.api]/disabled_by"
+    }
+  ]
+}

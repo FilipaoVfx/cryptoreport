@@ -1,0 +1,35 @@
+{
+  "descripcion": "cr.extractor.cycle exige cr.run.trigger.",
+  "error_esperado": {
+    "keyword": "registry",
+    "ruta": "/attributes/cr.run.trigger"
+  },
+  "instancia": {
+    "trace_id": "01a13b24f440769a9150683b38f3f19d",
+    "span_id": "edfe4889e44c31bf",
+    "name": "cr.extractor.cycle",
+    "kind": "INTERNAL",
+    "start_time": "2026-10-14T16:00:40.112Z",
+    "end_time": "2026-10-14T16:00:41.020Z",
+    "status": {
+      "code": "OK"
+    },
+    "resource": {
+      "service.name": "cr-extractor",
+      "service.version": "04a86b9-dirty",
+      "deployment.environment.name": "prod",
+      "cr.code.digest": "f8aa9649423ee26f0f6eae6cd595c0910510a3a9e53c1ac406c0c19ebabf21fb",
+      "cr.contract.version": "1.0.0",
+      "cr.telemetry.origin": "native"
+    },
+    "attributes": {
+      "cr.run.id": "01a13b24-f440-769a-9150-683b38f3f19d",
+      "cr.run.outcome": "ok",
+      "cr.cycle.videos_due": 0,
+      "cr.cycle.transcribed": 0,
+      "cr.cycle.pending": 0,
+      "cr.cycle.errors": 0,
+      "cr.config.version": 1
+    }
+  }
+}

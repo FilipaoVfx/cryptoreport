@@ -1,0 +1,15 @@
+{
+  "descripcion": "El operador outside exige un intervalo [min, max].",
+  "error_esperado": {
+    "keyword": "type",
+    "ruta": "/thresholds/[id=DQ-T-11]/levels/warning/value"
+  },
+  "base": "registros/umbrales.json",
+  "parche": [
+    {
+      "op": "replace",
+      "path": "/thresholds/[id=DQ-T-11]/levels/warning/value",
+      "value": 120
+    }
+  ]
+}

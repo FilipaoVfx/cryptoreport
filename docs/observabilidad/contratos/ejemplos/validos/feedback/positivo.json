@@ -1,0 +1,19 @@
+{
+  "feedback_id": "6ebcd88f-2f7b-4ac1-b363-9096b92828f4",
+  "created_at": "2026-10-15T10:05:00Z",
+  "actor": {
+    "kind": "user",
+    "id": "revisor-2",
+    "display_name": "Cuenta de revisión 2",
+    "roles": [
+      "reviewer"
+    ]
+  },
+  "target": {
+    "kind": "analysis",
+    "id": "analysis:OwrAjFdTQ4s",
+    "version": "b580749d965679565c93afcf092a1425410374d4cd26ffc9b1e34f125128ecd9"
+  },
+  "rating": "up",
+  "surface": "urania"
+}

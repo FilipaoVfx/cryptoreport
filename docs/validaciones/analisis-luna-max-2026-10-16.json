@@ -1,0 +1,133 @@
+{
+  "prompt_sha256": "818e648cdb77855b770c9e516c1a4fbf8e63a4fef89f1c3a921422062c0bdcd4",
+  "contract_version": "1.0.0",
+  "editorial_revision": "2026-10-16",
+  "completed": [
+    {
+      "video_id": "4Bc8XaDRD4E",
+      "channel": "cava",
+      "title": "Las MALDADES de Bessent | José Luis Cava",
+      "estado": "parcial",
+      "claims": 4,
+      "evidences": 7,
+      "scenarios": 1,
+      "validation_errors": [],
+      "model_requested": "gpt-6-luna",
+      "effort": "max",
+      "provider": "codex-chatgpt-plan",
+      "billing": "chatgpt_plan",
+      "external_verification": "no_realizada",
+      "citation_editorial_corrections": 0,
+      "citation_locator_repairs": 0
+    },
+    {
+      "video_id": "pr4NI4Vu1mM",
+      "channel": "nacho",
+      "title": "Marca esta FECHA 🚨 El Día CLAVE para BITCOIN",
+      "estado": "parcial",
+      "claims": 5,
+      "evidences": 5,
+      "scenarios": 1,
+      "validation_errors": [],
+      "model_requested": "gpt-6-luna",
+      "effort": "max",
+      "provider": "codex-chatgpt-plan",
+      "billing": "chatgpt_plan",
+      "external_verification": "no_realizada",
+      "citation_editorial_corrections": 0,
+      "citation_locator_repairs": 0
+    },
+    {
+      "video_id": "P_mDw-EPq-I",
+      "channel": "nacho",
+      "title": "¡BOOM! Bitcoin a punto del MOVIMIENTO que NADIE ESPERA (ahora hago esto)",
+      "estado": "parcial",
+      "claims": 6,
+      "evidences": 9,
+      "scenarios": 3,
+      "validation_errors": [],
+      "model_requested": "gpt-6-luna",
+      "effort": "max",
+      "provider": "codex-chatgpt-plan",
+      "billing": "chatgpt_plan",
+      "external_verification": "no_realizada",
+      "citation_editorial_corrections": 3,
+      "citation_locator_repairs": 0
+    },
+    {
+      "video_id": "EjIq9w9Ji_M",
+      "channel": "cava",
+      "title": "Argentina: El oro de su Banco Central. Se espera una gran subida. José Luis Cava",
+      "estado": "parcial",
+      "claims": 9,
+      "evidences": 23,
+      "scenarios": 3,
+      "validation_errors": [],
+      "model_requested": "gpt-6-luna",
+      "effort": "max",
+      "provider": "codex-chatgpt-plan",
+      "billing": "chatgpt_plan",
+      "external_verification": "no_realizada",
+      "citation_editorial_corrections": 0,
+      "citation_locator_repairs": 0
+    },
+    {
+      "video_id": "Hq3F3EtRqvo",
+      "channel": "nacho",
+      "title": "🚨 EL DÓLAR SE DESPLOMA: ¿Qué hacer con tu dinero HOY?",
+      "estado": "parcial",
+      "claims": 5,
+      "evidences": 11,
+      "scenarios": 0,
+      "validation_errors": [],
+      "model_requested": "gpt-6-luna",
+      "effort": "max",
+      "provider": "codex-chatgpt-plan",
+      "billing": "chatgpt_plan",
+      "external_verification": "no_realizada",
+      "citation_editorial_corrections": 0,
+      "citation_locator_repairs": 5
+    }
+  ],
+  "historical_analyses_unchanged": 44,
+  "paid_model_api_fallback": false,
+  "analysis_cron_installed": false,
+  "tests": {
+    "analysis": 38,
+    "bridge": 48,
+    "mobile_python": 36
+  },
+  "usage_limit": "16 attempts per Bogotá day; 2 automatic attempts per job, one explicit technical recovery allowed up to3 total",
+  "usage_caveat": "Only usage actually returned and retained is recorded. Recovered first-attempt dollar short has usage null; earlier discarded corrections are not included in the final-response usage. No total token cost is invented.",
+  "public_verification": {
+    "url": "https://software-johnston-seed-aimed.trycloudflare.com/b4-urania/#/diario",
+    "generation": "727d2e99ae1e8991f74448a385f9c006",
+    "checks": [
+      {
+        "video_id": "4Bc8XaDRD4E",
+        "state": "analizado",
+        "public_hash_matches": true
+      },
+      {
+        "video_id": "pr4NI4Vu1mM",
+        "state": "analizado",
+        "public_hash_matches": true
+      },
+      {
+        "video_id": "P_mDw-EPq-I",
+        "state": "analizado",
+        "public_hash_matches": true
+      },
+      {
+        "video_id": "EjIq9w9Ji_M",
+        "state": "analizado",
+        "public_hash_matches": true
+      },
+      {
+        "video_id": "Hq3F3EtRqvo",
+        "state": "analizado",
+        "public_hash_matches": true
+      }
+    ]
+  }
+}

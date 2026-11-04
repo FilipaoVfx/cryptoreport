@@ -1,0 +1,14 @@
+{
+  "descripcion": "span_id sin trace_id no se puede correlacionar.",
+  "error_esperado": {
+    "keyword": "required",
+    "ruta": ""
+  },
+  "instancia": {
+    "ts": "2026-10-14T16:03:21Z",
+    "severity": "INFO",
+    "service": "cr-bridge",
+    "message": "paso",
+    "span_id": "2d711642b726b044"
+  }
+}

@@ -1,0 +1,68 @@
+{
+  "descripcion": "Una ejecución terminada (outcome ≠ running) necesita finished_at.",
+  "error_esperado": {
+    "keyword": "required",
+    "ruta": ""
+  },
+  "instancia": {
+    "run_id": "01a13b24-f440-769a-9150-683b38f3f19d",
+    "service": "cr-extractor",
+    "trigger": "timer",
+    "started_at": "2026-10-14T16:00:40Z",
+    "duration_s": 0.908,
+    "outcome": "ok",
+    "exit_code": 0,
+    "trace_id": "01a13b24f440769a9150683b38f3f19d",
+    "code": {
+      "version": "04a86b9-dirty",
+      "digest": "f8aa9649423ee26f0f6eae6cd595c0910510a3a9e53c1ac406c0c19ebabf21fb"
+    },
+    "config_version": 1,
+    "channels": {
+      "cava": {
+        "source": "rss",
+        "status": "ok",
+        "entries": 15,
+        "new_videos": 0
+      },
+      "criptoniano": {
+        "source": "rss",
+        "status": "ok",
+        "entries": 12,
+        "new_videos": 0
+      },
+      "nacho": {
+        "source": "rss",
+        "status": "ok",
+        "entries": 15,
+        "new_videos": 0
+      },
+      "kmanu": {
+        "source": "rss",
+        "status": "ok",
+        "entries": 15,
+        "new_videos": 0
+      },
+      "healthy": {
+        "source": "rss",
+        "status": "ok",
+        "entries": 15,
+        "new_videos": 0
+      }
+    },
+    "counts": {
+      "videos_due": 0,
+      "transcribed": 0,
+      "pending": 0,
+      "errors": 0,
+      "repaired": 0,
+      "recovered": 0
+    },
+    "errors": [],
+    "warnings": [],
+    "costs": {
+      "scrapertech_requests": 0,
+      "supadata_credits": 0
+    }
+  }
+}

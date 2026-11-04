@@ -1,0 +1,17 @@
+[Unit]
+Description=CryptoReport: purgar y publicar el Feed vigente, sin red
+
+[Service]
+Type=oneshot
+WorkingDirectory=/root/cryptoreport/services/social
+ExecStart=/usr/bin/python3 -m crsocial export
+Environment=CRA_ALLOW_API_ANALYSIS=false
+Environment=CR_SOCIAL_ALLOW_MODEL_API=false
+Environment=PYTHONUNBUFFERED=1
+TimeoutStartSec=2min
+MemoryMax=300M
+Nice=10
+NoNewPrivileges=true
+PrivateTmp=true
+PrivateNetwork=true
+

@@ -1,0 +1,59 @@
+{
+  "job_id": "i2LUeRtROdg__32dfbdf3a68ff76dc72c3a2850d50f47685b60bd9a0cfe9d8e0fe6e5aee0015c",
+  "video_id": "i2LUeRtROdg",
+  "channel": "criptoniano",
+  "state": "blocked",
+  "detail": "Scheduled registró un intento sin resultado",
+  "updated_at": "2026-10-14T05:20:46.880499+00:00",
+  "published_at": "2026-10-12T21:13:10+00:00",
+  "title": "Por qué Trump puede disparar Bitcoin [Mi Plan]",
+  "duration_s": 902.0,
+  "is_short": false,
+  "hashes": {
+    "transcript_sha256": "e18c194329f20016d5066ceaa40163e1b6b6fcf5e21f66edf7edddd488d92533",
+    "prompt_sha256": "082e5acbefbb832e35736ce85acf66cffbeefb7813133878666ec3578d29248f",
+    "schema_sha256": "7b88e0b75f8c36832a285d7ff70929a941844a510dd981c290f37d3d62af2e38",
+    "prompt_version": "1.0.0"
+  },
+  "transitions": [
+    {
+      "at": "2026-10-13T18:20:00Z",
+      "from": null,
+      "to": "queued",
+      "reason": "Transcripción válida dentro de la ventana de 48 h",
+      "actor": {
+        "kind": "service",
+        "id": "cr-bridge"
+      }
+    },
+    {
+      "at": "2026-10-13T18:33:12Z",
+      "from": "queued",
+      "to": "uploaded",
+      "reason": "Subida confirmada por relectura",
+      "actor": {
+        "kind": "service",
+        "id": "cr-bridge"
+      }
+    },
+    {
+      "at": "2026-10-14T05:20:46Z",
+      "from": "uploaded",
+      "to": "blocked",
+      "reason": "Scheduled registró un intento sin resultado",
+      "actor": {
+        "kind": "service",
+        "id": "cr-bridge"
+      }
+    }
+  ],
+  "agent_attempts": [
+    {
+      "agent_run_id": "3c884fc8-52b8-4d8d-9241-1e91882747fa",
+      "at": "2026-10-14T04:28:35Z",
+      "uploaded": false
+    }
+  ],
+  "analysis": null,
+  "retry_authorization": null
+}

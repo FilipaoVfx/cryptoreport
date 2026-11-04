@@ -1,0 +1,26 @@
+{
+  "observationCapture": "004",
+  "observationArgv": [
+    "env",
+    "PYTHONPATH=/root/cryptoreport/services/social",
+    "/usr/bin/python3",
+    "-m",
+    "unittest",
+    "discover",
+    "-s",
+    "/root/cryptoreport/services/social/tests"
+  ],
+  "observed": "",
+  "hypothesis": "Social contracts passed; ensure the Drive/semantic bridge still validates and publishes without invoking inference after the catalog expansion.",
+  "nextCapture": "005",
+  "nextArgv": [
+    "env",
+    "PYTHONPATH=/root/cryptoreport/services/bridge:/root/cryptoreport/services/analysis:/root/cryptoreport/services/transcripts",
+    "/root/cryptoreport/services/bridge/.venv/bin/python",
+    "-m",
+    "unittest",
+    "discover",
+    "-s",
+    "/root/cryptoreport/services/bridge/tests"
+  ]
+}

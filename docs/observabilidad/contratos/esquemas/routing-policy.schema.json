@@ -1,0 +1,85 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Política de enrutamiento, fallback y reintentos",
+  "description": "Cadenas ordenadas de herramientas por propósito, con las condiciones de salto, la política de reintentos y los cooldowns. Describe lo que hace el código hoy; un cambio pasa por solicitud de cambio.",
+  "type": "object",
+  "required": ["registry_version", "chains"],
+  "additionalProperties": false,
+  "properties": {
+    "registry_version": {"$ref": "common.schema.json#/$defs/SemVer"},
+    "chains": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/Chain"}}
+  },
+  "$defs": {
+    "Chain": {
+      "type": "object",
+      "required": ["id", "service", "purpose", "enabled", "steps", "stop_rule", "retry"],
+      "additionalProperties": false,
+      "properties": {
+        "id": {"type": "string", "pattern": "^[a-z][a-z0-9_]*(\\.[a-z0-9_]+)*$"},
+        "service": {"$ref": "common.schema.json#/$defs/ServiceName"},
+        "purpose": {"type": "string", "minLength": 10},
+        "enabled": {"type": "boolean"},
+        "disabled_by": {"type": "string", "pattern": "^G-[0-9]{2}$", "description": "Guarda que mantiene la cadena apagada."},
+        "applies_to": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "channels": {"type": "array", "items": {"type": "string"}, "minItems": 1},
+            "is_short": {"enum": ["any", "true", "false"]}
+          }
+        },
+        "steps": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "required": ["tool"],
+            "additionalProperties": false,
+            "properties": {
+              "tool": {"type": "string", "pattern": "^[a-z][a-z0-9_]{1,40}$"},
+              "operation": {"type": "string"},
+              "model": {"type": "string"},
+              "mode": {"type": "string"},
+              "skip_if": {"type": "array", "items": {"type": "string", "minLength": 5}},
+              "advance_on": {"type": "array", "uniqueItems": true, "items": {"enum": ["ok_invalid_quality", "pending", "unavailable", "blocked", "error", "auth", "quota", "skipped", "drive_quota", "drive_auth", "drive_transport", "incomplete", "refusal"]}}
+            }
+          }
+        },
+        "stop_rule": {"type": "string", "minLength": 10},
+        "retry": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "per_call_tries": {"type": "integer", "minimum": 1},
+            "backoff_base_s": {"type": "integer", "minimum": 0},
+            "backoff_cap_s": {"type": "integer", "minimum": 0},
+            "max_attempts": {"type": "integer", "minimum": 1},
+            "give_up_hours": {"type": "number", "minimum": 0},
+            "automatic": {"type": "boolean"},
+            "note": {"type": "string"}
+          }
+        },
+        "cooldown": {
+          "type": "object",
+          "required": ["after_consecutive_errors", "on_outcomes", "duration_s"],
+          "additionalProperties": false,
+          "properties": {
+            "after_consecutive_errors": {"type": "integer", "minimum": 1},
+            "on_outcomes": {"type": "array", "items": {"type": "string"}, "uniqueItems": true},
+            "duration_s": {"type": "integer", "minimum": 1}
+          }
+        },
+        "guardrails": {"type": "array", "uniqueItems": true, "items": {"type": "string", "pattern": "^G-[0-9]{2}$"}},
+        "code": {
+          "type": "object",
+          "required": ["path", "anchor"],
+          "additionalProperties": false,
+          "properties": {"path": {"type": "string"}, "anchor": {"type": "string", "minLength": 4}}
+        }
+      },
+      "allOf": [
+        {"if": {"properties": {"enabled": {"const": false}}}, "then": {"required": ["disabled_by"]}}
+      ]
+    }
+  }
+}

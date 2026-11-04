@@ -1,0 +1,38 @@
+{
+  "descripcion": "Un índice listo publica su evaluación de calidad (DQ-E-04).",
+  "error_esperado": {
+    "keyword": "required",
+    "ruta": ""
+  },
+  "instancia": {
+    "index_id": "vector_index:transcripts-es",
+    "state": "ready",
+    "backend": "sqlite-vec",
+    "updated_at": "2026-11-03T02:12:00Z",
+    "embedding": {
+      "model": "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2",
+      "version": "1",
+      "dimension": 384,
+      "distance": "cosine",
+      "normalized": true,
+      "runtime": "local_cpu"
+    },
+    "chunking": {
+      "strategy": "segment_window",
+      "version": "1.0.0",
+      "target_tokens": 300,
+      "max_tokens": 512
+    },
+    "counts": {
+      "sources_total": 41,
+      "sources_indexed": 41,
+      "chunks_total": 512,
+      "chunks_embedded": 512,
+      "chunks_stale": 0,
+      "chunks_failed": 0
+    },
+    "freshness": {
+      "last_build_finished_at": "2026-11-03T02:12:00Z"
+    }
+  }
+}

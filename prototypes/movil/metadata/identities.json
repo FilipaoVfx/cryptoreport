@@ -1,0 +1,175 @@
+{
+  "assets": {
+    "btc": {
+      "path": "../media/identities/assets-btc-8022fd53c251f18c.png",
+      "source_url": "https://raw.githubusercontent.com/spothq/cryptocurrency-icons/master/128/color/btc.png",
+      "source": "cryptocurrency-icons · CC0",
+      "verified_at": "2026-10-29T01:05:11.315855+00:00"
+    },
+    "eth": {
+      "path": "../media/identities/assets-eth-99bf2102cc13a51b.png",
+      "source_url": "https://raw.githubusercontent.com/spothq/cryptocurrency-icons/master/128/color/eth.png",
+      "source": "cryptocurrency-icons · CC0",
+      "verified_at": "2026-10-29T01:05:11.448004+00:00"
+    },
+    "xrp": {
+      "path": "../media/identities/assets-xrp-0875539d872ac020.png",
+      "source_url": "https://raw.githubusercontent.com/spothq/cryptocurrency-icons/master/128/color/xrp.png",
+      "source": "cryptocurrency-icons · CC0",
+      "verified_at": "2026-10-29T01:05:11.348304+00:00"
+    },
+    "sol": {
+      "path": "../media/identities/assets-sol-b9296ce1118a6d15.png",
+      "source_url": "https://raw.githubusercontent.com/spothq/cryptocurrency-icons/master/128/color/sol.png",
+      "source": "cryptocurrency-icons · CC0",
+      "verified_at": "2026-10-29T01:05:11.345074+00:00"
+    },
+    "bnb": {
+      "path": "../media/identities/assets-bnb-7aef69406a4a5c74.png",
+      "source_url": "https://raw.githubusercontent.com/spothq/cryptocurrency-icons/master/128/color/bnb.png",
+      "source": "cryptocurrency-icons · CC0",
+      "verified_at": "2026-10-29T01:05:11.380164+00:00"
+    },
+    "dot": {
+      "path": "../media/identities/assets-dot-6051b0de048fea17.png",
+      "source_url": "https://raw.githubusercontent.com/spothq/cryptocurrency-icons/master/128/color/dot.png",
+      "source": "cryptocurrency-icons · CC0",
+      "verified_at": "2026-10-29T01:05:11.572488+00:00"
+    },
+    "atom": {
+      "path": "../media/identities/assets-atom-5bc992b9f953e6f2.png",
+      "source_url": "https://raw.githubusercontent.com/spothq/cryptocurrency-icons/master/128/color/atom.png",
+      "source": "cryptocurrency-icons · CC0",
+      "verified_at": "2026-10-29T01:05:11.568033+00:00"
+    },
+    "link": {
+      "path": "../media/identities/assets-link-6180dd8f67f797ea.png",
+      "source_url": "https://raw.githubusercontent.com/spothq/cryptocurrency-icons/master/128/color/link.png",
+      "source": "cryptocurrency-icons · CC0",
+      "verified_at": "2026-10-29T01:05:11.452420+00:00"
+    },
+    "ada": {
+      "path": "../media/identities/assets-ada-c1257317f1853dd6.png",
+      "source_url": "https://raw.githubusercontent.com/spothq/cryptocurrency-icons/master/128/color/ada.png",
+      "source": "cryptocurrency-icons · CC0",
+      "verified_at": "2026-10-29T01:05:11.659570+00:00"
+    },
+    "avax": {
+      "path": "../media/identities/assets-avax-0195b3b11e71fc3c.png",
+      "source_url": "https://raw.githubusercontent.com/spothq/cryptocurrency-icons/master/128/color/avax.png",
+      "source": "cryptocurrency-icons · CC0",
+      "verified_at": "2026-10-29T01:05:11.523173+00:00"
+    },
+    "nvda": {
+      "path": "../media/identities/assets-nvda-b0e4cfc12712c840.svg",
+      "source_url": "https://raw.githubusercontent.com/simple-icons/simple-icons/11.15.0/icons/nvidia.svg",
+      "source": "Simple Icons · CC0; marcas de sus titulares",
+      "verified_at": "2026-10-29T01:05:11.962652+00:00"
+    },
+    "googl": {
+      "path": "../media/identities/assets-googl-d8cf9fb2d5e234e0.svg",
+      "source_url": "https://raw.githubusercontent.com/simple-icons/simple-icons/11.15.0/icons/google.svg",
+      "source": "Simple Icons · CC0; marcas de sus titulares",
+      "verified_at": "2026-10-29T01:05:11.832029+00:00"
+    },
+    "aapl": {
+      "path": "../media/identities/assets-aapl-2a1509dccd25e6d2.svg",
+      "source_url": "https://raw.githubusercontent.com/simple-icons/simple-icons/11.15.0/icons/apple.svg",
+      "source": "Simple Icons · CC0; marcas de sus titulares",
+      "verified_at": "2026-10-29T01:05:12.008692+00:00"
+    },
+    "tsla": {
+      "path": "../media/identities/assets-tsla-4b94d9eaf23849d6.svg",
+      "source_url": "https://raw.githubusercontent.com/simple-icons/simple-icons/11.15.0/icons/tesla.svg",
+      "source": "Simple Icons · CC0; marcas de sus titulares",
+      "verified_at": "2026-10-29T01:05:12.084715+00:00"
+    },
+    "amzn": {
+      "path": "../media/identities/assets-amzn-f7ef379d2ea0da19.svg",
+      "source_url": "https://raw.githubusercontent.com/simple-icons/simple-icons/11.15.0/icons/amazon.svg",
+      "source": "Simple Icons · CC0; marcas de sus titulares",
+      "verified_at": "2026-10-29T01:05:12.081842+00:00"
+    },
+    "msft": {
+      "path": "../media/identities/assets-msft-f0fdaef83e59660c.svg",
+      "source_url": "https://raw.githubusercontent.com/simple-icons/simple-icons/11.15.0/icons/microsoft.svg",
+      "source": "Simple Icons · CC0; marcas de sus titulares",
+      "verified_at": "2026-10-29T01:05:11.947408+00:00"
+    },
+    "sui": {
+      "path": "../media/identities/assets-sui-4f8bdce8c8effcc5.png",
+      "source_url": "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/sui/info/logo.png",
+      "source": "Trust Wallet Assets · MIT; marcas de sus titulares",
+      "verified_at": "2026-10-29T01:05:12.082352+00:00"
+    },
+    "apt": {
+      "path": "../media/identities/assets-apt-030fc736338e392f.png",
+      "source_url": "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/aptos/info/logo.png",
+      "source": "Trust Wallet Assets · MIT; marcas de sus titulares",
+      "verified_at": "2026-10-29T01:05:12.297172+00:00"
+    },
+    "pol": {
+      "path": "../media/identities/assets-pol-ba495a374776ab6c.png",
+      "source_url": "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/polygon/info/logo.png",
+      "source": "Trust Wallet Assets · MIT; marcas de sus titulares",
+      "verified_at": "2026-10-29T01:05:12.298528+00:00"
+    },
+    "sonic": {
+      "path": "../media/identities/assets-sonic-f6a08690c283b992.png",
+      "source_url": "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/sonic/info/logo.png",
+      "source": "Trust Wallet Assets · MIT; marcas de sus titulares",
+      "verified_at": "2026-10-29T01:05:12.395014+00:00"
+    }
+  },
+  "creators": {
+    "cava": {
+      "path": "../media/identities/creators-cava-52f2d2ff5aa9146a.jpg",
+      "source_url": "https://yt3.googleusercontent.com/giVP2NSxhaZcmLJ9QBeqpWbmFJpWyM37q7yvK_nXjRY4lZcpNzGKxuxrOvoDzb-lzxv95rjUCA=s120-c-k-c0x00ffffff-no-rj",
+      "source": "YouTube · avatar público del canal",
+      "verified_at": "2026-10-29T01:05:13.041681+00:00"
+    },
+    "criptoniano": {
+      "path": "../media/identities/creators-criptoniano-ee37a31a20edded1.jpg",
+      "source_url": "https://yt3.googleusercontent.com/ujJV26fjtJojUg1Dwu-CaOXHFVvKgej4OJdPA1MaV6amHmmFfK6F2ilkm1h6K8_CTdQcJqcliw=s120-c-k-c0x00ffffff-no-rj",
+      "source": "YouTube · avatar público del canal",
+      "verified_at": "2026-10-29T01:05:12.928843+00:00"
+    },
+    "nacho": {
+      "path": "../media/identities/creators-nacho-c380e583fb0985f6.jpg",
+      "source_url": "https://yt3.googleusercontent.com/8isLNzIr7kqaIVOHU6URDWjbwy7cdPKf8Ys5mHHiabhTXUl3GpZ7DBEDFzVu75bzD7b0flEZPA=s120-c-k-c0x00ffffff-no-rj",
+      "source": "YouTube · avatar público del canal",
+      "verified_at": "2026-10-29T01:05:12.824417+00:00"
+    },
+    "kmanu": {
+      "path": "../media/identities/creators-kmanu-7b775fcddd7cc33d.jpg",
+      "source_url": "https://yt3.googleusercontent.com/dpr80piH6gGf7Fz8WBNNBTneAbvxQZSPSfqUN7kqoce2v08ggzaoHreOM3BKbGgRdUIEuWHD=s120-c-k-c0x00ffffff-no-rj",
+      "source": "YouTube · avatar público del canal",
+      "verified_at": "2026-10-29T01:05:12.947878+00:00"
+    },
+    "healthy": {
+      "path": "../media/identities/creators-healthy-a2b92ab2a5f71152.jpg",
+      "source_url": "https://yt3.googleusercontent.com/ytc/AIdro_np2b2X6mxstVM5_pDxhAioAiLkbWXZTi-65ja2p14VeA=s120-c-k-c0x00ffffff-no-rj",
+      "source": "YouTube · avatar público del canal",
+      "verified_at": "2026-10-29T01:05:13.962022+00:00"
+    },
+    "battaglia": {
+      "path": "../media/identities/creators-battaglia-1db92cf4b723a2a5.jpg",
+      "source_url": "https://yt3.googleusercontent.com/X56sS7sZFOBJmEXitKuaciF1iKnp9JuXif7ze7kLfhuNz0GCVM0LL94RrebO0FiWOqIGXbVjWA=s120-c-k-c0x00ffffff-no-rj",
+      "source": "YouTube · avatar público del canal",
+      "verified_at": "2026-10-29T01:05:13.565009+00:00"
+    },
+    "planbtc": {
+      "path": "../media/identities/creators-planbtc-53c858da6957dc55.jpg",
+      "source_url": "https://yt3.googleusercontent.com/A8PUJYyjlLn0lGwPQ-sPprhZ_48tUwiZXyDwGjQkDK_SnFIB7CilPh1cuM5qfPFBH_n8fk5-HDI=s120-c-k-c0x00ffffff-no-rj",
+      "source": "YouTube · avatar público del canal",
+      "verified_at": "2026-10-29T01:05:13.524609+00:00"
+    }
+  },
+  "checked_at": "2026-10-29T01:05:13.963311+00:00",
+  "attribution": {
+    "crypto": "https://github.com/spothq/cryptocurrency-icons/blob/master/LICENSE.md",
+    "companies": "https://github.com/simple-icons/simple-icons/blob/develop/LICENSE.md",
+    "chains": "https://github.com/trustwallet/assets/blob/master/LICENSE",
+    "creators": "Avatares públicos asociados al ID del canal; identidad y derechos de sus titulares."
+  }
+}

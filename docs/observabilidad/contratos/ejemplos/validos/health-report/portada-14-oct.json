@@ -1,0 +1,145 @@
+{
+  "generated_at": "2026-10-14T16:05:00Z",
+  "status": "critical",
+  "components": [
+    {
+      "id": "extractor",
+      "status": "ok",
+      "summary": "Ciclos cada 15 min; 5/5 canales por RSS.",
+      "last_run": {
+        "run_id": "01a13b24-f440-769a-9150-683b38f3f19d",
+        "finished_at": "2026-10-14T16:00:41Z",
+        "outcome": "ok"
+      },
+      "signals": [
+        {
+          "threshold_id": "SH-01",
+          "observed": 259,
+          "level": "ok"
+        },
+        {
+          "threshold_id": "SH-03",
+          "observed": 244,
+          "level": "ok"
+        }
+      ]
+    },
+    {
+      "id": "bridge",
+      "status": "critical",
+      "summary": "Cada ciclo termina con drive_quota.",
+      "last_run": {
+        "run_id": "01a13b27-1720-7eac-8aaf-1fb19af9d4cc",
+        "finished_at": "2026-10-14T16:03:21Z",
+        "outcome": "failed"
+      },
+      "signals": [
+        {
+          "threshold_id": "SH-05",
+          "observed": 1.0,
+          "level": "critical"
+        },
+        {
+          "threshold_id": "SH-14",
+          "observed": 1,
+          "level": "warning"
+        }
+      ]
+    },
+    {
+      "id": "scheduled_agent",
+      "status": "degraded",
+      "summary": "Último comprobante con error hace 10 h 47 min; GCR 0,967.",
+      "signals": [
+        {
+          "threshold_id": "SH-12",
+          "observed": 38803,
+          "level": "warning"
+        },
+        {
+          "threshold_id": "AP-01",
+          "observed": 0.967,
+          "level": "ok"
+        },
+        {
+          "threshold_id": "AP-03",
+          "observed": 0.556,
+          "level": "warning"
+        },
+        {
+          "threshold_id": "AP-04",
+          "observed": 1,
+          "level": "warning"
+        }
+      ]
+    },
+    {
+      "id": "publication",
+      "status": "ok",
+      "summary": "data.json y datos de Urania publicados a las 15:30 UTC.",
+      "signals": [
+        {
+          "threshold_id": "SH-11",
+          "observed": 2054,
+          "level": "ok"
+        }
+      ]
+    },
+    {
+      "id": "analysis_api",
+      "status": "disabled",
+      "summary": "Guarda G-01 cerrada; 0 USD este mes.",
+      "signals": [
+        {
+          "threshold_id": "CO-03",
+          "observed": 0,
+          "level": "ok"
+        }
+      ]
+    },
+    {
+      "id": "telemetry",
+      "status": "unknown",
+      "summary": "Pila OTel pendiente (Fase 1).",
+      "signals": [
+        {
+          "threshold_id": "SH-15",
+          "observed": null,
+          "level": "not_measured"
+        }
+      ]
+    }
+  ],
+  "slos": [
+    {
+      "threshold_id": "SH-01",
+      "objective": 0.99,
+      "attainment": 1.0,
+      "window": "30d",
+      "error_budget_remaining": 1.0
+    }
+  ],
+  "alerts_firing": 4,
+  "budgets": [
+    {
+      "name": "supadata_credits",
+      "used": 4,
+      "limit": 20,
+      "unit": "{credit}",
+      "projected_month_end": 9
+    },
+    {
+      "name": "scrapertech_requests",
+      "used": 87,
+      "limit": 1000,
+      "unit": "{request}",
+      "projected_month_end": 193
+    },
+    {
+      "name": "model_api_usd",
+      "used": 0,
+      "limit": 0,
+      "unit": "{USD}"
+    }
+  ]
+}

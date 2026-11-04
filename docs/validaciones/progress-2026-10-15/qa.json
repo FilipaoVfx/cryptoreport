@@ -1,0 +1,14 @@
+[
+  {
+    "signalWidth": 390,
+    "status": "PASS"
+  },
+  {
+    "signalWidth": 360,
+    "status": "PASS"
+  },
+  {
+    "feed": "expiry, open modal, automatic fetch, return to tab, filters",
+    "status": "PASS"
+  }
+]

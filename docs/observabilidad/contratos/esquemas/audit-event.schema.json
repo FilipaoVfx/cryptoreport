@@ -1,0 +1,51 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Evento de auditoría",
+  "description": "Registro append-only con hash encadenado: hash = sha256(prev_hash + \"\\n\" + JSON canónico del evento sin el campo hash). El primer evento usa prev_hash = 64 ceros. Las IP y agentes de usuario se guardan como hash con sal, nunca en claro.",
+  "type": "object",
+  "required": ["seq", "event_id", "at", "actor", "action", "target", "outcome", "prev_hash", "hash"],
+  "additionalProperties": false,
+  "properties": {
+    "seq": {"type": "integer", "minimum": 1},
+    "event_id": {"$ref": "common.schema.json#/$defs/Uuid"},
+    "at": {"$ref": "common.schema.json#/$defs/Timestamp"},
+    "actor": {"$ref": "common.schema.json#/$defs/Actor"},
+    "action": {"enum": [
+      "session.login", "session.logout", "session.login_failed",
+      "feedback.create",
+      "intervention.request", "intervention.approve", "intervention.reject", "intervention.execute", "intervention.cancel", "intervention.revert",
+      "config.propose", "config.validate", "config.approve", "config.reject", "config.apply", "config.rollback",
+      "alert.acknowledge", "alert.silence",
+      "asset.export", "asset.quarantine", "asset.release", "asset.version_create",
+      "user.create", "user.role_change", "user.disable",
+      "audit.verify"
+    ]},
+    "target": {"$ref": "common.schema.json#/$defs/TargetRef"},
+    "outcome": {"enum": ["success", "failure", "denied"]},
+    "reason": {"type": "string", "maxLength": 500},
+    "request": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "ip_hash": {"$ref": "common.schema.json#/$defs/Sha256"},
+        "user_agent_hash": {"$ref": "common.schema.json#/$defs/Sha256"},
+        "trace_id": {"$ref": "common.schema.json#/$defs/TraceId"},
+        "idempotency_key": {"type": "string", "maxLength": 128}
+      }
+    },
+    "diff": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "before_sha256": {"$ref": "common.schema.json#/$defs/Sha256"},
+        "after_sha256": {"$ref": "common.schema.json#/$defs/Sha256"}
+      }
+    },
+    "prev_hash": {"$ref": "common.schema.json#/$defs/Sha256"},
+    "hash": {"$ref": "common.schema.json#/$defs/Sha256"}
+  },
+  "allOf": [
+    {"if": {"properties": {"seq": {"const": 1}}}, "then": {"properties": {"prev_hash": {"const": "0000000000000000000000000000000000000000000000000000000000000000"}}}},
+    {"if": {"properties": {"outcome": {"const": "denied"}}}, "then": {"required": ["reason"]}}
+  ]
+}

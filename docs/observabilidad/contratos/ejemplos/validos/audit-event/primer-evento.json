@@ -1,0 +1,24 @@
+{
+  "event_id": "0d25605e-045a-42f0-afeb-529805bb978d",
+  "at": "2026-10-14T16:19:30Z",
+  "actor": {
+    "kind": "user",
+    "id": "revisor-1",
+    "display_name": "Cuenta de revisión 1",
+    "roles": [
+      "reviewer"
+    ]
+  },
+  "action": "session.login",
+  "target": {
+    "kind": "session",
+    "id": "revisor-1"
+  },
+  "outcome": "success",
+  "request": {
+    "ip_hash": "2df6857e3f5c8132340373c58a61fbad82c6e6e9a71f1acef21e7018acbc162e"
+  },
+  "seq": 1,
+  "prev_hash": "0000000000000000000000000000000000000000000000000000000000000000",
+  "hash": "3f4c0a4fffd28bceb85ea71cd3614356d6b52e1db80209889aff65cdc36377fd"
+}

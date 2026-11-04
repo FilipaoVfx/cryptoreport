@@ -1,0 +1,41 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "pipeline-status.json (contrato v1, tal cual existe)",
+  "description": "Informe que escribe Bridge.health() en bridge/status.json y copia como pipeline-status.json. Describe el formato actual sin cambios para que el panel lo consuma desde la Fase 2 y para detectar deriva (PV-07).",
+  "type": "object",
+  "required": ["generated_at", "status", "last_sync_at", "last_published_at", "last_receipt_at", "last_receipt_status", "jobs", "oldest_pending_at", "warnings", "errors", "extraction", "model_api_enabled"],
+  "additionalProperties": false,
+  "properties": {
+    "generated_at": {"$ref": "common.schema.json#/$defs/Timestamp"},
+    "status": {"enum": ["ok", "degraded"]},
+    "last_sync_at": {"$ref": "#/$defs/NullableTimestamp"},
+    "last_published_at": {"$ref": "#/$defs/NullableTimestamp"},
+    "last_receipt_at": {"$ref": "#/$defs/NullableTimestamp"},
+    "last_receipt_status": {"enum": ["resultados_subidos", "sin_pendientes", "error", null]},
+    "jobs": {
+      "type": "object",
+      "propertyNames": {"enum": ["queued", "needs_transcript", "upload_uncertain", "uploaded", "imported", "rejected", "conflict", "blocked", "superseded"]},
+      "additionalProperties": {"type": "integer", "minimum": 0}
+    },
+    "oldest_pending_at": {"$ref": "#/$defs/NullableTimestamp"},
+    "warnings": {"type": "array", "items": {"type": "string"}},
+    "errors": {"type": "array", "items": {"type": "string"}},
+    "extraction": {
+      "type": "object",
+      "required": ["last_finished_at", "channels", "pending"],
+      "additionalProperties": false,
+      "properties": {
+        "last_finished_at": {"$ref": "#/$defs/NullableTimestamp"},
+        "channels": {"type": "object", "propertyNames": {"$ref": "common.schema.json#/$defs/ChannelSlug"}, "additionalProperties": {"type": "string"}},
+        "pending": {"type": ["integer", "null"], "minimum": 0}
+      }
+    },
+    "model_api_enabled": {"const": false}
+  },
+  "allOf": [
+    {"if": {"properties": {"warnings": {"maxItems": 0}, "errors": {"maxItems": 0}}}, "then": {"properties": {"status": {"const": "ok"}}}, "else": {"properties": {"status": {"const": "degraded"}}}}
+  ],
+  "$defs": {
+    "NullableTimestamp": {"anyOf": [{"$ref": "common.schema.json#/$defs/Timestamp"}, {"type": "null"}]}
+  }
+}

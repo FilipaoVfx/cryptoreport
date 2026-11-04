@@ -1,0 +1,60 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Alerta",
+  "description": "Instancia de un umbral en modo alert que se ha cruzado. Toda alerta apunta a su umbral, a un runbook y, si existe, a la intervención sugerida.",
+  "type": "object",
+  "required": ["alert_id", "threshold_id", "severity", "state", "fired_at", "observed", "condition", "summary", "runbook"],
+  "additionalProperties": false,
+  "properties": {
+    "alert_id": {"$ref": "common.schema.json#/$defs/Uuid"},
+    "threshold_id": {"type": "string", "pattern": "^(SH|CO|TK|AP|RS|DQ-V|DQ-T|DQ-C|DQ-E|DQ-M|DQ-A)-[0-9]{2}$"},
+    "severity": {"enum": ["warning", "critical"]},
+    "state": {"enum": ["firing", "acknowledged", "resolved", "silenced"]},
+    "fired_at": {"$ref": "common.schema.json#/$defs/Timestamp"},
+    "resolved_at": {"$ref": "common.schema.json#/$defs/Timestamp"},
+    "observed": {"type": ["number", "string", "boolean", "null"]},
+    "condition": {"type": "string", "minLength": 3, "maxLength": 200, "description": "Comparación que disparó la alerta, p. ej. «> 2700 s»."},
+    "summary": {"type": "string", "minLength": 5, "maxLength": 300},
+    "runbook": {"type": "string", "pattern": "^RB-[0-9]{2}$"},
+    "intervention_suggested": {"type": "string", "pattern": "^[a-z][a-z0-9_]+$"},
+    "target": {"$ref": "common.schema.json#/$defs/TargetRef"},
+    "labels": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "service": {"$ref": "common.schema.json#/$defs/ServiceName"},
+        "channel": {"$ref": "common.schema.json#/$defs/ChannelSlug"},
+        "provider": {"type": "string"}
+      }
+    },
+    "acknowledged": {
+      "type": "object",
+      "required": ["by", "at"],
+      "additionalProperties": false,
+      "properties": {
+        "by": {"$ref": "common.schema.json#/$defs/Actor"},
+        "at": {"$ref": "common.schema.json#/$defs/Timestamp"},
+        "note": {"type": "string", "maxLength": 500}
+      }
+    },
+    "silenced_until": {"$ref": "common.schema.json#/$defs/Timestamp"},
+    "notifications": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["channel", "at", "ok"],
+        "additionalProperties": false,
+        "properties": {
+          "channel": {"enum": ["panel", "telegram"]},
+          "at": {"$ref": "common.schema.json#/$defs/Timestamp"},
+          "ok": {"type": "boolean"}
+        }
+      }
+    }
+  },
+  "allOf": [
+    {"if": {"properties": {"state": {"const": "resolved"}}}, "then": {"required": ["resolved_at"]}},
+    {"if": {"properties": {"state": {"const": "acknowledged"}}}, "then": {"required": ["acknowledged"]}},
+    {"if": {"properties": {"state": {"const": "silenced"}}}, "then": {"required": ["silenced_until"]}}
+  ]
+}

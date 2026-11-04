@@ -1,0 +1,15 @@
+{
+  "descripcion": "La captura de contenido no puede estar activada por defecto.",
+  "error_esperado": {
+    "keyword": "const",
+    "ruta": "/content_capture/default"
+  },
+  "base": "registros/semconv.json",
+  "parche": [
+    {
+      "op": "replace",
+      "path": "/content_capture/default",
+      "value": "on"
+    }
+  ]
+}

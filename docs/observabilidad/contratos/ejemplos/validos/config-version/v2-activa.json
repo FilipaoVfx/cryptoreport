@@ -1,0 +1,29 @@
+{
+  "version": 2,
+  "created_at": "2026-10-21T09:12:00Z",
+  "created_by": {
+    "kind": "user",
+    "id": "operador-1",
+    "display_name": "Cuenta de operación 1",
+    "roles": [
+      "operator"
+    ]
+  },
+  "change_id": "71796e3b-5195-441d-9a7f-a3a3a093c688",
+  "parent_version": 1,
+  "status": "active",
+  "activated_at": "2026-10-21T09:12:01Z",
+  "parameters": {
+    "extractor.lookback_hours": 48,
+    "extractor.max_videos_per_run": 10,
+    "extractor.providers_order": [
+      "scrapertech",
+      "ytdlp",
+      "supadata"
+    ],
+    "providers.supadata.monthly_credits": 20,
+    "analysis.reasoning_effort": "high",
+    "analysis.max_output_tokens": 64000
+  },
+  "digest": "9a209a742d421a188a3d15319518331a8b498a3988a7400b461d6382dfd06c7e"
+}

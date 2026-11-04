@@ -1,0 +1,14 @@
+{
+  "descripcion": "Un protocolo no implementado indica su fase.",
+  "error_esperado": {
+    "keyword": "required",
+    "ruta": "/protocols/[id=PV-09]"
+  },
+  "base": "registros/trazabilidad.json",
+  "parche": [
+    {
+      "op": "remove",
+      "path": "/protocols/[id=PV-09]/phase"
+    }
+  ]
+}

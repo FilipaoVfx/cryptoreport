@@ -1,0 +1,19 @@
+# Panel de administración de Urania/Diario (services/panel). Instalar:
+#   install -m 644 ops/cryptoreport-panel.service /etc/systemd/system/ && systemctl daemon-reload && systemctl enable --now cryptoreport-panel
+# Contraseña: python3 -B crpanel.py --set-password  ·  Token de la URL: /root/.cryptoreport-panel-token
+[Unit]
+Description=CryptoReport: panel de administración y contenidos (solo 127.0.0.1:8750)
+After=network-online.target
+
+[Service]
+Type=simple
+WorkingDirectory=/root/cryptoreport/services/panel
+ExecStart=/bin/sh -c 'exec /usr/bin/python3 -B crpanel.py --port 8750 --token "$(cat /root/.cryptoreport-panel-token)"'
+Restart=on-failure
+RestartSec=5
+MemoryMax=150M
+Nice=5
+Environment=PYTHONUNBUFFERED=1
+
+[Install]
+WantedBy=multi-user.target

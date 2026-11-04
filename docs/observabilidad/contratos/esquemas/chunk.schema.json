@@ -1,0 +1,66 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Chunk semántico de transcripción",
+  "description": "Fragmento de una versión concreta de transcripción para búsqueda semántica (Fase 3). Nunca parte un segmento y siempre es trazable a su rango de segmentos y al SHA-256 de la transcripción.",
+  "type": "object",
+  "required": ["chunk_id", "video_id", "channel", "transcript_sha256", "seq", "segment_range", "start_s", "end_s", "text_sha256", "token_count", "char_count", "language", "chunker", "embedding"],
+  "additionalProperties": false,
+  "properties": {
+    "chunk_id": {"type": "string", "pattern": "^[A-Za-z0-9_-]{11}:[0-9a-f]{12}:[0-9]{4}$", "description": "<video_id>:<12 primeros hex del sha256 de la transcripción>:<secuencia>."},
+    "video_id": {"$ref": "common.schema.json#/$defs/VideoId"},
+    "channel": {"$ref": "common.schema.json#/$defs/ChannelSlug"},
+    "transcript_sha256": {"$ref": "common.schema.json#/$defs/Sha256"},
+    "seq": {"type": "integer", "minimum": 0, "maximum": 9999},
+    "segment_range": {
+      "type": "object",
+      "required": ["first", "last"],
+      "additionalProperties": false,
+      "properties": {
+        "first": {"type": "integer", "minimum": 0},
+        "last": {"type": "integer", "minimum": 0}
+      }
+    },
+    "start_s": {"type": "number", "minimum": 0},
+    "end_s": {"type": "number", "exclusiveMinimum": 0},
+    "overlap_segments": {"type": "integer", "minimum": 0, "maximum": 3},
+    "text_sha256": {"$ref": "common.schema.json#/$defs/Sha256"},
+    "token_count": {"type": "integer", "minimum": 1},
+    "char_count": {"type": "integer", "minimum": 1},
+    "language": {"const": "es"},
+    "tags": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "topics": {"type": "array", "items": {"type": "string", "pattern": "^[a-z0-9-]+$"}, "uniqueItems": true},
+        "tone": {"enum": ["alcista", "bajista", "mixta", "neutra"]}
+      }
+    },
+    "chunker": {
+      "type": "object",
+      "required": ["strategy", "version", "target_tokens", "max_tokens"],
+      "additionalProperties": false,
+      "properties": {
+        "strategy": {"enum": ["segment_window"]},
+        "version": {"$ref": "common.schema.json#/$defs/SemVer"},
+        "target_tokens": {"type": "integer", "minimum": 50},
+        "max_tokens": {"type": "integer", "minimum": 50}
+      }
+    },
+    "embedding": {
+      "type": "object",
+      "required": ["status"],
+      "additionalProperties": false,
+      "properties": {
+        "status": {"enum": ["pending", "embedded", "stale", "failed"]},
+        "model": {"type": "string"},
+        "dimension": {"type": "integer", "minimum": 1},
+        "embedded_at": {"$ref": "common.schema.json#/$defs/Timestamp"},
+        "error": {"type": "string", "maxLength": 300}
+      },
+      "allOf": [
+        {"if": {"properties": {"status": {"const": "embedded"}}}, "then": {"required": ["status", "model", "dimension", "embedded_at"]}},
+        {"if": {"properties": {"status": {"const": "failed"}}}, "then": {"required": ["status", "error"]}}
+      ]
+    }
+  }
+}

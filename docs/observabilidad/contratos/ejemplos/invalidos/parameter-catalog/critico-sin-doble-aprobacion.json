@@ -1,0 +1,15 @@
+{
+  "descripcion": "Un parámetro critical exige segunda persona.",
+  "error_esperado": {
+    "keyword": "const",
+    "ruta": "/parameters/[key=analysis.allow_api]/approval"
+  },
+  "base": "registros/parametros.json",
+  "parche": [
+    {
+      "op": "replace",
+      "path": "/parameters/[key=analysis.allow_api]/approval",
+      "value": "none"
+    }
+  ]
+}

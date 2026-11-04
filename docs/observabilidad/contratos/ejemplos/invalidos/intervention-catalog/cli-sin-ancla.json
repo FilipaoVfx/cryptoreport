@@ -1,0 +1,14 @@
+{
+  "descripcion": "Un ejecutor CLI cita el texto del comando que invoca.",
+  "error_esperado": {
+    "keyword": "required",
+    "ruta": "/interventions/[id=retry_job]/executor"
+  },
+  "base": "registros/intervenciones.json",
+  "parche": [
+    {
+      "op": "remove",
+      "path": "/interventions/[id=retry_job]/executor/anchor"
+    }
+  ]
+}

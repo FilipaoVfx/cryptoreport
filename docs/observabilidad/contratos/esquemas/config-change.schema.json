@@ -1,0 +1,77 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Solicitud de cambio de configuración",
+  "description": "Ciclo de vida de un cambio de parámetros, prompts, enrutamiento o guardas: borrador → validación automática → aprobación → aplicación → (reversión). La regla de que quien aprueba no puede ser quien solicita la comprueba el panel y validate_contracts.py.",
+  "type": "object",
+  "required": ["change_id", "state", "created_at", "created_by", "base_version", "changes", "reason", "risk", "required_approvals", "approvals", "validations"],
+  "additionalProperties": false,
+  "properties": {
+    "change_id": {"$ref": "common.schema.json#/$defs/Uuid"},
+    "state": {"enum": ["draft", "validating", "validation_failed", "pending_approval", "approved", "applied", "rejected", "rolled_back", "cancelled"]},
+    "created_at": {"$ref": "common.schema.json#/$defs/Timestamp"},
+    "created_by": {"$ref": "common.schema.json#/$defs/Actor"},
+    "base_version": {"type": "integer", "minimum": 1, "description": "Versión activa al proponer; si cambia antes de aplicar, la solicitud debe revalidarse (ETag/If-Match)."},
+    "changes": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["key", "from", "to"],
+        "additionalProperties": false,
+        "properties": {
+          "key": {"$ref": "parameter-catalog.schema.json#/$defs/ParameterKey"},
+          "from": {},
+          "to": {},
+          "clamped": {
+            "type": "object",
+            "required": ["requested", "applied", "guardrail"],
+            "additionalProperties": false,
+            "properties": {
+              "requested": {},
+              "applied": {},
+              "guardrail": {"type": "string", "pattern": "^G-[0-9]{2}$"}
+            }
+          }
+        }
+      }
+    },
+    "reason": {"type": "string", "minLength": 10, "maxLength": 1000},
+    "risk": {"enum": ["low", "medium", "high", "critical"]},
+    "required_approvals": {"type": "integer", "minimum": 0, "maximum": 2},
+    "approvals": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["by", "at", "decision"],
+        "additionalProperties": false,
+        "properties": {
+          "by": {"$ref": "common.schema.json#/$defs/Actor"},
+          "at": {"$ref": "common.schema.json#/$defs/Timestamp"},
+          "decision": {"enum": ["approve", "reject"]},
+          "comment": {"type": "string", "maxLength": 500}
+        }
+      }
+    },
+    "validations": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["check", "status"],
+        "additionalProperties": false,
+        "properties": {
+          "check": {"enum": ["schema", "bounds", "host_ceiling", "guardrails", "offline_tests", "eval_gate", "cost_estimate"]},
+          "status": {"enum": ["pass", "fail", "skipped"]},
+          "detail": {"type": "string", "maxLength": 500}
+        }
+      }
+    },
+    "applied_version": {"type": "integer", "minimum": 1},
+    "applied_at": {"$ref": "common.schema.json#/$defs/Timestamp"},
+    "rollback_of": {"type": "integer", "minimum": 1}
+  },
+  "allOf": [
+    {"if": {"properties": {"state": {"enum": ["applied", "rolled_back"]}}}, "then": {"required": ["applied_version", "applied_at"]}},
+    {"if": {"properties": {"risk": {"enum": ["high", "critical"]}}}, "then": {"properties": {"required_approvals": {"minimum": 1}}}},
+    {"if": {"properties": {"state": {"enum": ["approved", "applied"]}}}, "then": {"properties": {"validations": {"minItems": 1, "items": {"properties": {"status": {"enum": ["pass", "skipped"]}}}}}}}
+  ]
+}

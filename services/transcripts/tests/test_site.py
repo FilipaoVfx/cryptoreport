@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import json
+import hashlib
 import tempfile
 import unittest
 from datetime import timedelta
@@ -73,6 +74,21 @@ class Analyses(unittest.TestCase):
                "analysis": {"estado": "parcial", "resumen": {"tesis_principal": "Tesis"},
                             "afirmaciones": [{"mercado": {"activo_literal": "Bitcoin"}}, {"mercado": None}]}}
         path.write_text(json.dumps(doc), encoding="utf-8")
+        if status == "ok":
+            transcript = path.parent.parent.parent / "transcripts" / path.parent.name / path.name
+            transcript.parent.mkdir(parents=True, exist_ok=True)
+            transcript.write_bytes(b'{"video":{"video_id":"vid1"}}')
+            doc["meta"]["transcript_sha256"] = hashlib.sha256(transcript.read_bytes()).hexdigest()
+            path.write_text(json.dumps(doc), encoding="utf-8")
+
+    def test_changed_transcript_hides_stale_analysis(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            adir = Path(tmp)/"analysis"
+            p = adir/"nacho/2026-10-12_vid1.json"
+            self.write(p)
+            self.assertIn("vid1",collect_analyses(adir))
+            (Path(tmp)/"transcripts/nacho"/p.name).write_bytes(b'{"changed":true}')
+            self.assertFalse(collect_analyses(adir))
 
     def test_only_valid_analyses_are_published_and_stale_ones_removed(self):
         with tempfile.TemporaryDirectory() as tmp:

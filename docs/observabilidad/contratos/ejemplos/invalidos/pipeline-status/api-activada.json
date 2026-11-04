@@ -1,0 +1,41 @@
+{
+  "descripcion": "El puente nunca declara la API de modelos activada.",
+  "error_esperado": {
+    "keyword": "const",
+    "ruta": "/model_api_enabled"
+  },
+  "instancia": {
+    "generated_at": "2026-10-14T16:03:21.779785+00:00",
+    "status": "degraded",
+    "last_sync_at": "2026-10-14T16:00:46.718322+00:00",
+    "last_published_at": "2026-10-14T15:30:46.879683+00:00",
+    "last_receipt_at": "2026-10-14T05:18:17+00:00",
+    "last_receipt_status": "error",
+    "jobs": {
+      "imported": 32,
+      "blocked": 1,
+      "uploaded": 2
+    },
+    "oldest_pending_at": "2026-10-14T10:20:00+00:00",
+    "warnings": [
+      "Cola pendiente sin comprobante reciente de Scheduled (8 h)",
+      "Última ejecución de Scheduled reportó error",
+      "Hay trabajos que requieren revisión"
+    ],
+    "errors": [
+      "rclone lsjson: drive_quota (1)"
+    ],
+    "extraction": {
+      "last_finished_at": "2026-10-14T16:00:41+00:00",
+      "channels": {
+        "cava": "ok (15 entradas)",
+        "criptoniano": "ok (12 entradas)",
+        "nacho": "ok (15 entradas)",
+        "kmanu": "ok (15 entradas)",
+        "healthy": "ok (15 entradas)"
+      },
+      "pending": 0
+    },
+    "model_api_enabled": true
+  }
+}

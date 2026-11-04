@@ -1,0 +1,52 @@
+{
+  "version": 1,
+  "id": "002",
+  "cwd": "/root/cryptoreport",
+  "argv": [
+    "env",
+    "CR_SOCIAL_LIVE_E2E=1",
+    "NODE_PATH=/root/gstack/node_modules",
+    "node",
+    "/root/cryptoreport/services/panel/tests/social-live.browser.cjs"
+  ],
+  "deadline": "/root/cryptoreport/services/social/validation/accounts-2026-10-16/qa/.qa-evidence/002/deadline.json",
+  "timing": [
+    {
+      "guard": "qa-deadline",
+      "event": "started",
+      "version": 1,
+      "startedAt": "2026-10-16T17:16:46.936Z",
+      "deadlineAt": "2026-10-16T17:19:46.936Z",
+      "budgetMs": 180000,
+      "observedAt": "2026-10-16T17:16:46.944Z",
+      "remainingMs": 179992,
+      "expired": false
+    },
+    {
+      "guard": "qa-deadline",
+      "event": "finished",
+      "observedAt": "2026-10-16T17:17:27.701Z",
+      "deadlineAt": "2026-10-16T17:19:46.936Z",
+      "timedOut": false,
+      "exitCode": 0
+    }
+  ],
+  "startedAt": "2026-10-16T17:16:46.939Z",
+  "completedAt": "2026-10-16T17:17:27.706Z",
+  "exitCode": 0,
+  "signal": null,
+  "status": "complete",
+  "observation": {
+    "sha256": "3343787904d933329239c7e4360893dad7c4ebdfc8a7474b57b338d4c4d0a783",
+    "bytes": 1743
+  },
+  "publicOutput": true,
+  "stdout": {
+    "sha256": "3343787904d933329239c7e4360893dad7c4ebdfc8a7474b57b338d4c4d0a783",
+    "bytes": 1743
+  },
+  "stderr": {
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "bytes": 0
+  }
+}

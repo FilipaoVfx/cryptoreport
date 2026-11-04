@@ -1,0 +1,59 @@
+[
+  {
+    "width": 390,
+    "cards": [
+      {
+        "bottom": 312.109375,
+        "height": 143.375
+      },
+      {
+        "bottom": 456.484375,
+        "height": 143.375
+      }
+    ],
+    "reading": {
+      "height": 692,
+      "scroll": 692
+    },
+    "exceptions": 0,
+    "checks": "PASS"
+  },
+  {
+    "width": 360,
+    "cards": [
+      {
+        "bottom": 312.109375,
+        "height": 143.375
+      },
+      {
+        "bottom": 456.484375,
+        "height": 143.375
+      }
+    ],
+    "reading": {
+      "height": 648,
+      "scroll": 648
+    },
+    "exceptions": 0,
+    "checks": "PASS"
+  },
+  {
+    "width": 1280,
+    "cards": [
+      {
+        "bottom": 312.109375,
+        "height": 143.375
+      },
+      {
+        "bottom": 452.859375,
+        "height": 139.75
+      }
+    ],
+    "reading": {
+      "height": 648,
+      "scroll": 648
+    },
+    "exceptions": 0,
+    "checks": "PASS"
+  }
+]

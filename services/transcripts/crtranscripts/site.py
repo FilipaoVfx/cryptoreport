@@ -13,6 +13,8 @@ from pathlib import Path
 
 from .pipeline import PAGES_FALLBACK
 from .store import Store, now_utc
+from .quality import assess, analysis_matches
+from .observability import published, digest
 
 MAX_CYCLES = 192  # dos días de ciclos de 15 min
 ANALYSIS_WEB_DIR = "analysis"
@@ -22,6 +24,14 @@ MONTHS = ("ene", "feb", "mar", "abr", "may", "jun", "jul", "ago", "sep", "oct", 
 def _short_date(dt: datetime) -> str:
     """'09 oct 21:00' sin depender del locale del sistema (que aquí es inglés)."""
     return f"{dt:%d} {MONTHS[dt.month - 1]} {dt:%H:%M}"
+
+
+def hidden_videos(data_dir: Path) -> set[str]:
+    """Videos que el administrador ocultó desde el panel (panel/editorial.json); no se publican."""
+    try:
+        return set(json.loads((Path(data_dir) / "panel" / "editorial.json").read_text(encoding="utf-8")).get("hidden", {}))
+    except (OSError, ValueError, AttributeError):
+        return set()
 
 
 def _feed_state(state: str):
@@ -44,6 +54,12 @@ def collect_analyses(analysis_dir: Path) -> dict[str, dict]:
             continue
         meta, analysis = doc.get("meta") or {}, doc.get("analysis") or {}
         if meta.get("status") != "ok" or not (meta.get("validation") or {}).get("ok"):
+            continue
+        transcript = analysis_dir.parent / "transcripts" / path.parent.name / path.name
+        try:
+            if not analysis_matches(doc, transcript.read_bytes()):
+                continue
+        except OSError:
             continue
         claims = analysis.get("afirmaciones") or []
         found[meta.get("video_id")] = {
@@ -87,9 +103,18 @@ def build_data(config, store: Store, analyses: dict[str, dict] | None = None) ->
     first = store.db.execute("SELECT MIN(first_seen_at) FROM videos").fetchone()[0]
     service_start = datetime.fromisoformat(first) if first else now_utc()
     videos = []
+    hidden = hidden_videos(config.data_dir)
     for r in store.db.execute("SELECT * FROM videos WHERE status = 'ok' ORDER BY published_at DESC"):
+        if r["video_id"] in hidden:
+            continue
         published, fetched = datetime.fromisoformat(r["published_at"]), datetime.fromisoformat(r["fetched_at"])
         path = Path(r["transcript_path"])
+        try:
+            document = json.loads(path.read_text(encoding="utf-8"))
+            if not assess(document, config.language)["valid"]:
+                continue
+        except (OSError, ValueError):
+            continue
         try:
             rel = path.relative_to(config.transcripts_dir)
         except ValueError:
@@ -132,4 +157,6 @@ def export_site(config) -> Path:
     tmp.write_text(json.dumps(data, ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
     os.chmod(tmp, 0o644)
     os.replace(tmp, target)
+    published(config.data_dir, "site", {v["id"]:digest(json.loads(analyses[v["id"]]["source"].read_text())["analysis"])
+              for v in data["videos"] if v["analysis"]}, at=data["generatedAt"])
     return target

@@ -1,0 +1,60 @@
+{
+  "contract_version": "1.0.0",
+  "schemas": {
+    "alert.schema.json": "Alerta",
+    "asset.schema.json": "Activo de la Biblioteca",
+    "audit-event.schema.json": "Evento de auditoría",
+    "chunk.schema.json": "Chunk semántico de transcripción",
+    "common.schema.json": "Definiciones comunes",
+    "config-change.schema.json": "Solicitud de cambio de configuración",
+    "config-version.schema.json": "Versión de configuración",
+    "evaluation-result.schema.json": "Resultado de evaluación",
+    "feedback.schema.json": "Feedback 👍/👎",
+    "guardrail-policy.schema.json": "Políticas de guardrails activas",
+    "health-report.schema.json": "Informe de salud del panel",
+    "intervention-catalog.schema.json": "Catálogo de intervenciones manuales",
+    "intervention.schema.json": "Intervención manual",
+    "job.schema.json": "Trabajo del puente",
+    "log-record.schema.json": "Línea de log estructurado",
+    "parameter-catalog.schema.json": "Catálogo de parámetros ajustables",
+    "pipeline-status.schema.json": "pipeline-status.json (contrato v1, tal cual existe)",
+    "quality-report.schema.json": "Informe de calidad de datos",
+    "routing-policy.schema.json": "Política de enrutamiento, fallback y reintentos",
+    "run-record.schema.json": "Registro de ejecución",
+    "search.schema.json": "Búsqueda en la Biblioteca",
+    "semconv-registry.schema.json": "Registro de nombres de telemetría",
+    "span-record.schema.json": "Span normalizado",
+    "thresholds.schema.json": "Registro de umbrales",
+    "tool-registry.schema.json": "Registro de herramientas y proveedores",
+    "traceability.schema.json": "Trazabilidad de requisitos y protocolos de validación",
+    "vector-index-status.schema.json": "Estado de un índice vectorial"
+  },
+  "registries": {
+    "registros/semconv.json": "esquemas/semconv-registry.schema.json",
+    "registros/umbrales.json": "esquemas/thresholds.schema.json",
+    "registros/parametros.json": "esquemas/parameter-catalog.schema.json",
+    "registros/herramientas.json": "esquemas/tool-registry.schema.json",
+    "registros/enrutamiento.json": "esquemas/routing-policy.schema.json",
+    "registros/guardrails.json": "esquemas/guardrail-policy.schema.json",
+    "registros/intervenciones.json": "esquemas/intervention-catalog.schema.json",
+    "registros/trazabilidad.json": "esquemas/traceability.schema.json"
+  },
+  "openapi": {
+    "file": "openapi.yaml",
+    "oas_schema": "vendor/oas-3.1-schema-2026-08-03.json"
+  },
+  "vendor": {
+    "vendor/oas-3.1-schema-2026-08-03.json": {
+      "source": "https://spec.openapis.org/oas/3.1/schema/2026-08-03",
+      "license": "Apache-2.0 (OpenAPI Initiative)",
+      "note": "Esquema oficial de documentos OpenAPI 3.1.x sin validación de Schema Objects.",
+      "sha256": "59f106413cb48c31299f96f024c938d3628aed6cd02cd14bcfb2fcaae7a130b6"
+    },
+    "vendor/otel-semconv-genai-0779402.json": {
+      "source": "herramientas/extract_semconv.py --genai-commit 07794021bfe46e1c241408b6f55cb4354bd28318 --core-tag v1.44.0",
+      "license": "Apache-2.0 (nombres derivados de open-telemetry/semantic-conventions-genai y semantic-conventions)",
+      "note": "Instantánea de nombres, estabilidad, tipos, instrumentos y unidades.",
+      "sha256": "6a32833bab7ccb306d7b19e1f257f4b758facb2ae2ede7e76913f84ac062b18b"
+    }
+  }
+}

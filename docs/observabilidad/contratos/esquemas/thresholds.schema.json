@@ -1,0 +1,114 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Registro de umbrales",
+  "description": "Umbrales de salud, coste, rendimiento de agentes, calidad de datos y recursos. Es la fuente única: las tablas del documento se generan desde aquí y el validador comprueba las anclas de código.",
+  "type": "object",
+  "required": ["registry_version", "measured_at", "thresholds"],
+  "additionalProperties": false,
+  "properties": {
+    "registry_version": {"$ref": "common.schema.json#/$defs/SemVer"},
+    "measured_at": {"$ref": "common.schema.json#/$defs/Timestamp", "description": "Momento de la medición de la línea base."},
+    "thresholds": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/Threshold"}}
+  },
+  "$defs": {
+    "Threshold": {
+      "type": "object",
+      "required": ["id", "domain", "category", "name", "description", "signal", "aggregation", "unit", "window", "mode", "source"],
+      "additionalProperties": false,
+      "properties": {
+        "id": {"type": "string", "pattern": "^(SH|CO|TK|AP|RS|DQ-V|DQ-T|DQ-C|DQ-E|DQ-M|DQ-A)-[0-9]{2}$"},
+        "domain": {"enum": ["system_health", "cost", "agent_performance", "data_quality", "resources"]},
+        "category": {"enum": ["extractor", "bridge", "providers", "latency", "publication", "telemetry", "budget", "tokens", "scheduled_agent", "trajectory", "autorater", "human_feedback", "video_metadata", "transcript", "chunking", "embeddings", "tagging", "analysis", "resources"]},
+        "name": {"type": "string", "minLength": 5, "maxLength": 90},
+        "description": {"type": "string", "minLength": 10},
+        "signal": {
+          "description": "Origen del valor observado: metric:<nombre del registro>, ledger:<registro>.<campo>, check:<comprobación>, eval:<gen_ai.evaluation.name>, external:<fuente> o derived:<expresión>.",
+          "type": "string",
+          "pattern": "^(metric|ledger|check|eval|external|derived):[^\\s].*$"
+        },
+        "aggregation": {"enum": ["per_item", "per_run", "last", "age", "max", "sum", "count", "ratio", "mean", "p50", "p90", "p95", "consecutive", "kappa"]},
+        "levels": {
+          "type": "object",
+          "minProperties": 1,
+          "additionalProperties": false,
+          "properties": {
+            "warning": {"$ref": "#/$defs/Level"},
+            "critical": {"$ref": "#/$defs/Level"}
+          }
+        },
+        "rule": {"type": "string", "minLength": 5, "description": "Condición compuesta cuando no basta un comparador."},
+        "unit": {"type": "string", "minLength": 1},
+        "window": {"enum": ["instant", "per_item", "per_run", "1h", "24h", "7d", "30d", "calendar_month"]},
+        "mode": {
+          "description": "enforce: el código bloquea; alert: avisa y abre intervención; monitor: se muestra sin avisar; proposed: aún no medible (requiere una fase de la hoja de ruta).",
+          "enum": ["enforce", "alert", "monitor", "proposed"]
+        },
+        "phase": {"type": "integer", "minimum": 0, "maximum": 4, "description": "Fase de la hoja de ruta en la que pasa a ser medible."},
+        "source": {
+          "type": "object",
+          "required": ["kind", "note"],
+          "additionalProperties": false,
+          "properties": {
+            "kind": {"enum": ["code", "existing_rule", "measurement", "proposal", "contract"]},
+            "path": {"type": "string", "pattern": "^[A-Za-z0-9_./-]+$"},
+            "anchor": {"type": "string", "minLength": 4, "description": "Texto literal que debe existir en path; si el código cambia, el validador lo detecta."},
+            "note": {"type": "string", "minLength": 5}
+          },
+          "allOf": [
+            {"if": {"properties": {"kind": {"enum": ["code", "existing_rule", "contract"]}}}, "then": {"required": ["path", "anchor"]}}
+          ]
+        },
+        "baseline": {
+          "type": "object",
+          "required": ["value", "note"],
+          "additionalProperties": false,
+          "properties": {
+            "value": {"type": ["number", "string", "boolean", "null"]},
+            "note": {"type": "string", "minLength": 3}
+          }
+        },
+        "alert": {
+          "type": "object",
+          "required": ["runbook"],
+          "additionalProperties": false,
+          "properties": {
+            "runbook": {"type": "string", "pattern": "^RB-[0-9]{2}$"},
+            "intervention": {"type": "string", "pattern": "^[a-z][a-z0-9_]+$"}
+          }
+        },
+        "slo": {
+          "type": "object",
+          "required": ["objective", "window"],
+          "additionalProperties": false,
+          "properties": {
+            "objective": {"type": "number", "exclusiveMinimum": 0, "maximum": 1},
+            "window": {"enum": ["7d", "30d"]}
+          }
+        }
+      },
+      "allOf": [
+        {"anyOf": [{"required": ["levels"]}, {"required": ["rule"]}]},
+        {"if": {"properties": {"mode": {"const": "alert"}}}, "then": {"required": ["alert", "levels"]}},
+        {"if": {"properties": {"mode": {"const": "proposed"}}}, "then": {"required": ["phase"]}}
+      ]
+    },
+    "Level": {
+      "type": "object",
+      "required": ["op", "value"],
+      "additionalProperties": false,
+      "properties": {
+        "op": {"enum": ["lt", "lte", "gt", "gte", "eq", "neq", "outside"]},
+        "value": {
+          "oneOf": [
+            {"type": "number"},
+            {"type": "boolean"},
+            {"type": "array", "items": {"type": "number"}, "minItems": 2, "maxItems": 2}
+          ]
+        }
+      },
+      "allOf": [
+        {"if": {"properties": {"op": {"const": "outside"}}}, "then": {"properties": {"value": {"type": "array"}}}, "else": {"properties": {"value": {"not": {"type": "array"}}}}}
+      ]
+    }
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "descripcion": "Un parámetro not_applicable explica por qué.",
+  "error_esperado": {
+    "keyword": "required",
+    "ruta": "/parameters/[key=analysis.temperature]"
+  },
+  "base": "registros/parametros.json",
+  "parche": [
+    {
+      "op": "remove",
+      "path": "/parameters/[key=analysis.temperature]/note"
+    }
+  ]
+}

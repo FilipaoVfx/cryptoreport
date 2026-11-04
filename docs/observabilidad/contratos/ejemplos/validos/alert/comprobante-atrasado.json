@@ -1,0 +1,21 @@
+{
+  "alert_id": "af86dd01-164d-4c57-b5fc-34c156b2136b",
+  "threshold_id": "SH-12",
+  "severity": "warning",
+  "state": "firing",
+  "fired_at": "2026-10-14T13:18:17Z",
+  "observed": 38404,
+  "condition": "> 28800 s con cola activa",
+  "summary": "Scheduled no deja comprobante desde hace 10 h 40 min y hay 2 trabajos subidos.",
+  "runbook": "RB-06",
+  "labels": {
+    "service": "cr-scheduled-agent"
+  },
+  "notifications": [
+    {
+      "channel": "panel",
+      "at": "2026-10-14T13:18:20Z",
+      "ok": true
+    }
+  ]
+}

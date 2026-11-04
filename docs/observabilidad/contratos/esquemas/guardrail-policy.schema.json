@@ -1,0 +1,61 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Políticas de guardrails activas",
+  "description": "Cada guarda declara dónde se aplica, si falla cerrada o abierta, qué prueba la demuestra y qué hace falta para cambiarla.",
+  "type": "object",
+  "required": ["registry_version", "guardrails"],
+  "additionalProperties": false,
+  "properties": {
+    "registry_version": {"$ref": "common.schema.json#/$defs/SemVer"},
+    "guardrails": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/Guardrail"}}
+  },
+  "$defs": {
+    "Guardrail": {
+      "type": "object",
+      "required": ["id", "title", "description", "enforcement", "mode", "failure_mode", "tests", "change"],
+      "additionalProperties": false,
+      "properties": {
+        "id": {"type": "string", "pattern": "^G-[0-9]{2}$"},
+        "title": {"type": "string", "minLength": 5, "maxLength": 80},
+        "description": {"type": "string", "minLength": 10},
+        "enforcement": {
+          "type": "object",
+          "required": ["point"],
+          "additionalProperties": false,
+          "properties": {
+            "point": {"enum": ["code", "systemd", "instructions", "panel", "collector", "ci"]},
+            "path": {"type": "string", "pattern": "^[A-Za-z0-9_./-]+$"},
+            "anchor": {"type": "string", "minLength": 4}
+          }
+        },
+        "mode": {"enum": ["enforce", "monitor", "proposed"]},
+        "failure_mode": {"enum": ["fail_closed", "fail_open"], "description": "fail_closed: ante la duda, bloquea (pago, publicación); fail_open: ante la duda, deja pasar (telemetría)."},
+        "tests": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {"type": "string", "pattern": "^[A-Za-z0-9_./-]+\\.py::[A-Za-z_][A-Za-z0-9_]*$"},
+          "description": "archivo::función; vacío solo si mode = proposed o la guarda no tiene prueba (se declara en gap)."
+        },
+        "gap": {"type": "string", "description": "Hueco conocido de la prueba o de la aplicación."},
+        "change": {
+          "type": "object",
+          "required": ["min_role", "approval", "requires"],
+          "additionalProperties": false,
+          "properties": {
+            "min_role": {"$ref": "common.schema.json#/$defs/Role"},
+            "approval": {"enum": ["none", "second_person"]},
+            "requires": {"type": "array", "items": {"type": "string", "minLength": 5}, "minItems": 1}
+          }
+        },
+        "thresholds": {"type": "array", "uniqueItems": true, "items": {"type": "string"}},
+        "parameters": {"type": "array", "uniqueItems": true, "items": {"type": "string"}},
+        "phase": {"type": "integer", "minimum": 0, "maximum": 4}
+      },
+      "allOf": [
+        {"if": {"properties": {"enforcement": {"properties": {"point": {"enum": ["code", "systemd", "instructions"]}}}}}, "then": {"properties": {"enforcement": {"required": ["point", "path", "anchor"]}}}},
+        {"if": {"properties": {"mode": {"const": "proposed"}}}, "then": {"required": ["phase"]}},
+        {"if": {"properties": {"mode": {"const": "enforce"}, "tests": {"maxItems": 0}}}, "then": {"required": ["gap"]}}
+      ]
+    }
+  }
+}

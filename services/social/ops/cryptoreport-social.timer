@@ -1,0 +1,11 @@
+[Unit]
+Description=Comprobar el feed cada hora; consultas cada 12 h y reintentos acotados
+
+[Timer]
+OnCalendar=*-*-* *:13:00 UTC
+RandomizedDelaySec=120
+Persistent=true
+Unit=cryptoreport-social.service
+
+[Install]
+WantedBy=timers.target

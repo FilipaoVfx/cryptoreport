@@ -1,0 +1,14 @@
+{
+  "descripcion": "Un span de origen otel-genai declara su tipo de la instantánea.",
+  "error_esperado": {
+    "keyword": "required",
+    "ruta": "/spans/[name=chat {gen_ai.request.model}]"
+  },
+  "base": "registros/semconv.json",
+  "parche": [
+    {
+      "op": "remove",
+      "path": "/spans/[name=chat {gen_ai.request.model}]/otel_span_type"
+    }
+  ]
+}

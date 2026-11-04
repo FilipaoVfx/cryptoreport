@@ -1,0 +1,50 @@
+{
+  "version": 1,
+  "id": "006",
+  "cwd": "/root/cryptoreport",
+  "argv": [
+    "/bin/bash",
+    "-c",
+    "node --test prototypes/movil/b4-urania/*.test.cjs"
+  ],
+  "deadline": "/root/cryptoreport/services/social/validation/accounts-2026-10-16/qa/.qa-evidence/006/deadline.json",
+  "timing": [
+    {
+      "guard": "qa-deadline",
+      "event": "started",
+      "version": 1,
+      "startedAt": "2026-10-16T17:19:31.659Z",
+      "deadlineAt": "2026-10-16T17:21:31.659Z",
+      "budgetMs": 120000,
+      "observedAt": "2026-10-16T17:19:31.661Z",
+      "remainingMs": 119998,
+      "expired": false
+    },
+    {
+      "guard": "qa-deadline",
+      "event": "finished",
+      "observedAt": "2026-10-16T17:19:31.999Z",
+      "deadlineAt": "2026-10-16T17:21:31.659Z",
+      "timedOut": false,
+      "exitCode": 0
+    }
+  ],
+  "startedAt": "2026-10-16T17:19:31.660Z",
+  "completedAt": "2026-10-16T17:19:32.009Z",
+  "exitCode": 0,
+  "signal": null,
+  "status": "complete",
+  "observation": {
+    "sha256": "2d19e0b24449dd90d615167587107bb6b27209823b0cf74737f87dd93d60201b",
+    "bytes": 2791
+  },
+  "publicOutput": true,
+  "stdout": {
+    "sha256": "f882fb52ac0277562c04acb27663046cc54a68220ef8a754f793dfb306ee28b4",
+    "bytes": 2748
+  },
+  "stderr": {
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "bytes": 0
+  }
+}

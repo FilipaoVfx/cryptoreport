@@ -1,0 +1,37 @@
+{
+  "descripcion": "Un autorater no puede bloquear publicaciones (mode gate) hasta pasar AP-11.",
+  "error_esperado": {
+    "keyword": "false",
+    "ruta": ""
+  },
+  "instancia": {
+    "evaluation_id": "6c86e4ff-597d-4e08-a23e-3bf4d5480b34",
+    "name": "cr.autorater.overall",
+    "kind": "autorater",
+    "evaluated_at": "2026-11-06T10:00:00Z",
+    "target": {
+      "kind": "analysis",
+      "id": "analysis:agFTCuv80XE",
+      "version": "d96416ddc27e8a77f9d1e9b80ce4c996e2c108b0fa90b561f3f1558613eac93a"
+    },
+    "evaluator": {
+      "kind": "llm",
+      "id": "juez-narrativas",
+      "version": "1.0.0",
+      "provider": "anthropic",
+      "model": "claude-sonnet-5-5",
+      "prompt_sha256": "60090e3d71dc75c0e66cdded04a4968c0a751fbb2ceef9929e12f8e5bc448727"
+    },
+    "score": {
+      "value": 4,
+      "label": null,
+      "normalized": 0.75,
+      "scale": "1-5"
+    },
+    "rubric": {
+      "id": "rubrica-narrativas",
+      "version": "1.0.0"
+    },
+    "mode": "gate"
+  }
+}

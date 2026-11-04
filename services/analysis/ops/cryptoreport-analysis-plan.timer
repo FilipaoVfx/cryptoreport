@@ -1,0 +1,12 @@
+[Unit]
+Description=CryptoReport: dispatch pending analyses every 15 minutes, including after reboot
+
+[Timer]
+OnBootSec=2min
+OnCalendar=*-*-* *:08,23,38,53:00
+RandomizedDelaySec=15
+Persistent=true
+Unit=cryptoreport-analysis-plan.service
+
+[Install]
+WantedBy=timers.target

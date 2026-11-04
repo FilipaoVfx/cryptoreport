@@ -1,0 +1,59 @@
+{
+  "evidence": [
+    {
+      "capture": "001",
+      "command": "Retained exact command in capture 001",
+      "contract": "Live admin negative input",
+      "expected": "Busy 409 can precede field validation; retry after lock release",
+      "classification": "superseded"
+    },
+    {
+      "capture": "002",
+      "command": "Retained exact command in capture 002",
+      "contract": "Authenticated admin edits and public Feed E2E",
+      "expected": "401/403 guards, invalid-window 422 with unchanged catalog, four source filters, exact modal text and canonical links at 390/1280 px",
+      "classification": "pass"
+    },
+    {
+      "capture": "003",
+      "command": "Retained exact command in capture 003",
+      "contract": "Panel administration fixtures",
+      "expected": "14 tests pass; invalid/expired profile tokens, identity pinning, edit revisions, disable/reenable and lock exclusion",
+      "classification": "pass"
+    },
+    {
+      "capture": "004",
+      "command": "Retained exact command in capture 004",
+      "contract": "Social ingestion fixtures",
+      "expected": "68 tests pass; 3 h cadence, account capacity, bounded credits, expiry during recovery and strict provider contracts",
+      "classification": "pass"
+    },
+    {
+      "capture": "005",
+      "command": "Retained exact command in capture 005",
+      "contract": "Bridge regression fixtures",
+      "expected": "45 tests pass without paid inference",
+      "classification": "pass"
+    },
+    {
+      "capture": "006",
+      "command": "Retained exact command in capture 006",
+      "contract": "Frontend contracts",
+      "expected": "32 tests pass for filtering, expiry, identity, evidence and narrative links",
+      "classification": "pass"
+    },
+    {
+      "capture": "007",
+      "command": "Retained exact command in capture 007",
+      "contract": "Current production publication and pause",
+      "expected": "HTTP200, matching public/local IDs, eight sources, zero pending pages, 3 h polling and analysis paused by user",
+      "classification": "pass"
+    }
+  ],
+  "limits": [
+    "Live counts are time-bound: 443 posts during browser E2E, 442 at final verification after one legitimate expiration.",
+    "Third-party failures and admin deactivation/concurrency edges are exercised with owned fixtures; live provider extraction and publication were also verified.",
+    "No seven-day availability certification or absolute X coverage claim.",
+    "Existing monitor tests emit SQLite ResourceWarning messages; all 14 tests pass. Analysis is paused and its draft runner is outside this completed Feed delivery."
+  ]
+}

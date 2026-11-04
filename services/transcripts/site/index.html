@@ -497,8 +497,7 @@
         <div class="p-3 border-b border-line grid gap-2">
           <div class="flex flex-wrap gap-1" role="group" aria-label="Filtrar por canal">
             <button type="button" class="seg-btn" data-ch="all" aria-pressed="true">Todos</button>
-            <button type="button" class="seg-btn" data-ch="nacho" aria-pressed="false">Nacho IC</button>
-            <button type="button" class="seg-btn" data-ch="kmanu" aria-pressed="false">KManuS88</button>
+            <!-- Un botón por canal de data.json (renderChannelFilters): ningún creador queda fijado aquí -->
             <button type="button" class="seg-btn" data-kind="video" aria-pressed="false">Solo largos</button>
             <button type="button" class="seg-btn" data-an="1" aria-pressed="false">Con análisis</button>
           </div>
@@ -961,11 +960,21 @@
   });
 
   // Filtros, vista, búsqueda y copia
-  document.querySelectorAll("[data-ch]").forEach(b => b.addEventListener("click", () => {
+  // Los botones de canal se regeneran con cada data.json: delegación en el grupo, no un listener por botón
+  function renderChannelFilters() {
+    if (state.ch !== "all" && !DATA.channels.some(c => c.slug === state.ch)) state.ch = "all";
+    document.querySelectorAll("[data-ch]:not([data-ch='all'])").forEach(b => b.remove());
+    document.querySelector("[data-kind]").insertAdjacentHTML("beforebegin", DATA.channels.map(c =>
+      `<button type="button" class="seg-btn" data-ch="${esc(c.slug)}" aria-pressed="${state.ch === c.slug}">${esc(c.name)}</button>`).join(""));
+    document.querySelector("[data-ch='all']").setAttribute("aria-pressed", String(state.ch === "all"));
+  }
+  document.querySelector('[aria-label="Filtrar por canal"]').addEventListener("click", e => {
+    const b = e.target.closest("[data-ch]");
+    if (!b) return;
     state.ch = b.dataset.ch;
     document.querySelectorAll("[data-ch]").forEach(o => o.setAttribute("aria-pressed", String(o === b)));
     renderList();
-  }));
+  });
   document.querySelector("[data-kind]").addEventListener("click", e => {
     state.onlyLong = !state.onlyLong; e.currentTarget.setAttribute("aria-pressed", String(state.onlyLong)); renderList();
   });
@@ -994,7 +1003,7 @@
     DATA = await r.json();
   }
   function renderAll() {
-    renderCycles(); renderKpis(); renderTable(); renderList(); renderLatestAnalysis();
+    renderChannelFilters(); renderCycles(); renderKpis(); renderTable(); renderList(); renderLatestAnalysis();
     if (!navPanel.hidden) renderNav();
   }
   (async () => {

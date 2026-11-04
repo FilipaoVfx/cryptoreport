@@ -1,0 +1,48 @@
+{
+  "descripcion": "El span chat {modelo} fija gen_ai.operation.name = chat.",
+  "error_esperado": {
+    "keyword": "registry",
+    "ruta": "/attributes/gen_ai.operation.name"
+  },
+  "instancia": {
+    "trace_id": "01a1319794a07559aaecc5b3bf5625dd",
+    "span_id": "59d6c4dd3e76ebc4",
+    "parent_span_id": "9761e901f69ee62a",
+    "name": "chat gpt-6.1-sol",
+    "kind": "CLIENT",
+    "start_time": "2026-10-12T19:29:41.003Z",
+    "end_time": "2026-10-12T19:36:38.871Z",
+    "status": {
+      "code": "OK"
+    },
+    "resource": {
+      "service.name": "cr-analysis",
+      "service.version": "04a86b9-dirty",
+      "deployment.environment.name": "prod",
+      "cr.code.digest": "4d5c01d761f4837a24bfd23668218450d41a1ee403813f435a26412761aecd91",
+      "cr.contract.version": "1.0.0",
+      "cr.telemetry.origin": "native"
+    },
+    "attributes": {
+      "gen_ai.operation.name": "text_completion",
+      "gen_ai.provider.name": "openai",
+      "gen_ai.request.model": "gpt-6.1-sol",
+      "gen_ai.response.model": "gpt-6.1-sol",
+      "gen_ai.response.finish_reasons": [
+        "stop"
+      ],
+      "gen_ai.usage.input_tokens": 20285,
+      "gen_ai.usage.output_tokens": 24866,
+      "gen_ai.usage.cache_read.input_tokens": 7392,
+      "gen_ai.usage.cache_write.input_tokens": 12890,
+      "gen_ai.usage.reasoning.output_tokens": 6214,
+      "gen_ai.request.reasoning.level": "high",
+      "gen_ai.request.max_tokens": 64000,
+      "gen_ai.output.type": "json",
+      "openai.api.type": "responses",
+      "server.address": "api.openai.com",
+      "cr.cost.usd": 0.2816,
+      "cr.cost.estimated": true
+    }
+  }
+}

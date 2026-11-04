@@ -1,0 +1,37 @@
+{
+  "change_id": "b21e7653-dcce-47fb-a0d7-4e9d8e8b2307",
+  "state": "pending_approval",
+  "created_at": "2026-10-22T11:00:00Z",
+  "created_by": {
+    "kind": "user",
+    "id": "operador-1",
+    "display_name": "Cuenta de operación 1",
+    "roles": [
+      "operator"
+    ]
+  },
+  "base_version": 2,
+  "changes": [
+    {
+      "key": "providers.supadata.monthly_credits",
+      "from": 20,
+      "to": 20,
+      "clamped": {
+        "requested": 40,
+        "applied": 20,
+        "guardrail": "G-16"
+      }
+    }
+  ],
+  "reason": "Subir el respaldo de Supadata por la caída prolongada de Scraper.Tech.",
+  "risk": "high",
+  "required_approvals": 1,
+  "approvals": [],
+  "validations": [
+    {
+      "check": "host_ceiling",
+      "status": "fail",
+      "detail": "40 supera el techo de 20 del host: se recorta a 20."
+    }
+  ]
+}

@@ -1,0 +1,82 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Catálogo de parámetros ajustables",
+  "description": "Todo parámetro que el panel muestra o permite cambiar, con su valor vigente, su origen en el código, el sobre de valores admitidos y el techo que solo el host puede mover.",
+  "type": "object",
+  "required": ["registry_version", "measured_at", "parameters"],
+  "additionalProperties": false,
+  "properties": {
+    "registry_version": {"$ref": "common.schema.json#/$defs/SemVer"},
+    "measured_at": {"$ref": "common.schema.json#/$defs/Timestamp"},
+    "parameters": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/Parameter"}}
+  },
+  "$defs": {
+    "ParameterKey": {"type": "string", "pattern": "^[a-z][a-z0-9_]*(\\.[a-z0-9_]+)+$"},
+    "Parameter": {
+      "type": "object",
+      "required": ["key", "title", "description", "service", "category", "type", "current", "apply", "risk", "min_role", "approval", "origin", "status"],
+      "additionalProperties": false,
+      "properties": {
+        "key": {"$ref": "#/$defs/ParameterKey"},
+        "title": {"type": "string", "minLength": 3, "maxLength": 80},
+        "description": {"type": "string", "minLength": 10},
+        "service": {"$ref": "common.schema.json#/$defs/ServiceName"},
+        "category": {"enum": ["prompt", "model", "routing", "tool_registry", "guardrail", "retry_fallback", "budget", "quality_gate", "scheduling", "tone", "alerting"]},
+        "type": {"enum": ["string", "integer", "number", "boolean", "enum", "string_list", "number_list", "artifact_ref"]},
+        "enum": {"type": "array", "minItems": 1, "uniqueItems": true},
+        "unit": {"type": "string"},
+        "current": {"description": "Valor efectivo en producción a la fecha de measured_at."},
+        "default": {"description": "Valor por defecto del código si no hay entorno."},
+        "bounds": {
+          "description": "Sobre que el panel admite sin cambiar el host.",
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "min": {"type": "number"},
+            "max": {"type": "number"},
+            "max_items": {"type": "integer", "minimum": 1}
+          }
+        },
+        "host_ceiling": {
+          "description": "Techo fijado en el host (unidad systemd o .env). El panel nunca lo supera: recorta y registra cr.guardrail.decision = clamp.",
+          "type": "object",
+          "required": ["value", "where"],
+          "additionalProperties": false,
+          "properties": {
+            "value": {},
+            "where": {"type": "string", "minLength": 5}
+          }
+        },
+        "apply": {
+          "description": "immediate: el panel; next_cycle: al empezar el siguiente ciclo; restart: requiere recargar systemd; release: nueva versión con validación y despliegue (prompts, esquemas, instrucciones, constantes).",
+          "enum": ["immediate", "next_cycle", "restart", "release"]
+        },
+        "risk": {"enum": ["low", "medium", "high", "critical"]},
+        "min_role": {"$ref": "common.schema.json#/$defs/Role"},
+        "approval": {"enum": ["none", "second_person"]},
+        "origin": {
+          "type": "object",
+          "required": ["kind", "path", "anchor"],
+          "additionalProperties": false,
+          "properties": {
+            "kind": {"enum": ["env", "code_constant", "systemd", "file", "instructions"]},
+            "name": {"type": "string", "description": "Variable de entorno o constante."},
+            "path": {"type": "string", "pattern": "^[A-Za-z0-9_./-]+$"},
+            "anchor": {"type": "string", "minLength": 4, "description": "Texto literal que debe existir en path."}
+          }
+        },
+        "status": {
+          "description": "active: el panel lo puede proponer; read_only: solo se muestra; not_applicable: el código no lo usa (se explica en note); planned: hoy es una constante y la Fase 2 lo lleva a configuración.",
+          "enum": ["active", "read_only", "not_applicable", "planned"]
+        },
+        "note": {"type": "string"}
+      },
+      "allOf": [
+        {"if": {"properties": {"type": {"const": "enum"}}}, "then": {"required": ["enum"]}},
+        {"if": {"properties": {"risk": {"enum": ["high", "critical"]}}}, "then": {"properties": {"approval": {"const": "second_person"}}}},
+        {"if": {"properties": {"risk": {"const": "critical"}}}, "then": {"properties": {"min_role": {"const": "admin"}}}},
+        {"if": {"properties": {"status": {"const": "not_applicable"}}}, "then": {"required": ["note"]}}
+      ]
+    }
+  }
+}

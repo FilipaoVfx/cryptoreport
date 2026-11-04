@@ -1,0 +1,4 @@
+# Agent Reach itself is installed from the audited checkout at commit
+# 94f06c1969dfc1834001269d79d3ad0972d9dee6, not the unrelated PyPI name.
+# Provider contract and direct, read-only adapter require this exact backend.
+twitter-cli==0.8.5

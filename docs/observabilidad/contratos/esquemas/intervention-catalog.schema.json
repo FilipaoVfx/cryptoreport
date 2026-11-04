@@ -1,0 +1,71 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Catálogo de intervenciones manuales",
+  "description": "Tipos de intervención que el panel puede ejecutar. Cada tipo declara rol mínimo, aprobación, precondiciones, efecto, deshacer y el ejecutor permitido (argv fijo, sin shell).",
+  "type": "object",
+  "required": ["registry_version", "interventions"],
+  "additionalProperties": false,
+  "properties": {
+    "registry_version": {"$ref": "common.schema.json#/$defs/SemVer"},
+    "interventions": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/InterventionType"}}
+  },
+  "$defs": {
+    "InterventionType": {
+      "type": "object",
+      "required": ["id", "title", "description", "target_kind", "min_role", "approval", "risk", "reversible", "preconditions", "effect", "executor", "cost", "phase"],
+      "additionalProperties": false,
+      "properties": {
+        "id": {"type": "string", "pattern": "^[a-z][a-z0-9_]+$"},
+        "title": {"type": "string", "minLength": 3, "maxLength": 60},
+        "description": {"type": "string", "minLength": 10},
+        "target_kind": {"$ref": "common.schema.json#/$defs/TargetKind"},
+        "min_role": {"$ref": "common.schema.json#/$defs/Role"},
+        "approval": {"enum": ["none", "second_person"]},
+        "risk": {"enum": ["low", "medium", "high", "critical"]},
+        "reversible": {"type": "boolean"},
+        "undo": {"type": "string", "pattern": "^[a-z][a-z0-9_]+$", "description": "Tipo de intervención que la deshace."},
+        "preconditions": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 5}},
+        "effect": {"type": "string", "minLength": 10},
+        "parameters": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["name", "type", "required"],
+            "additionalProperties": false,
+            "properties": {
+              "name": {"type": "string", "pattern": "^[a-z][a-z0-9_]*$"},
+              "type": {"enum": ["string", "video_id", "job_id", "sha256", "integer", "boolean", "path"]},
+              "required": {"type": "boolean"},
+              "max_length": {"type": "integer", "minimum": 1}
+            }
+          }
+        },
+        "executor": {
+          "type": "object",
+          "required": ["kind"],
+          "additionalProperties": false,
+          "properties": {
+            "kind": {"enum": ["cli", "systemctl", "config_change", "state_file", "panel"]},
+            "argv": {"type": "array", "items": {"type": "string"}, "minItems": 1, "description": "Plantilla argv; {param} se sustituye por un valor validado, nunca se interpreta en un shell."},
+            "cwd": {"type": "string"},
+            "unit": {"type": "string", "pattern": "^cryptoreport-[a-z-]+\\.(service|timer)$"},
+            "file": {"type": "string"},
+            "anchor": {"type": "string", "description": "Texto que debe existir en el código que el ejecutor invoca."},
+            "anchor_path": {"type": "string"}
+          },
+          "allOf": [
+            {"if": {"properties": {"kind": {"const": "cli"}}}, "then": {"required": ["argv", "cwd", "anchor", "anchor_path"]}},
+            {"if": {"properties": {"kind": {"const": "systemctl"}}}, "then": {"required": ["argv", "unit"]}}
+          ]
+        },
+        "cost": {"enum": ["none", "credits", "paid_api", "subscription_quota"]},
+        "phase": {"type": "integer", "minimum": 2, "maximum": 4, "description": "Fase en la que el panel ofrece la intervención."}
+      },
+      "allOf": [
+        {"if": {"properties": {"reversible": {"const": true}}}, "then": {"required": ["undo"]}},
+        {"if": {"properties": {"risk": {"enum": ["high", "critical"]}}}, "then": {"properties": {"approval": {"const": "second_person"}}}},
+        {"if": {"properties": {"cost": {"const": "paid_api"}}}, "then": {"properties": {"approval": {"const": "second_person"}}}}
+      ]
+    }
+  }
+}

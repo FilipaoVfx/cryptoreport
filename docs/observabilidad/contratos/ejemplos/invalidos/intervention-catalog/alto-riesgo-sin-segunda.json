@@ -1,0 +1,15 @@
+{
+  "descripcion": "Una intervención high exige segunda persona.",
+  "error_esperado": {
+    "keyword": "const",
+    "ruta": "/interventions/[id=import_reviewed]/approval"
+  },
+  "base": "registros/intervenciones.json",
+  "parche": [
+    {
+      "op": "replace",
+      "path": "/interventions/[id=import_reviewed]/approval",
+      "value": "none"
+    }
+  ]
+}

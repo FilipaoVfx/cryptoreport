@@ -1,0 +1,30 @@
+{
+  "alert_id": "d7f62f99-0568-4eba-8d35-39304c53c531",
+  "threshold_id": "AP-04",
+  "severity": "critical",
+  "state": "acknowledged",
+  "fired_at": "2026-10-14T05:18:30Z",
+  "observed": 22,
+  "condition": "attempted_job_ids > 5 sin modo manual declarado",
+  "summary": "La ejecución aabe58f1 intentó 22 trabajos; el límite de la revisión 1.3 es 2.",
+  "runbook": "RB-16",
+  "target": {
+    "kind": "run",
+    "id": "c7b1f0d6-3baf-5c16-969e-aa96aef92879"
+  },
+  "labels": {
+    "service": "cr-scheduled-agent"
+  },
+  "acknowledged": {
+    "by": {
+      "kind": "user",
+      "id": "operador-1",
+      "display_name": "Cuenta de operación 1",
+      "roles": [
+        "operator"
+      ]
+    },
+    "at": "2026-10-14T16:10:00Z",
+    "note": "Confirmar con el usuario si fue una ejecución manual de carga."
+  }
+}

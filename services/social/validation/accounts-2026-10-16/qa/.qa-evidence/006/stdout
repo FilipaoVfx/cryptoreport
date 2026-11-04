@@ -1,0 +1,40 @@
+✔ un brief solo se aplica al análisis exacto revisado (1.157533ms)
+✔ el título de lista oculta hashtags sin suprimir las palabras ni sus condiciones (0.687402ms)
+✔ account windows differ and 48h filters correctly (7.281016ms)
+✔ search normalizes accents without generating analysis (0.274642ms)
+✔ expired and future posts disappear even in cached feed (0.141101ms)
+✔ unknown account and mismatched pinned author do not render (0.22358ms)
+✔ invalid identifiers and absent expiration are rejected (0.22613ms)
+✔ URLs require HTTPS and avatar origin is restricted (1.047652ms)
+✔ post HTML is escaped while safe URLs remain clickable (1.373574ms)
+✔ editorial filters separate relevant posts and preserve access to conversations (0.953291ms)
+✔ short ETH resolves canonical asset (1.812784ms)
+✔ ordinary search, negations, Shorts and closed positions are not hijacked (0.26849ms)
+✔ unknown or colliding tickers never broaden to all assets (0.508961ms)
+✔ rolling periods are measured from current time and exclude future dates (0.20656ms)
+✔ repeat videos by one author do not inflate creator count (6.903586ms)
+✔ creator and period filters produce consistent evidence (0.561981ms)
+✔ bearish tone alone does not pass declared-short filter (0.38397ms)
+✔ closed or third-party evidence does not establish a declared position (0.181511ms)
+✔ asset-specific exception overrides the generic thesis (0.291141ms)
+✔ global grouping puts neutral analyses after directional transcript quotes (0.430531ms)
+✔ same passage is not repeated as a detected and analyzed quote (0.322701ms)
+✔ opposing horizons in the same passage survive deduplication (0.393942ms)
+✔ diez vídeos de un creador cuentan como un creador en ranking y tesis (3.601809ms)
+✔ el total de creadores es una unión, no la suma de columnas; se marca quien está en varios lados (0.838281ms)
+✔ orden: creadores, luego tesis, luego fecha y luego id; las citas de terceros y sin cita no cuentan (0.488461ms)
+✔ los filtros de creador y periodo se aplican igual a ranking y tesis (0.645241ms)
+✔ sin proyección de tesis la cobertura es desconocida, no cero tesis (0.351381ms)
+✔ conexiones con X: solo aceptadas, vigentes, del mismo análisis y con el post intacto (0.330971ms)
+✔ un ticker coincidente en X es contexto por activo, no apoyo (0.16491ms)
+✔ un «cambio» entre autores distintos es contraste entre fuentes, no cambio de postura (0.109989ms)
+✔ Síntesis: tesis de un vídeo con su relación (0.351001ms)
+✔ una tesis con activos propios no se vincula a otro activo citado de paso; una tesis de grupo sí (0.32015ms)
+ℹ tests 32
+ℹ suites 0
+ℹ pass 32
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 282.682812

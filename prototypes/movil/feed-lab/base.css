@@ -1,0 +1,67 @@
+/* Base común del laboratorio: reinicio, vidrio líquido y hoja inferior. Cada propuesta redefine los tokens. */
+:root {
+  --bg: #07060d; --ink: #f4f1ff; --muted: #a49cc0; --accent: #c6ff4a;
+  --glass: rgba(255, 255, 255, .08); --glass-hi: rgba(255, 255, 255, .16); --glass-line: rgba(255, 255, 255, .2);
+  --blur: 24px; --radius: 22px; --g: 16px;
+  --sans: "Inter Tight", ui-sans-serif, system-ui, sans-serif;
+  color-scheme: dark;
+}
+*, *::before, *::after { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; overflow-x: clip; }
+body { margin: 0; min-height: 100vh; background: var(--bg); color: var(--ink); font: 500 15px/1.45 var(--sans); -webkit-font-smoothing: antialiased; overflow-x: hidden; }
+a { color: inherit; }
+button { font: inherit; color: inherit; cursor: pointer; }
+img { display: block; }
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+.wrap { width: min(100%, 520px); margin: 0 auto; padding: 0 var(--g) 96px; }
+
+/* Vidrio líquido: capa translúcida, desenfoque saturado, brillo especular arriba y borde de luz. */
+.glass {
+  position: relative; isolation: isolate;
+  background: linear-gradient(140deg, var(--glass-hi), var(--glass) 55%);
+  -webkit-backdrop-filter: blur(var(--blur)) saturate(180%); backdrop-filter: blur(var(--blur)) saturate(180%);
+  border: 1px solid var(--glass-line); border-radius: var(--radius);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .38), inset 0 -1px 1px rgba(255, 255, 255, .06), 0 12px 32px rgba(0, 0, 0, .28);
+}
+.glass::before {
+  content: ""; position: absolute; inset: 0; z-index: -1; border-radius: inherit; pointer-events: none;
+  background: radial-gradient(120% 60% at 15% 0%, rgba(255, 255, 255, .22), transparent 45%);
+  mix-blend-mode: screen;
+}
+
+/* Fondo vivo: manchas de color que se desplazan lento detrás del vidrio. */
+.aurora { position: fixed; inset: -20%; z-index: -1; pointer-events: none; filter: blur(60px) saturate(140%); }
+.aurora i { position: absolute; width: 55vmax; height: 55vmax; border-radius: 50%; opacity: .55; animation: drift 26s ease-in-out infinite alternate; }
+.aurora i:nth-child(2) { animation-duration: 34s; animation-delay: -8s; }
+.aurora i:nth-child(3) { animation-duration: 40s; animation-delay: -16s; }
+@keyframes drift { to { transform: translate3d(12vmax, 10vmax, 0) scale(1.15); } }
+
+.av { position: relative; display: inline-grid; place-items: center; width: 26px; height: 26px; flex: 0 0 auto; border-radius: 50%; overflow: hidden; background: var(--ac); color: #0b0a12; font-size: 10px; font-weight: 800; }
+.av img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+
+/* Hoja inferior */
+#fl-sheet { position: fixed; inset: 0; z-index: 50; }
+.fl-scrim { position: absolute; inset: 0; background: rgba(0, 0, 0, .45); opacity: 0; transition: opacity .25s; }
+.fl-sheet { position: absolute; left: 0; right: 0; bottom: 0; max-height: 86vh; overflow: auto; width: min(100%, 560px); margin: 0 auto; padding: 8px 20px calc(24px + env(safe-area-inset-bottom));
+  border-radius: 28px 28px 0 0; border: 1px solid var(--glass-line); border-bottom: 0;
+  background: linear-gradient(160deg, var(--sheet-hi, rgba(255,255,255,.18)), var(--sheet, rgba(20,18,30,.72)));
+  -webkit-backdrop-filter: blur(30px) saturate(180%); backdrop-filter: blur(30px) saturate(180%);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .4); transform: translateY(100%); transition: transform .3s cubic-bezier(.2, .8, .2, 1); }
+#fl-sheet.open .fl-scrim { opacity: 1; }
+#fl-sheet.open .fl-sheet { transform: none; }
+.fl-grip { width: 44px; height: 5px; margin: 4px auto 14px; border-radius: 3px; background: var(--glass-line); }
+.fl-sh { display: flex; align-items: center; gap: 10px; }
+.fl-sh .av { width: 40px; height: 40px; font-size: 13px; }
+.fl-sh div { flex: 1; min-width: 0; display: grid; }
+.fl-sh small { color: var(--muted); }
+.fl-x { width: 44px; height: 44px; border-radius: 50%; border: 1px solid var(--glass-line); background: var(--glass); }
+.fl-text { margin: 16px 0; font-size: 17px; line-height: 1.55; white-space: pre-line; overflow-wrap: anywhere; }
+.fl-text a { color: var(--accent); }
+.fl-tags { display: flex; flex-wrap: wrap; gap: 6px; }
+.fl-tag { padding: 5px 10px; border-radius: 999px; background: var(--glass-hi); border: 1px solid var(--glass-line); font-size: 12px; font-weight: 700; }
+.fl-tag.soft { font-weight: 500; color: var(--muted); }
+.fl-open { display: flex; align-items: center; justify-content: center; min-height: 48px; margin-top: 16px; border-radius: 14px; background: var(--accent); color: var(--on-accent, #0b0a12); font-weight: 800; text-decoration: none; }
+.fl-fine { color: var(--muted); font-size: 11px; text-align: center; }
+
+.lab-back { position: fixed; top: 10px; left: 10px; z-index: 40; display: inline-flex; align-items: center; min-height: 36px; padding: 0 12px; border-radius: 999px; font-size: 12px; font-weight: 700; text-decoration: none; }
+@media (prefers-reduced-motion: reduce) { .aurora i { animation: none; } .fl-sheet, .fl-scrim { transition: none; } }

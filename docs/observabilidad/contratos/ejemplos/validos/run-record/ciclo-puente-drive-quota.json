@@ -1,0 +1,35 @@
+{
+  "run_id": "01a13b27-1720-7eac-8aaf-1fb19af9d4cc",
+  "service": "cr-bridge",
+  "trigger": "post_extract",
+  "started_at": "2026-10-14T16:03:00Z",
+  "finished_at": "2026-10-14T16:03:21Z",
+  "duration_s": 21.4,
+  "outcome": "failed",
+  "exit_code": 1,
+  "trace_id": "01a13b2717207eac8aaf1fb19af9d4cc",
+  "parent_run_id": "01a13b24-f440-769a-9150-683b38f3f19d",
+  "code": {
+    "version": "04a86b9-dirty",
+    "digest": "b5eed92c51e0b203d6fb105e9a79bb745cf6bc1fa3f222c0b6717747e79e0403"
+  },
+  "config_version": 1,
+  "counts": {
+    "jobs_by_state": {
+      "imported": 32,
+      "blocked": 1,
+      "uploaded": 2
+    }
+  },
+  "errors": [
+    {
+      "class": "drive_quota",
+      "message": "rclone lsjson: drive_quota (1)"
+    }
+  ],
+  "warnings": [
+    "Cola pendiente sin comprobante reciente de Scheduled (8 h)",
+    "Última ejecución de Scheduled reportó error",
+    "Hay trabajos que requieren revisión"
+  ]
+}

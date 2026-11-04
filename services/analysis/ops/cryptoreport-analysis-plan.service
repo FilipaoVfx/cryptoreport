@@ -1,0 +1,24 @@
+[Unit]
+Description=CryptoReport: autonomous narrative analysis with ChatGPT plan (Luna max)
+After=network-online.target cryptoreport-bridge.service cryptoreport-transcripts.service
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+WorkingDirectory=/root/cryptoreport
+ExecStart=/root/cryptoreport/services/bridge/.venv/bin/python -m cranalysis.plan --limit 2
+Environment=HOME=/root
+Environment=PATH=/root/.local/bin:/usr/local/bin:/usr/bin:/bin
+Environment=PYTHONPATH=/root/cryptoreport/services/analysis:/root/cryptoreport/services/transcripts
+Environment=PYTHONUNBUFFERED=1
+Environment=CR_ANALYSIS_SCHEDULER=systemd
+Environment=CRA_ALLOW_API_ANALYSIS=false
+UnsetEnvironment=OPENAI_API_KEY CODEX_API_KEY ANTHROPIC_API_KEY
+TimeoutStartSec=65min
+KillMode=control-group
+MemoryMax=768M
+TasksMax=128
+Nice=10
+NoNewPrivileges=true
+PrivateTmp=true
+

@@ -1,0 +1,87 @@
+{
+  "authentication": "PASS",
+  "invalidInput": "422 with unchanged catalog",
+  "accounts": [
+    {
+      "handle": "bulltheoryio",
+      "label": "Narrativas",
+      "save": "PASS"
+    },
+    {
+      "handle": "bitcoinarchive",
+      "label": "Bitcoin",
+      "save": "PASS"
+    },
+    {
+      "handle": "watcherguru",
+      "label": "Noticias",
+      "save": "PASS"
+    },
+    {
+      "handle": "crediblecrypto",
+      "label": "Mercados",
+      "save": "PASS"
+    }
+  ],
+  "browser": [
+    {
+      "width": 390,
+      "handle": "bulltheoryio",
+      "published": 62,
+      "rendered": 24,
+      "authorAndTextFidelity": "PASS"
+    },
+    {
+      "width": 390,
+      "handle": "bitcoinarchive",
+      "published": 73,
+      "rendered": 24,
+      "authorAndTextFidelity": "PASS"
+    },
+    {
+      "width": 390,
+      "handle": "watcherguru",
+      "published": 56,
+      "rendered": 24,
+      "authorAndTextFidelity": "PASS"
+    },
+    {
+      "width": 390,
+      "handle": "crediblecrypto",
+      "published": 55,
+      "rendered": 24,
+      "authorAndTextFidelity": "PASS"
+    },
+    {
+      "width": 1280,
+      "handle": "bulltheoryio",
+      "published": 62,
+      "rendered": 24,
+      "authorAndTextFidelity": "PASS"
+    },
+    {
+      "width": 1280,
+      "handle": "bitcoinarchive",
+      "published": 73,
+      "rendered": 24,
+      "authorAndTextFidelity": "PASS"
+    },
+    {
+      "width": 1280,
+      "handle": "watcherguru",
+      "published": 56,
+      "rendered": 24,
+      "authorAndTextFidelity": "PASS"
+    },
+    {
+      "width": 1280,
+      "handle": "crediblecrypto",
+      "published": 55,
+      "rendered": 24,
+      "authorAndTextFidelity": "PASS"
+    }
+  ],
+  "exceptions": 0,
+  "posts": 443,
+  "status": "PASS"
+}

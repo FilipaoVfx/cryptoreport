@@ -20,7 +20,9 @@
   const scrolls = new Map();
   const cur = { id: null, video: null, doc: null, lens: 'destilado', blocks: [], nowBlock: -1, open: new Set(), gaps: new Set(), card: 0, notesAt: new Map() };
   const ui = { filter: store.get('filter', 'todo'), section: store.get('section', 'altcoins'), follow: true, txq: '' };
-  const FILTERS = { todo: 'Todo el archivo', analizados: 'Solo con análisis', largos: 'Vídeos largos', shorts: 'Shorts', cava: 'José Luis Cava', criptoniano: 'Criptoniano', nacho: 'Nacho IC', kmanu: 'KManuS88', healthy: 'Healthy Pockets' };
+  const FILTERS = { todo: 'Todo el archivo', analizados: 'Solo con análisis', largos: 'Vídeos largos', shorts: 'Shorts' };
+  // Un filtro por creador de index.json: ningún canal queda fijado en el código.
+  const filters = () => Object.assign({}, FILTERS, Object.fromEntries(idx.channels.map((c) => [c.slug, c.name])));
 
   const lowerFirst = (s) => (s ? s.charAt(0).toLowerCase() + s.slice(1) : s);
   const kc = (tipo) => `style="--kc: var(--k-${tipo})"`;
@@ -204,10 +206,10 @@
       <div class="pad"><h1 class="title-xl">Bitácora</h1><p class="lede">Lo que publicaron ${idx.channels.map((c) => c.name).join(' y ')}, día a día. Los puntos rellenos ya tienen análisis.</p></div>
       ${mark}
       <div class="pad" style="position:relative;display:flex;justify-content:space-between;align-items:center;gap:10px;margin-top:14px">
-        <p class="small muted">Mostrando: <b style="color:var(--ink)">${FILTERS[ui.filter]}</b> · ${list.length}</p>
+        <p class="small muted">Mostrando: <b style="color:var(--ink)">${filters()[ui.filter] || FILTERS.todo}</b> · ${list.length}</p>
         <button class="filter-btn" type="button" data-act="filter-menu" aria-haspopup="menu" aria-expanded="false" aria-controls="filter-menu">${icon('filter')} Filtrar</button>
         <div class="menu" id="filter-menu" role="menu" hidden>
-          ${Object.entries(FILTERS).map(([k, label]) => `<button type="button" role="menuitemradio" aria-checked="${ui.filter === k}" data-act="filter" data-f="${k}">${label}<span class="n">${filterVideos(k).length}</span></button>`).join('')}
+          ${Object.entries(filters()).map(([k, label]) => `<button type="button" role="menuitemradio" aria-checked="${ui.filter === k}" data-act="filter" data-f="${k}">${label}<span class="n">${filterVideos(k).length}</span></button>`).join('')}
         </div>
       </div>
       ${days.map((d) => `<section class="day"><h2 class="day-h">${esc(CR.dayLabel(d.iso))}<small>${CR.plural(d.items.length, 'vídeo', 'vídeos')}${d.items.some((v) => v.analysis) ? ' · con análisis' : ''}</small></h2><ol class="entries">${d.items.map(entryHtml).join('')}</ol></section>`).join('')

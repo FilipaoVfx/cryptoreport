@@ -94,6 +94,10 @@ def analyze_one(config, client, runner, transcript: Path, force: bool = False) -
 
 
 def cmd_run(config, args) -> int:
+    if not config.allow_api_analysis:
+        print("Análisis por API deshabilitado: usa ChatGPT Scheduled. "
+              "No se creó ningún cliente ni se envió ninguna petición.", file=sys.stderr)
+        return 2
     client, runner = _client_and_runner(config)
     targets = (pending(config.transcripts_dir, config.output_dir, config.include_shorts)[: args.limit] if args.pending
                else [find_transcript(config.transcripts_dir, args.ref)])

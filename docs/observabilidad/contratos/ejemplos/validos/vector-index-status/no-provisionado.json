@@ -1,0 +1,7 @@
+{
+  "index_id": "vector_index:transcripts-es",
+  "state": "not_provisioned",
+  "backend": "none",
+  "updated_at": "2026-10-14T16:05:00Z",
+  "note": "No existe índice vectorial: la búsqueda del panel es léxica hasta la Fase 3."
+}

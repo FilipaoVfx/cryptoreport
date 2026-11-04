@@ -1,0 +1,83 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Informe de salud del panel",
+  "description": "Resumen agregado que alimenta la portada del panel: estado por componente, SLO, alertas y presupuestos. Se calcula desde el libro de ejecuciones, las métricas y pipeline-status.json.",
+  "type": "object",
+  "required": ["generated_at", "status", "components", "slos", "alerts_firing", "budgets"],
+  "additionalProperties": false,
+  "properties": {
+    "generated_at": {"$ref": "common.schema.json#/$defs/Timestamp"},
+    "status": {"$ref": "#/$defs/Status"},
+    "components": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["id", "status", "summary", "signals"],
+        "additionalProperties": false,
+        "properties": {
+          "id": {"enum": ["extractor", "bridge", "scheduled_agent", "publication", "analysis_api", "telemetry", "panel"]},
+          "status": {"enum": ["ok", "degraded", "critical", "unknown", "disabled"]},
+          "summary": {"type": "string", "maxLength": 200},
+          "last_run": {
+            "type": "object",
+            "required": ["run_id", "outcome"],
+            "additionalProperties": false,
+            "properties": {
+              "run_id": {"$ref": "common.schema.json#/$defs/RunId"},
+              "finished_at": {"$ref": "common.schema.json#/$defs/Timestamp"},
+              "outcome": {"enum": ["running", "ok", "degraded", "failed", "busy", "skipped"]}
+            }
+          },
+          "signals": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": ["threshold_id", "level"],
+              "additionalProperties": false,
+              "properties": {
+                "threshold_id": {"type": "string", "pattern": "^(SH|CO|TK|AP|RS|DQ-V|DQ-T|DQ-C|DQ-E|DQ-M|DQ-A)-[0-9]{2}$"},
+                "observed": {"type": ["number", "string", "boolean", "null"]},
+                "level": {"enum": ["ok", "warning", "critical", "not_measured"]}
+              }
+            }
+          }
+        }
+      }
+    },
+    "slos": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["threshold_id", "objective", "attainment", "window", "error_budget_remaining"],
+        "additionalProperties": false,
+        "properties": {
+          "threshold_id": {"type": "string"},
+          "objective": {"type": "number", "exclusiveMinimum": 0, "maximum": 1},
+          "attainment": {"type": "number", "minimum": 0, "maximum": 1},
+          "window": {"enum": ["7d", "30d"]},
+          "error_budget_remaining": {"type": "number", "maximum": 1}
+        }
+      }
+    },
+    "alerts_firing": {"type": "integer", "minimum": 0},
+    "budgets": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["name", "used", "limit", "unit"],
+        "additionalProperties": false,
+        "properties": {
+          "name": {"enum": ["supadata_credits", "scrapertech_requests", "model_api_usd"]},
+          "used": {"type": "number", "minimum": 0},
+          "limit": {"type": "number", "minimum": 0},
+          "unit": {"type": "string"},
+          "projected_month_end": {"type": "number", "minimum": 0}
+        }
+      }
+    }
+  },
+  "$defs": {
+    "Status": {"enum": ["ok", "degraded", "critical", "unknown"]}
+  }
+}

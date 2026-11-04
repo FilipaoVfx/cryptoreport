@@ -1,0 +1,66 @@
+{
+  "descripcion": "La telemetría reconstruida debe decir qué servicio la reconstruyó.",
+  "error_esperado": {
+    "keyword": "required",
+    "ruta": "/resource"
+  },
+  "instancia": {
+    "trace_id": "7d79107c06395238a910d9eadadd32f7",
+    "span_id": "f85faf0f8d408501",
+    "name": "invoke_agent cryptoreport-narrativas",
+    "kind": "CLIENT",
+    "start_time": "2026-10-14T03:40:59Z",
+    "end_time": "2026-10-14T04:22:53Z",
+    "status": {
+      "code": "OK"
+    },
+    "resource": {
+      "service.name": "cr-scheduled-agent",
+      "service.version": "04a86b9-dirty",
+      "deployment.environment.name": "prod",
+      "cr.code.digest": "a08cb79961c08eeaa3d35117cad8eaf5037cc8d6111a76b98f863dd5ec221453",
+      "cr.contract.version": "1.0.0",
+      "cr.telemetry.origin": "reconstructed"
+    },
+    "attributes": {
+      "gen_ai.operation.name": "invoke_agent",
+      "gen_ai.provider.name": "openai",
+      "gen_ai.agent.name": "cryptoreport-narrativas",
+      "gen_ai.agent.version": "1.3",
+      "gen_ai.request.model": "gpt-6.1-sol",
+      "cr.model.verified": false,
+      "cr.agent.run_id": "f81ebb70-53d8-4822-acda-5c021e37e385",
+      "cr.agent.receipt.status": "resultados_subidos",
+      "cr.agent.jobs.attempted": 2,
+      "cr.agent.jobs.uploaded": 2,
+      "cr.instructions.revision": "1.3"
+    },
+    "events": [
+      {
+        "name": "cr.agent.job_attempted",
+        "time": "2026-10-14T04:22:53Z",
+        "attributes": {
+          "cr.job.id": "PPWCETjvgVk__ba333ffb8201d52b6f3eae12e4766e51f659f7ef769578a87d16162f77a29456",
+          "cr.agent.job_uploaded": true
+        }
+      },
+      {
+        "name": "cr.agent.job_attempted",
+        "time": "2026-10-14T04:22:53Z",
+        "attributes": {
+          "cr.job.id": "Rj6VStVcvWA__876482de55f346250c3bda6c8ee8b9683037c4e53d5a0b018e1e0fdb29554b3d",
+          "cr.agent.job_uploaded": true
+        }
+      }
+    ],
+    "links": [
+      {
+        "trace_id": "01a13833c7c07a0dac6b4dbc5808022d",
+        "span_id": "9680a677310f475b",
+        "attributes": {
+          "cr.job.id": "PPWCETjvgVk__ba333ffb8201d52b6f3eae12e4766e51f659f7ef769578a87d16162f77a29456"
+        }
+      }
+    ]
+  }
+}

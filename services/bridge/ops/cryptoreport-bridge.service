@@ -1,0 +1,22 @@
+[Unit]
+Description=CryptoReport: Drive, cola durable, validación y publicación sin inferencia API
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+WorkingDirectory=/root/cryptoreport/services/bridge
+ExecStart=/root/cryptoreport/services/bridge/.venv/bin/python -m crbridge run
+Environment=CR_DATA_DIR=/var/lib/cryptoreport-transcripts
+Environment=CR_SITE_DIR=/var/www/cryptoreport
+Environment=CR_DRIVE_REMOTE=gdrive
+Environment=CRA_ALLOW_API_ANALYSIS=false
+Environment=PYTHONUNBUFFERED=1
+EnvironmentFile=-/etc/cryptoreport-bridge.env
+StateDirectory=cryptoreport-transcripts
+TimeoutStartSec=10min
+MemoryMax=300M
+Nice=10
+NoNewPrivileges=true
+PrivateTmp=true
+# Un estado degradado se registra y el timer vuelve a intentarlo; sin bucles de inferencia.

@@ -1,0 +1,93 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Trabajo del puente",
+  "description": "Vista de un trabajo de análisis (crbridge jobs) con su historial de transiciones (Fase 0). Nunca incluye IDs de Drive ni el payload de la transcripción.",
+  "type": "object",
+  "required": ["job_id", "video_id", "channel", "state", "updated_at", "published_at", "hashes"],
+  "additionalProperties": false,
+  "properties": {
+    "job_id": {"$ref": "common.schema.json#/$defs/JobId"},
+    "video_id": {"$ref": "common.schema.json#/$defs/VideoId"},
+    "channel": {"$ref": "common.schema.json#/$defs/ChannelSlug"},
+    "state": {"$ref": "#/$defs/JobState"},
+    "detail": {"type": ["string", "null"], "maxLength": 300},
+    "updated_at": {"$ref": "common.schema.json#/$defs/Timestamp"},
+    "published_at": {"$ref": "common.schema.json#/$defs/Timestamp"},
+    "title": {"type": "string", "maxLength": 300},
+    "duration_s": {"type": ["number", "null"], "minimum": 0},
+    "is_short": {"type": ["boolean", "null"]},
+    "hashes": {
+      "type": "object",
+      "required": ["transcript_sha256", "prompt_sha256", "schema_sha256", "prompt_version"],
+      "additionalProperties": false,
+      "properties": {
+        "transcript_sha256": {"$ref": "common.schema.json#/$defs/Sha256"},
+        "prompt_sha256": {"$ref": "common.schema.json#/$defs/Sha256"},
+        "schema_sha256": {"$ref": "common.schema.json#/$defs/Sha256"},
+        "prompt_version": {"$ref": "common.schema.json#/$defs/SemVer"}
+      }
+    },
+    "transitions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["at", "from", "to", "reason", "actor"],
+        "additionalProperties": false,
+        "properties": {
+          "at": {"$ref": "common.schema.json#/$defs/Timestamp"},
+          "from": {"anyOf": [{"$ref": "#/$defs/JobState"}, {"type": "null"}]},
+          "to": {"$ref": "#/$defs/JobState"},
+          "reason": {"type": "string", "maxLength": 300},
+          "actor": {"$ref": "common.schema.json#/$defs/Actor"},
+          "run_id": {"$ref": "common.schema.json#/$defs/RunId"}
+        }
+      }
+    },
+    "agent_attempts": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["agent_run_id", "at", "uploaded"],
+        "additionalProperties": false,
+        "properties": {
+          "agent_run_id": {"type": "string", "maxLength": 200},
+          "at": {"$ref": "common.schema.json#/$defs/Timestamp"},
+          "uploaded": {"type": "boolean"}
+        }
+      }
+    },
+    "analysis": {
+      "anyOf": [
+        {"type": "null"},
+        {
+          "type": "object",
+          "required": ["asset_id", "version", "import_mode"],
+          "additionalProperties": false,
+          "properties": {
+            "asset_id": {"$ref": "common.schema.json#/$defs/AssetId"},
+            "version": {"$ref": "common.schema.json#/$defs/Sha256"},
+            "import_mode": {"enum": ["automatic", "reviewed", "manual", "api", null]}
+          }
+        }
+      ]
+    },
+    "retry_authorization": {
+      "anyOf": [
+        {"type": "null"},
+        {
+          "type": "object",
+          "required": ["authorized_at", "reason"],
+          "additionalProperties": false,
+          "properties": {
+            "authorized_at": {"$ref": "common.schema.json#/$defs/Timestamp"},
+            "reason": {"type": "string", "maxLength": 200},
+            "actor": {"$ref": "common.schema.json#/$defs/Actor"}
+          }
+        }
+      ]
+    }
+  },
+  "$defs": {
+    "JobState": {"enum": ["queued", "needs_transcript", "upload_uncertain", "uploaded", "imported", "rejected", "conflict", "blocked", "superseded"]}
+  }
+}

@@ -1,0 +1,71 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Intervención manual",
+  "description": "Instancia de un tipo del catálogo: solicitud, vista previa (dry run), aprobaciones y ejecución. La salida del ejecutor no se guarda: solo su SHA-256 y el código de salida.",
+  "type": "object",
+  "required": ["intervention_id", "type", "state", "requested_at", "requested_by", "target", "reason", "dry_run", "idempotency_key", "approvals"],
+  "additionalProperties": false,
+  "properties": {
+    "intervention_id": {"$ref": "common.schema.json#/$defs/Uuid"},
+    "type": {"type": "string", "pattern": "^[a-z][a-z0-9_]+$"},
+    "state": {"enum": ["requested", "pending_approval", "approved", "executing", "succeeded", "failed", "rejected", "cancelled", "reverted"]},
+    "requested_at": {"$ref": "common.schema.json#/$defs/Timestamp"},
+    "requested_by": {"$ref": "common.schema.json#/$defs/Actor"},
+    "target": {"$ref": "common.schema.json#/$defs/TargetRef"},
+    "reason": {"type": "string", "minLength": 10, "maxLength": 500},
+    "parameters": {"type": "object", "additionalProperties": {"type": ["string", "integer", "boolean"]}},
+    "dry_run": {"type": "boolean"},
+    "idempotency_key": {"type": "string", "minLength": 8, "maxLength": 128},
+    "preview": {
+      "type": "object",
+      "required": ["effect", "preconditions"],
+      "additionalProperties": false,
+      "properties": {
+        "effect": {"type": "string", "maxLength": 500},
+        "cost_estimate": {"$ref": "common.schema.json#/$defs/Money"},
+        "preconditions": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["text", "met"],
+            "additionalProperties": false,
+            "properties": {"text": {"type": "string"}, "met": {"type": "boolean"}}
+          }
+        }
+      }
+    },
+    "approvals": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["by", "at", "decision"],
+        "additionalProperties": false,
+        "properties": {
+          "by": {"$ref": "common.schema.json#/$defs/Actor"},
+          "at": {"$ref": "common.schema.json#/$defs/Timestamp"},
+          "decision": {"enum": ["approve", "reject"]},
+          "comment": {"type": "string", "maxLength": 500}
+        }
+      }
+    },
+    "execution": {
+      "type": "object",
+      "required": ["started_at"],
+      "additionalProperties": false,
+      "properties": {
+        "started_at": {"$ref": "common.schema.json#/$defs/Timestamp"},
+        "finished_at": {"$ref": "common.schema.json#/$defs/Timestamp"},
+        "exit_code": {"type": "integer"},
+        "run_id": {"$ref": "common.schema.json#/$defs/RunId"},
+        "trace_id": {"$ref": "common.schema.json#/$defs/TraceId"},
+        "output_sha256": {"$ref": "common.schema.json#/$defs/Sha256"}
+      }
+    },
+    "reverted_by": {"$ref": "common.schema.json#/$defs/Uuid"}
+  },
+  "allOf": [
+    {"if": {"properties": {"state": {"enum": ["succeeded", "failed"]}}}, "then": {"required": ["execution"], "properties": {"execution": {"required": ["started_at", "finished_at", "exit_code"]}}}},
+    {"if": {"properties": {"state": {"const": "reverted"}}}, "then": {"required": ["reverted_by"]}},
+    {"if": {"properties": {"state": {"enum": ["approved", "executing", "succeeded", "failed"]}, "dry_run": {"const": true}}}, "then": false}
+  ]
+}

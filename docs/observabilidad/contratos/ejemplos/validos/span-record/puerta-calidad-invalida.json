@@ -1,0 +1,29 @@
+{
+  "trace_id": "01a134546ab07a42a4e35a99e0392dfc",
+  "span_id": "e2b8d5cdec603a8d",
+  "parent_span_id": "4d399f0bffa9e0ea",
+  "name": "cr.quality.assess",
+  "kind": "INTERNAL",
+  "start_time": "2026-10-13T08:15:22.001Z",
+  "end_time": "2026-10-13T08:15:22.004Z",
+  "status": {
+    "code": "UNSET"
+  },
+  "resource": {
+    "service.name": "cr-extractor",
+    "service.version": "04a86b9-dirty",
+    "deployment.environment.name": "prod",
+    "cr.code.digest": "f8aa9649423ee26f0f6eae6cd595c0910510a3a9e53c1ac406c0c19ebabf21fb",
+    "cr.contract.version": "1.0.0",
+    "cr.telemetry.origin": "native"
+  },
+  "attributes": {
+    "cr.quality.verdict": "invalid",
+    "cr.quality.reasons": [
+      "posible_corte_final"
+    ],
+    "cr.quality.warnings": [],
+    "cr.transcript.coverage": 0.62,
+    "cr.transcript.segments": 141
+  }
+}

@@ -1,0 +1,20 @@
+{
+  "observationCapture": "001",
+  "observationArgv": [
+    "env",
+    "CR_SOCIAL_LIVE_E2E=1",
+    "NODE_PATH=/root/gstack/node_modules",
+    "node",
+    "/root/cryptoreport/services/panel/tests/social-live.browser.cjs"
+  ],
+  "observed": "",
+  "hypothesis": "A concurrent bridge held run.lock; 409 is the declared no-effect busy response. Retry the negative-input check after the lock is released, then verify 422 and unchanged catalog.",
+  "nextCapture": "002",
+  "nextArgv": [
+    "env",
+    "CR_SOCIAL_LIVE_E2E=1",
+    "NODE_PATH=/root/gstack/node_modules",
+    "node",
+    "/root/cryptoreport/services/panel/tests/social-live.browser.cjs"
+  ]
+}

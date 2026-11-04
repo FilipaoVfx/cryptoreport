@@ -1,0 +1,55 @@
+{
+  "version": 1,
+  "id": "005",
+  "cwd": "/root/cryptoreport",
+  "argv": [
+    "env",
+    "PYTHONPATH=/root/cryptoreport/services/bridge:/root/cryptoreport/services/analysis:/root/cryptoreport/services/transcripts",
+    "/root/cryptoreport/services/bridge/.venv/bin/python",
+    "-m",
+    "unittest",
+    "discover",
+    "-s",
+    "/root/cryptoreport/services/bridge/tests"
+  ],
+  "deadline": "/root/cryptoreport/services/social/validation/accounts-2026-10-16/qa/.qa-evidence/005/deadline.json",
+  "timing": [
+    {
+      "guard": "qa-deadline",
+      "event": "started",
+      "version": 1,
+      "startedAt": "2026-10-16T17:19:24.677Z",
+      "deadlineAt": "2026-10-16T17:21:24.677Z",
+      "budgetMs": 120000,
+      "observedAt": "2026-10-16T17:19:24.679Z",
+      "remainingMs": 119998,
+      "expired": false
+    },
+    {
+      "guard": "qa-deadline",
+      "event": "finished",
+      "observedAt": "2026-10-16T17:19:25.661Z",
+      "deadlineAt": "2026-10-16T17:21:24.677Z",
+      "timedOut": false,
+      "exitCode": 0
+    }
+  ],
+  "startedAt": "2026-10-16T17:19:24.678Z",
+  "completedAt": "2026-10-16T17:19:25.664Z",
+  "exitCode": 0,
+  "signal": null,
+  "status": "complete",
+  "observation": {
+    "sha256": "bd85bcdb8d4e613a79cb62d0903946ad10c83e63dc75f67614c159c0dbf4d184",
+    "bytes": 3
+  },
+  "publicOutput": true,
+  "stdout": {
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "bytes": 0
+  },
+  "stderr": {
+    "sha256": "a75702f7be00686d51959b78c7ef2d8e4ec83c2f1ebc4c3b149f777768dd0dc4",
+    "bytes": 144
+  }
+}

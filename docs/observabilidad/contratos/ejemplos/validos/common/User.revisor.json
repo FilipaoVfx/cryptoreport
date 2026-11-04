@@ -1,0 +1,9 @@
+{
+  "id": "revisor-1",
+  "display_name": "Cuenta de revisión 1",
+  "roles": [
+    "reviewer"
+  ],
+  "mfa_enabled": false,
+  "last_login_at": "2026-10-14T15:58:02Z"
+}

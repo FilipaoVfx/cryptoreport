@@ -1,0 +1,14 @@
+{
+  "descripcion": "Una herramienta de pago declara el presupuesto que consume.",
+  "error_esperado": {
+    "keyword": "required",
+    "ruta": "/tools/[id=supadata]/cost"
+  },
+  "base": "registros/herramientas.json",
+  "parche": [
+    {
+      "op": "remove",
+      "path": "/tools/[id=supadata]/cost/budget"
+    }
+  ]
+}

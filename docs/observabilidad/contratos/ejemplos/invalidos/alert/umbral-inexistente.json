@@ -1,0 +1,18 @@
+{
+  "descripcion": "threshold_id debe existir en registros/umbrales.json.",
+  "error_esperado": {
+    "keyword": "semantic",
+    "ruta": "/threshold_id"
+  },
+  "instancia": {
+    "alert_id": "f46dd28a-5499-48ef-af0b-8fb8ee1ec1c5",
+    "threshold_id": "SH-99",
+    "severity": "warning",
+    "state": "firing",
+    "fired_at": "2026-10-14T16:00:00Z",
+    "observed": 1,
+    "condition": "> 0",
+    "summary": "Umbral desconocido",
+    "runbook": "RB-01"
+  }
+}

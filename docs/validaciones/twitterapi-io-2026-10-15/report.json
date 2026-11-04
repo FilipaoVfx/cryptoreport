@@ -1,0 +1,209 @@
+{
+  "started_at": "2026-10-16T04:28:13.119467+00:00",
+  "requests": [
+    {
+      "path": "/oapi/my/info",
+      "http": 200,
+      "elapsed_ms": 102,
+      "top_level_keys": [
+        "recharge_credits",
+        "total_bonus_credits"
+      ]
+    },
+    {
+      "path": "/twitter/tweet/advanced_search",
+      "http": 200,
+      "elapsed_ms": 323,
+      "top_level_keys": [
+        "tweets",
+        "has_next_page",
+        "next_cursor"
+      ]
+    },
+    {
+      "path": "/twitter/tweet/advanced_search",
+      "http": 200,
+      "elapsed_ms": 378,
+      "top_level_keys": [
+        "tweets",
+        "has_next_page",
+        "next_cursor"
+      ]
+    },
+    {
+      "path": "/twitter/tweet/advanced_search",
+      "http": 200,
+      "elapsed_ms": 657,
+      "top_level_keys": [
+        "tweets",
+        "has_next_page",
+        "next_cursor"
+      ]
+    },
+    {
+      "path": "/twitter/tweet/advanced_search",
+      "http": 200,
+      "elapsed_ms": 812,
+      "top_level_keys": [
+        "tweets",
+        "has_next_page",
+        "next_cursor"
+      ]
+    },
+    {
+      "path": "/oapi/my/info",
+      "http": 200,
+      "elapsed_ms": 81,
+      "top_level_keys": [
+        "recharge_credits",
+        "total_bonus_credits"
+      ]
+    }
+  ],
+  "accounts": [
+    {
+      "handle": "beincrypto_es",
+      "returned": 3,
+      "matching_author": 3,
+      "wrong_author": 0,
+      "within_48h": 3,
+      "invalid": 0,
+      "not_in_current_feed": 0,
+      "relevant": 0,
+      "has_next_page": true,
+      "cursor_present": true,
+      "samples": [
+        {
+          "id": "2110288853512720827",
+          "url": "https://x.com/i/web/status/2110288853512720827",
+          "published_at": "2026-10-14T08:37:24+00:00",
+          "text_characters": 140
+        },
+        {
+          "id": "2110283790647980204",
+          "url": "https://x.com/i/web/status/2110283790647980204",
+          "published_at": "2026-10-14T08:17:17+00:00",
+          "text_characters": 224
+        },
+        {
+          "id": "2110276201314976037",
+          "url": "https://x.com/i/web/status/2110276201314976037",
+          "published_at": "2026-10-14T07:47:08+00:00",
+          "text_characters": 133
+        }
+      ],
+      "newest": "2026-10-14T08:37:24+00:00",
+      "oldest": "2026-10-14T07:47:08+00:00"
+    },
+    {
+      "handle": "mattunchi",
+      "returned": 9,
+      "matching_author": 9,
+      "wrong_author": 0,
+      "within_48h": 9,
+      "invalid": 0,
+      "not_in_current_feed": 3,
+      "relevant": 5,
+      "has_next_page": true,
+      "cursor_present": true,
+      "samples": [
+        {
+          "id": "2110917072238629218",
+          "url": "https://x.com/i/web/status/2110917072238629218",
+          "published_at": "2026-10-16T02:13:43+00:00",
+          "text_characters": 117
+        },
+        {
+          "id": "2110917070833541495",
+          "url": "https://x.com/i/web/status/2110917070833541495",
+          "published_at": "2026-10-16T02:13:43+00:00",
+          "text_characters": 297
+        },
+        {
+          "id": "2110911858811060415",
+          "url": "https://x.com/i/web/status/2110911858811060415",
+          "published_at": "2026-10-16T01:53:00+00:00",
+          "text_characters": 26
+        }
+      ],
+      "newest": "2026-10-16T02:13:43+00:00",
+      "oldest": "2026-10-14T14:34:47+00:00"
+    },
+    {
+      "handle": "vitalikbuterin",
+      "returned": 1,
+      "matching_author": 1,
+      "wrong_author": 0,
+      "within_48h": 1,
+      "invalid": 0,
+      "not_in_current_feed": 0,
+      "relevant": 1,
+      "has_next_page": true,
+      "cursor_present": true,
+      "samples": [
+        {
+          "id": "2110576209658548683",
+          "url": "https://x.com/i/web/status/2110576209658548683",
+          "published_at": "2026-10-15T03:39:15+00:00",
+          "text_characters": 440
+        }
+      ],
+      "newest": "2026-10-15T03:39:15+00:00",
+      "oldest": "2026-10-15T03:39:15+00:00"
+    },
+    {
+      "handle": "granmag0",
+      "returned": 20,
+      "matching_author": 20,
+      "wrong_author": 0,
+      "within_48h": 20,
+      "invalid": 0,
+      "not_in_current_feed": 20,
+      "relevant": 7,
+      "has_next_page": true,
+      "cursor_present": true,
+      "samples": [
+        {
+          "id": "2110839112332968273",
+          "url": "https://x.com/i/web/status/2110839112332968273",
+          "published_at": "2026-10-15T21:03:56+00:00",
+          "text_characters": 86
+        },
+        {
+          "id": "2110835958698402027",
+          "url": "https://x.com/i/web/status/2110835958698402027",
+          "published_at": "2026-10-15T20:51:24+00:00",
+          "text_characters": 203
+        },
+        {
+          "id": "2110833089765085484",
+          "url": "https://x.com/i/web/status/2110833089765085484",
+          "published_at": "2026-10-15T20:40:00+00:00",
+          "text_characters": 16
+        }
+      ],
+      "newest": "2026-10-15T21:03:56+00:00",
+      "oldest": "2026-10-15T15:22:21+00:00"
+    }
+  ],
+  "cookies_used": false,
+  "model_calls": 0,
+  "balance_before": {
+    "recharge_credits": 0,
+    "total_bonus_credits": 100000
+  },
+  "balance_after": {
+    "recharge_credits": 0,
+    "total_bonus_credits": 99820
+  },
+  "observed_credit_delta": "180",
+  "status": "completed",
+  "finished_at": "2026-10-16T04:28:39.247339+00:00",
+  "scope": "one_page_per_account_read_only_test_not_production_integration",
+  "pagination_verified": false,
+  "published_to_app": false,
+  "total_posts_returned": 33,
+  "new_to_current_feed": 23,
+  "reference_cost_usd": "0.00495",
+  "billing_reconciled": false
+}

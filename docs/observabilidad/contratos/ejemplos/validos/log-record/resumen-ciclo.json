@@ -1,0 +1,14 @@
+{
+  "ts": "2026-10-14T16:00:41.021Z",
+  "severity": "INFO",
+  "service": "cr-extractor",
+  "message": "Ciclo terminado: 5 canales por RSS, 0 videos nuevos, 0 pendientes.",
+  "event": "cr.run.finished",
+  "run_id": "01a13b24-f440-769a-9150-683b38f3f19d",
+  "trace_id": "01a13b24f440769a9150683b38f3f19d",
+  "span_id": "edfe4889e44c31bf",
+  "attributes": {
+    "cr.run.outcome": "ok",
+    "cr.cycle.transcribed": 0
+  }
+}

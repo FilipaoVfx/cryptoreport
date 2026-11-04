@@ -1,0 +1,42 @@
+{
+  "descripcion": "Una intervención terminada registra su ejecución.",
+  "error_esperado": {
+    "keyword": "required",
+    "ruta": ""
+  },
+  "instancia": {
+    "intervention_id": "50282833-ef1f-4e76-a133-27bae64b6c89",
+    "type": "retry_job",
+    "state": "succeeded",
+    "requested_at": "2026-10-14T16:20:00Z",
+    "requested_by": {
+      "kind": "user",
+      "id": "revisor-1",
+      "display_name": "Cuenta de revisión 1",
+      "roles": [
+        "reviewer"
+      ]
+    },
+    "target": {
+      "kind": "job",
+      "id": "i2LUeRtROdg__32dfbdf3a68ff76dc72c3a2850d50f47685b60bd9a0cfe9d8e0fe6e5aee0015c"
+    },
+    "reason": "El material ya se revisó: reintentar con la autorización nueva.",
+    "parameters": {
+      "video_id": "i2LUeRtROdg",
+      "reason": "material revisado"
+    },
+    "dry_run": false,
+    "idempotency_key": "retry-i2LUeRtROdg-20261014",
+    "preview": {
+      "effect": "crbridge retry: el trabajo vuelve a queued.",
+      "preconditions": [
+        {
+          "text": "Existe exactamente un trabajo blocked para el video",
+          "met": true
+        }
+      ]
+    },
+    "approvals": []
+  }
+}

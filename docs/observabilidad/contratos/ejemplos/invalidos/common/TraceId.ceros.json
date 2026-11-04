@@ -1,0 +1,8 @@
+{
+  "descripcion": "El trace_id todo ceros es inválido en W3C Trace Context.",
+  "error_esperado": {
+    "keyword": "not",
+    "ruta": ""
+  },
+  "instancia": "00000000000000000000000000000000"
+}

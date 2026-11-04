@@ -1,0 +1,15 @@
+{
+  "descripcion": "Un administrador sin segundo factor viola la regla de MFA obligatoria.",
+  "error_esperado": {
+    "keyword": "const",
+    "ruta": "/mfa_enabled"
+  },
+  "instancia": {
+    "id": "admin-2",
+    "display_name": "Cuenta de administración 2",
+    "roles": [
+      "admin"
+    ],
+    "mfa_enabled": false
+  }
+}

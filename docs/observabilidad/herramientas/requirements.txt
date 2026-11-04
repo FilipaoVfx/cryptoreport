@@ -1,0 +1,4 @@
+# Validador de contratos de observabilidad (CI y uso local; ningún servicio lo importa).
+# jsonschema >= 4.18 trae referencing, necesario para resolver $ref entre archivos.
+jsonschema>=4.18,<5
+PyYAML>=6,<7

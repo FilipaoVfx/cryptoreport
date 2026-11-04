@@ -1,0 +1,43 @@
+{
+  "descripcion": "El audio, si algún día se obtiene, es transitorio: máximo 7 días.",
+  "error_esperado": {
+    "keyword": "maximum",
+    "ruta": "/access/retention/value"
+  },
+  "instancia": {
+    "asset_id": "audio:OwrAjFdTQ4s",
+    "kind": "audio",
+    "title": "Audio temporal",
+    "video_id": "OwrAjFdTQ4s",
+    "created_at": "2026-11-01T00:00:00Z",
+    "current_version": "6ed8919ce20490a5e3ad8630a4fab69475297abd07db73918dd5f36fcfaeb11b",
+    "versions": [
+      {
+        "version": "6ed8919ce20490a5e3ad8630a4fab69475297abd07db73918dd5f36fcfaeb11b",
+        "created_at": "2026-11-01T00:00:00Z",
+        "created_by": {
+          "kind": "service",
+          "id": "cr-extractor"
+        },
+        "status": "current",
+        "storage": {
+          "mode": "local",
+          "uri": "file:///var/lib/cryptoreport-transcripts/audio/OwrAjFdTQ4s.m4a",
+          "bytes": 17000000,
+          "media_type": "audio/mp4"
+        },
+        "provenance": {
+          "source": "ytdlp"
+        }
+      }
+    ],
+    "lineage": [],
+    "access": {
+      "visibility": "restricted",
+      "retention": {
+        "policy": "days",
+        "value": 30
+      }
+    }
+  }
+}

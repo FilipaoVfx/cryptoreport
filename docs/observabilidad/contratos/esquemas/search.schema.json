@@ -1,0 +1,71 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Búsqueda en la Biblioteca",
+  "description": "Petición y respuesta de búsqueda léxica (FTS5), semántica (índice vectorial) o híbrida (fusión RRF). La respuesta siempre informa del estado del índice usado para que la persona sepa qué buscó realmente.",
+  "anyOf": [
+    {"$ref": "#/$defs/SearchRequest"},
+    {"$ref": "#/$defs/SearchResponse"}
+  ],
+  "$defs": {
+    "SearchRequest": {
+      "type": "object",
+      "required": ["query", "mode"],
+      "additionalProperties": false,
+      "properties": {
+        "query": {"type": "string", "minLength": 2, "maxLength": 300},
+        "mode": {"enum": ["lexical", "semantic", "hybrid"]},
+        "top_k": {"type": "integer", "minimum": 1, "maximum": 50, "default": 10},
+        "filters": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "kinds": {"type": "array", "items": {"enum": ["transcript", "analysis", "chunk_set"]}, "uniqueItems": true},
+            "channels": {"type": "array", "items": {"$ref": "common.schema.json#/$defs/ChannelSlug"}, "uniqueItems": true},
+            "published_from": {"$ref": "common.schema.json#/$defs/Timestamp"},
+            "published_to": {"$ref": "common.schema.json#/$defs/Timestamp"},
+            "quality": {"type": "array", "items": {"enum": ["valid", "warning", "invalid"]}, "uniqueItems": true},
+            "include_quarantined": {"type": "boolean", "default": false}
+          }
+        }
+      }
+    },
+    "SearchResponse": {
+      "type": "object",
+      "required": ["query", "mode_used", "index", "hits", "took_ms"],
+      "additionalProperties": false,
+      "properties": {
+        "query": {"type": "string"},
+        "mode_used": {"enum": ["lexical", "semantic", "hybrid"]},
+        "degraded_from": {"enum": ["semantic", "hybrid"], "description": "Presente si se pidió semántica o híbrida y el índice no estaba listo: se respondió con búsqueda léxica."},
+        "index": {
+          "type": "object",
+          "required": ["lexical", "vector"],
+          "additionalProperties": false,
+          "properties": {
+            "lexical": {"enum": ["ready", "building", "missing"]},
+            "vector": {"enum": ["not_provisioned", "building", "ready", "stale", "degraded", "failed"]}
+          }
+        },
+        "hits": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["asset_id", "version", "score", "snippet"],
+            "additionalProperties": false,
+            "properties": {
+              "asset_id": {"$ref": "common.schema.json#/$defs/AssetId"},
+              "version": {"$ref": "common.schema.json#/$defs/Sha256"},
+              "chunk_id": {"type": "string", "pattern": "^[A-Za-z0-9_-]{11}:[0-9a-f]{12}:[0-9]{4}$"},
+              "score": {"type": "number"},
+              "start_s": {"type": "number", "minimum": 0},
+              "end_s": {"type": "number", "minimum": 0},
+              "snippet": {"type": "string", "maxLength": 400},
+              "quality": {"enum": ["valid", "warning", "invalid", "unknown"]}
+            }
+          }
+        },
+        "took_ms": {"type": "number", "minimum": 0}
+      }
+    }
+  }
+}

@@ -1,0 +1,452 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Urania/Diario · Panel de administración</title>
+<style>
+  :root { --bg:#0f1115; --card:#171a21; --card2:#1d212a; --line:#262b35; --ink:#e8eaf0; --muted:#8b93a5; --ok:#5fd38d; --warn:#f2c14e; --crit:#ff6b6b; --na:#7d8597; --acc:#8fb8ff; }
+  * { box-sizing: border-box; }
+  body { margin:0; font: 14px/1.45 system-ui, -apple-system, "Segoe UI", sans-serif; background:var(--bg); color:var(--ink); }
+  header { display:flex; flex-wrap:wrap; gap:8px 16px; align-items:center; justify-content:space-between; padding:10px 18px; border-bottom:1px solid var(--line); position:sticky; top:0; background:var(--bg); z-index:5; }
+  h1 { font-size:15px; margin:0; } h2 { font-size:12px; text-transform:uppercase; letter-spacing:.06em; color:var(--muted); margin:0 0 10px; }
+  nav.tabs { display:flex; gap:4px; flex-wrap:wrap; } nav.tabs button { background:none; border:1px solid transparent; color:var(--muted); padding:6px 10px; border-radius:6px; cursor:pointer; font:inherit; }
+  nav.tabs button[aria-current="page"] { color:var(--ink); border-color:var(--line); background:var(--card); }
+  .live { color:var(--muted); font-size:12px; } .live b { color:var(--ok); }
+  main { padding:16px 18px 60px; display:grid; grid-template-columns:minmax(0,1fr); gap:16px; max-width:1360px; margin:0 auto; }
+  main>[data-view] { min-width:0; }
+  .banner { padding:12px 14px; border-radius:8px; border:1px solid var(--line); background:var(--card); font-weight:600; }
+  .grid { display:grid; gap:12px; grid-template-columns:repeat(auto-fit, minmax(190px, 1fr)); }
+  .two { display:grid; gap:16px; grid-template-columns:repeat(auto-fit, minmax(340px, 1fr)); }
+  .card { background:var(--card); border:1px solid var(--line); border-radius:8px; padding:12px 14px; min-width:0; }
+  .tile h3 { margin:0 0 6px; font-size:13px; display:flex; justify-content:space-between; gap:8px; } .tile p { margin:0; color:var(--muted); font-size:12.5px; }
+  .tag { font-size:11px; font-weight:700; padding:1px 7px; border-radius:99px; white-space:nowrap; display:inline-block; }
+  .s-ok { color:var(--ok); } .s-warning, .s-degraded { color:var(--warn); } .s-critical { color:var(--crit); } .s-unknown, .s-not_measured, .s-disabled { color:var(--na); }
+  .tag.s-ok { background:#5fd38d1f; } .tag.s-degraded, .tag.s-warning { background:#f2c14e1f; } .tag.s-critical { background:#ff6b6b1f; } .tag.s-unknown, .tag.s-disabled, .tag.s-not_measured { background:#7d859722; }
+  .sig { display:flex; gap:6px; flex-wrap:wrap; margin-top:8px; } .sig span { font-size:11px; border:1px solid var(--line); border-radius:4px; padding:0 5px; }
+  table { width:100%; border-collapse:collapse; font-size:12.5px; } th, td { text-align:left; padding:6px; border-bottom:1px solid var(--line); vertical-align:top; }
+  th { color:var(--muted); font-weight:600; } td.num { text-align:right; font-variant-numeric:tabular-nums; } tr.click { cursor:pointer; } tr.click:hover td { background:var(--card2); }
+  .cyc { display:grid; gap:3px; } .cyc-row { display:grid; grid-template-columns:110px 1fr; gap:6px; align-items:center; font-size:11.5px; color:var(--muted); }
+  .cells { display:flex; gap:2px; } .cells i { flex:1; height:12px; border-radius:2px; background:var(--na); } .cells i.ok { background:var(--ok); } .cells i.fb { background:var(--warn); } .cells i.error { background:var(--crit); }
+  .bar { height:8px; border-radius:4px; background:var(--line); overflow:hidden; margin:4px 0 2px; } .bar i { display:block; height:100%; }
+  .muted { color:var(--muted); } .small { font-size:12px; }
+  button.btn, .btn { background:var(--card2); color:var(--ink); border:1px solid var(--line); border-radius:6px; padding:6px 11px; font:inherit; cursor:pointer; }
+  .btn:hover { border-color:var(--acc); } .btn.primary { background:#2b4a7a; border-color:#3b62a0; } .btn.danger { border-color:#7a3b3b; color:#ffb4b4; } .btn:disabled { opacity:.5; cursor:default; }
+  input, select, textarea { background:var(--bg); color:var(--ink); border:1px solid var(--line); border-radius:6px; padding:6px 8px; font:inherit; }
+  .filters { display:flex; flex-wrap:wrap; gap:8px; align-items:center; margin-bottom:10px; }
+  .chips { display:flex; flex-wrap:wrap; gap:6px; } .chip { border:1px solid var(--line); border-radius:99px; padding:3px 10px; background:none; color:var(--muted); cursor:pointer; font:inherit; font-size:12px; }
+  .chip[aria-pressed="true"] { color:var(--ink); border-color:var(--acc); background:#8fb8ff14; }
+  .st { font-size:11.5px; font-weight:600; padding:1px 7px; border-radius:4px; background:var(--card2); white-space:nowrap; }
+  .st-publicado-con-análisis { color:var(--ok); } .st-en-análisis { color:var(--acc); } .st-requiere-revisión, .st-transcripción-inválida, .st-fallido { color:var(--crit); } .st-oculto { color:var(--na); text-decoration:line-through; }
+  .drawer { position:fixed; inset:0 0 0 auto; width:min(720px, 100%); background:var(--card); border-left:1px solid var(--line); overflow:auto; z-index:20; padding:16px 18px 40px; box-shadow:-20px 0 40px #0008; }
+  .scrim { position:fixed; inset:0; background:#0007; z-index:15; }
+  .card { overflow-wrap:anywhere; } .event-detail { white-space:pre-wrap; overflow-wrap:anywhere; font-size:12px; }
+  .timeline { list-style:none; padding:0; margin:0; border-left:2px solid var(--line); } .timeline li { padding:2px 0 8px 12px; position:relative; } .timeline li::before { content:""; position:absolute; left:-6px; top:7px; width:10px; height:10px; border-radius:50%; background:var(--acc); }
+  .kv { display:grid; grid-template-columns:150px 1fr; gap:4px 10px; font-size:12.5px; } .kv dt { color:var(--muted); } .kv dd { margin:0; }
+  .toast { position:fixed; bottom:18px; left:50%; transform:translateX(-50%); background:#22324d; border:1px solid #3b62a0; padding:10px 16px; border-radius:8px; z-index:30; max-width:90vw; }
+  .toast.err { background:#4d2222; border-color:#a03b3b; }
+  .login { max-width:360px; margin:12vh auto; display:grid; gap:10px; }
+  .row-actions { display:flex; gap:6px; flex-wrap:wrap; }
+  #x-accounts { overflow-x:auto; }
+  #creators { overflow-x:auto; }
+  #x-accounts table { min-width:640px; }
+  #x-accounts [data-x-name],#x-accounts [data-x-label] { display:block; width:190px; max-width:100%; margin-bottom:4px; }
+  [hidden] { display:none !important; }
+</style>
+</head>
+<body>
+<header>
+  <h1>Urania/Diario · Panel de administración</h1>
+  <nav class="tabs" id="tabs" hidden>
+    <button data-tab="resumen" aria-current="page">Resumen</button><button data-tab="contenidos">Contenidos</button><button data-tab="creadores">Creadores</button>
+    <button data-tab="parametros">Parámetros</button><button data-tab="acciones">Acciones</button><button data-tab="auditoria">Auditoría</button>
+  </nav>
+  <span class="live" id="live"></span>
+</header>
+
+<section class="login card" id="login" hidden>
+  <h2>Acceso de administración</h2>
+  <input id="pw" type="password" placeholder="Contraseña" autocomplete="current-password" autocapitalize="off" autocorrect="off" spellcheck="false" aria-label="Contraseña">
+  <label class="muted" style="display:block;margin-top:6px"><input type="checkbox" onchange="document.getElementById('pw').type=this.checked?'text':'password'"> Mostrar contraseña</label>
+  <button class="btn primary" id="login-btn">Entrar</button>
+  <p class="small muted" id="login-msg"></p>
+</section>
+
+<main id="app" hidden>
+  <!-- RESUMEN -->
+  <section data-view="resumen">
+    <div class="banner" id="banner" role="status">Cargando…</div>
+    <div class="grid" id="tiles" style="margin-top:16px"></div>
+    <div class="two" style="margin-top:16px">
+      <section class="card"><h2>Alertas abiertas</h2><div id="alerts"></div></section>
+      <section class="card"><h2>Ciclos del extractor · últimas 12 h</h2><div class="cyc" id="cycles"></div><p class="small muted" style="margin:8px 0 0">verde: RSS ok · amarillo: respaldo de páginas · rojo: error</p></section>
+    </div>
+    <div class="two" style="margin-top:16px">
+      <section class="card"><h2>Cola del puente y agente Scheduled</h2><div id="queue"></div></section>
+      <section class="card"><h2>Presupuestos del mes</h2><div id="budgets"></div></section>
+    </div>
+    <section class="card" style="margin-top:16px"><h2>Conexión y ejecución actual</h2><div id="operations"></div></section>
+    <section class="card" style="margin-top:16px"><h2>Escucha de X</h2><div id="social-health"></div></section>
+    <section class="card" style="margin-top:16px"><h2>Historial del sistema</h2>
+      <p class="small muted">Registro persistente. «Reportado» viene del comprobante de Schedule; «reconstruido» procede de metadatos históricos. No acredita acceso directo a la tarea de ChatGPT. Horarios de Bogotá.</p>
+      <div class="filters"><input id="event-video" placeholder="Filtrar por ID del video" aria-label="Video del historial"><button class="btn" id="event-filter">Filtrar</button></div>
+      <ul class="timeline" id="system-timeline"></ul><button class="btn" id="event-more" hidden>Cargar eventos anteriores</button>
+    </section>
+  </section>
+
+  <!-- CONTENIDOS -->
+  <section data-view="contenidos" hidden>
+    <div class="card">
+      <h2>Contenidos · línea de vida de cada video</h2>
+      <div class="filters">
+        <input id="q" type="search" placeholder="Buscar título o ID" aria-label="Buscar">
+        <select id="f-ch" aria-label="Creador"><option value="">Todos los creadores</option></select>
+        <div class="chips" id="stages"></div>
+      </div>
+      <div id="videos"></div>
+    </div>
+  </section>
+
+  <!-- CREADORES -->
+  <section data-view="creadores" hidden>
+    <div class="card" style="margin-bottom:16px"><h2>Cuentas de X · Feed</h2><p class="small muted">Consultas cada 3 h; nuevas cuentas en el siguiente ciclo (hasta 15 min). Todas comparten el presupuesto. Desactivar retira y purga sus posts.</p><div id="x-accounts"></div>
+      <div class="filters"><label>Cuenta de X <input id="x-ref" placeholder="https://x.com/cuenta o @cuenta" maxlength="100" aria-label="Cuenta de X"></label><button class="btn" id="x-preview">Comprobar cuenta</button></div><div id="x-result" aria-live="polite"></div></div>
+    <div class="card"><h2>Creadores vigilados</h2><div id="creators"></div></div>
+    <div class="card" style="margin-top:16px">
+      <h2>Añadir creador</h2>
+      <div class="filters"><input id="c-ref" size="40" placeholder="URL, @handle o ID del canal"><button class="btn" id="c-preview">Comprobar</button></div>
+      <div id="c-result"></div>
+      <p class="small muted">Al añadirlo entra en el siguiente ciclo con su contenido de las últimas 48 h y queda autorizado en la copia del repo de las instrucciones de Scheduled; después sincroniza esa copia con Drive.</p>
+      <button class="btn" id="sync-instr">Sincronizar instrucciones con Drive</button>
+    </div>
+  </section>
+
+  <!-- PARÁMETROS -->
+  <section data-view="parametros" hidden>
+    <div class="card"><h2>Parámetros</h2><p class="small muted" style="margin-top:0">Los editables se guardan en un drop-in de systemd (zz-panel.conf) y el extractor los usa desde su próximo ciclo. «Restablecer» vuelve al valor del perfil del servidor.</p><div id="params"></div></div>
+  </section>
+
+  <!-- ACCIONES -->
+  <section data-view="acciones" hidden>
+    <div class="two">
+      <div class="card"><h2>Ejecutar ahora</h2>
+        <div class="row-actions"><button class="btn primary" data-action="run_extractor_now">Ejecutar extracción (y publicar)</button><button class="btn" data-action="run_bridge_now">Ejecutar puente</button><button class="btn" data-action="backfill">Backfill de histórico</button></div>
+        <p class="small muted">La extracción descubre, transcribe y regenera el sitio y Urania. El puente sincroniza Drive e importa análisis.</p></div>
+      <div class="card"><h2>Tareas lanzadas en esta sesión</h2><div id="jobs"><p class="muted small">Ninguna.</p></div></div>
+    </div>
+  </section>
+
+  <!-- AUDITORÍA -->
+  <section data-view="auditoria" hidden>
+    <div class="card"><h2>Auditoría</h2><div id="audit"></div></div>
+  </section>
+</main>
+
+<div class="scrim" id="scrim" hidden></div>
+<aside class="drawer" id="drawer" hidden aria-label="Ficha"></aside>
+<div class="toast" id="toast" hidden></div>
+
+<script>
+  const $ = id => document.getElementById(id);
+  const esc = t => String(t ?? "").replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+  const ago = s => { if (!s) return "—"; const d = (Date.now() - new Date(s)) / 60000; return d < 60 ? `hace ${Math.max(0, Math.round(d))} min` : d < 2880 ? `hace ${(d / 60).toFixed(1)} h` : `hace ${Math.round(d / 1440)} d`; };
+  const dur = s => s ? (s >= 3600 ? `${Math.floor(s / 3600)} h ${Math.round(s % 3600 / 60)} min` : s >= 60 ? `${Math.round(s / 60)} min` : `${Math.round(s)} s`) : "—";
+  const date = s => s ? new Date(s).toLocaleString("es-CO", {timeZone:"America/Bogota",hour12:false}) : "—";
+  const hhmm = s => new Date(s).toLocaleTimeString("es-CO", {timeZone:"America/Bogota",hour:"2-digit",minute:"2-digit",hour12:false});
+  const EVENTS = {"video.discovered":"Video descubierto","transcript.available":"Transcripción disponible","transcript.ok":"Transcripción obtenida","transcript.attempt":"Intento de transcripción","transcript.retry_scheduled":"Reintento de transcripción programado","job.queued":"Trabajo preparado","job.uploaded":"Trabajo confirmado en Drive","job.imported":"Trabajo importado","job.blocked":"Trabajo bloqueado","job.rejected":"Trabajo rechazado","job.superseded":"Versión reemplazada","job.conflict":"Conflicto de versiones","job.needs_transcript":"Necesita transcripción","job.upload_uncertain":"Subida sin confirmar","result.detected":"Resultado detectado en Drive","result.received":"Resultado recibido del Drive","result.validated":"Resultado validado","result.rejected":"Resultado rechazado","analysis.generated":"Análisis generado","analysis.imported":"Análisis importado","publication.confirmed":"Versión publicada comprobada","analysis.published":"Análisis publicado","analysis.unpublished":"Análisis retirado de publicación","schedule.started":"Inicio declarado por Schedule","schedule.finished":"Fin declarado por Schedule","schedule.receipt":"Comprobante recibido","sync.started":"Sincronización iniciada","sync.finished":"Sincronización terminada","sync.error":"Error de sincronización","sync.lock_wait":"Puente esperando acceso compartido","extractor.started":"Extracción iniciada","extractor.finished":"Extracción terminada","extractor.error":"Error de extracción","extractor.lock_wait":"Extracción esperando acceso compartido","semantic.finished":"Revisión de la cola semántica","semantic.error":"Error en cruces semánticos","transport.activated":"Transporte de Drive activado"};
+  function eventHtml(e) {
+    const origin={observed:"registrado",reported:"reportado",reconstructed:"reconstruido"}[e.provenance]||e.provenance;
+    const failure=e.outcome==="error"||e.event.endsWith("rejected")||e.event.endsWith("blocked");
+    return `<li data-event-seq="${e.seq}" data-event-at="${esc(e.at)}"><b class="${failure?"s-warning":""}">${esc(EVENTS[e.event]||e.event)}</b> <span class="muted small">${date(e.at)} · ${esc(origin)} · #${e.seq}</span>
+      ${e.video_id?`<button class="btn small" data-open-video="${esc(e.video_id)}">${esc(e.video_id)}</button>`:""}
+      <details class="small"><summary>Detalle · ${esc(e.component)}${e.detail.destination?" · "+esc(e.detail.destination):""}</summary>
+      <div class="muted">Evento ${esc(e.event_id)} · ${esc(e.event)}<br>Trabajo: ${esc(e.job_id||"—")}<br>Ejecución: ${esc(e.run_id||"—")}<br>Registrado: ${date(e.recorded_at)} · Resultado: ${esc(e.outcome)}</div>
+      <pre class="event-detail">${esc(JSON.stringify(e.detail,null,2))}</pre></details></li>`;
+  }
+  let eventCursor=null,eventRows=[],eventVideo="";
+  function renderEvents(page,append=false,live=false) {const preserve=append||live;eventRows=preserve?[...new Map(eventRows.concat(page.events).map(e=>[e.seq,e])).values()].sort((a,b)=>b.seq-a.seq):page.events;if(!live)eventCursor=page.next_before;$("system-timeline").innerHTML=eventRows.map(eventHtml).join("")||'<li class="muted">Sin eventos registrados para este filtro.</li>';$("event-more").hidden=!eventCursor;}
+  async function loadEvents(append=false) {const q=new URLSearchParams();if(eventVideo)q.set("video_id",eventVideo);if(append&&eventCursor)q.set("before",eventCursor);renderEvents(await api("events?"+q),append);}
+  $("event-filter").addEventListener("click",()=>{eventVideo=$("event-video").value.trim();act(()=>loadEvents());});
+  $("event-more").addEventListener("click",()=>act(()=>loadEvents(true)));
+  document.addEventListener("click",e=>{const b=e.target.closest("[data-open-video]");if(b)openVideo(b.dataset.openVideo);});
+  const NAMES = { extractor: "Extracción", bridge: "Puente (Drive)", scheduled_agent: "Agente Scheduled", publication: "Publicación", analysis_api: "API de modelos", telemetry: "Telemetría", budget: "Presupuesto", drive_transport:"Transporte de Drive", semantic:"Cruces semánticos", runtime:"Procesos y esperas", social_feed:"Feed de X" };
+  const STATE = { ok: "ok", degraded: "degradado", critical: "crítico", unknown: "sin datos", disabled: "apagado", warning: "aviso", not_measured: "sin datos" };
+  const ALERT = { "SH-01": "Extracción sin ciclo reciente", "SH-03": "Ciclo lento (p95)", "SH-16": "Canal sin descubrimiento", "SH-04": "Puente sin sincronizar", "SH-05": "Errores en el puente",
+    "SH-14": "Trabajos que requieren revisión", "SH-12": "Sin comprobante de Scheduled con cola activa", "AP-01": "GCR del agente bajo", "AP-03": "Ejecuciones del agente con error",
+    "AP-04": "Ejecución por encima del límite de trabajos", "SH-11": "Publicación atrasada", "CO-01": "Créditos de Supadata", "CO-02": "Peticiones de Scraper.Tech", "DRIVE":"Autorización o pausa de Drive", "SEMANTIC":"Error en cruces semánticos", "SOCIAL":"Fuentes de X o proveedor pendientes" };
+  const SECONDS = new Set(["SH-01", "SH-03", "SH-04", "SH-11", "SH-12"]);
+  let current = "resumen", videosCache = [], stageFilter = "", lastOk = null;
+
+  async function api(path, body) {
+    const opt = body === undefined ? { cache: "no-store" } : { method: "POST", headers: { "Content-Type": "application/json", "X-Panel": "1" }, body: JSON.stringify(body) };
+    const r = await fetch("api/" + path, opt);
+    const d = await r.json().catch(() => ({}));
+    if (r.status === 401 && path !== "login") { showLogin(); throw new Error("Sesión caducada"); }
+    if (!r.ok) throw new Error(d.error || `HTTP ${r.status}`);
+    return d;
+  }
+  function toast(msg, err) { const t = $("toast"); t.textContent = msg; t.className = "toast" + (err ? " err" : ""); t.hidden = false; clearTimeout(t._h); t._h = setTimeout(() => t.hidden = true, 6000); }
+  async function act(fn) { try { const d = await fn(); if (d && d.message) toast(d.message); return d; } catch (e) { toast(e.message, true); } }
+
+  // ------------------------------------------------------------- sesión
+  function showLogin() { $("login").hidden = false; $("app").hidden = true; $("tabs").hidden = true; $("pw").focus(); }
+  async function login() {
+    try { await api("login", { password: $("pw").value }); $("pw").value = ""; start(); }
+    catch (e) { $("login-msg").textContent = e.message; }
+  }
+  $("login-btn").addEventListener("click", login);
+  $("pw").addEventListener("keydown", e => { if (e.key === "Enter") login(); });
+
+  // ------------------------------------------------------------- pestañas
+  $("tabs").addEventListener("click", e => { const b = e.target.closest("[data-tab]"); if (b) show(b.dataset.tab); });
+  function show(tab) {
+    current = tab; location.hash = tab;
+    document.querySelectorAll("[data-tab]").forEach(b => b.setAttribute("aria-current", b.dataset.tab === tab ? "page" : "false"));
+    document.querySelectorAll("[data-view]").forEach(s => s.hidden = s.dataset.view !== tab);
+    refresh();
+  }
+  async function refresh() {
+    try {
+      if (current === "resumen") renderHealth(await api("health"));
+      if (current === "contenidos") { videosCache = await api("videos"); renderVideos(); }
+      if (current === "creadores") {renderCreators(await api("creators"));if(!document.activeElement?.closest('#x-accounts'))renderXAccounts(await api("social/accounts"));}
+      if (current === "parametros") renderParams(await api("parameters"));
+      if (current === "auditoria") renderAudit(await api("audit"));
+      lastOk = new Date(); $("live").innerHTML = `<b>●</b> actualizado ${lastOk.toISOString().slice(11, 19)} UTC · <a href="#" id="logout" style="color:var(--muted)">salir</a>`;
+    } catch (e) { $("live").textContent = `◌ ${e.message}`; }
+  }
+  document.addEventListener("click", e => { if (e.target.id === "logout") { e.preventDefault(); api("logout", {}).finally(showLogin); } });
+
+  // ------------------------------------------------------------- resumen
+  function renderHealth(d) {
+    const h = d.health;
+    const t=d.drive_transport||{},r=d.runtime||{},sem=d.social_semantic||{};
+    const feed=d.social_feed||{},fh=feed.health||{},pilot=fh.pilot||{},tb=feed.twitterapi_budget||{},sb=feed.budget||{};
+    $("social-health").innerHTML=`<p class="small muted">Consultas cada ${fh.poll_interval_hours??"—"} h · exportar el Feed no renueva su fecha de extracción. API de modelos desactivada.</p>
+      <p class="small">Cron ${r.social_scheduler?.installed?"instalado":"sin confirmar"} · dispatcher cada ${r.social_scheduler?.dispatch_minutes??"—"} min · último despacho ${date(feed.last_dispatch_at)} (${feed.last_dispatch_requests??"—"} solicitudes) · operaciones normales hoy ${sb.normal_daily_used??sb.daily_used??0}/${sb.daily_limit??"—"} · carga inicial ${sb.backfill_daily_used??0}.</p>
+      <details><summary>Consumo de twitterapi.io</summary><p>Créditos estimados por mes: ${esc(JSON.stringify(tb.estimated_monthly_credits||{}))} · límite ${tb.monthly_limit??"—"} (USD ${tb.monthly_limit!=null?(tb.monthly_limit/100000).toFixed(2):"—"} de referencia). Saldo observado: ${tb.balance?.total_credits??"—"} créditos · ${date(tb.balance?.checked_at)}. Estimación local; la facturación puede reflejarse con retraso. Sin recargas automáticas.</p></details>
+      <table><tr><th>Cuenta</th><th>Última consulta correcta</th><th>Proveedor</th><th>Pendientes / error</th></tr>${(fh.accounts||[]).map(a=>`<tr><td>@${esc(a.handle)}</td><td>${date(a.last_success)} · ${a.fresh?"reciente":"atrasada"}</td><td>${esc(a.provider||"histórico")}</td><td>${a.pending?.length||0} ventanas · ${esc(a.last_error?.code||a.last_error?.kind||"sin error registrado")}</td></tr>`).join("")}</table>
+      <details><summary>Proveedores y prueba de siete días</summary>${Object.entries(fh.providers||{}).map(([name,p])=>`<p><b>${esc(name)}</b> · ${esc(p.status)} · ${esc(p.last_error?.code||"")} · próximo intento permitido ${date(p.retry_at)}</p>`).join("")}<p>Inicio: ${date(pilot.started_at)} · ${pilot.observed_operations??0} operaciones observadas · ${pilot.success_rate==null?"sin muestra":Math.round(pilot.success_rate*100)+" % correctas"} · ${pilot.observation_complete?"periodo observado; evaluar resultados":"observación pendiente o en curso"}.</p><p class="small muted">twitterapi.io y Scraper.tech: una solicitud. Agent Reach: una página mediante twitter-cli, que puede hacer consultas internas adicionales. Un proveedor de respaldo sin acceso no invalida una lectura correcta del principal.</p></details>
+      <details><summary>Últimos eventos de ingesta</summary>${(fh.events||[]).slice(-30).reverse().map(e=>`<p class="small">${date(e.at)} · @${esc(e.account)} · ${esc(e.provider)} · ${esc(e.stage)} · ${esc(e.outcome)}${e.error_code?" · "+esc(e.error_code):""} · +${e.added??0} posts</p>`).join("")||'<p class="muted">Sin intentos registrados todavía.</p>'}</details>`;
+    $("operations").innerHTML=`<dl class="kv"><dt>Consulta en vivo</dt><dd>${date(r.observed_at)}</dd><dt>Informe del puente</dt><dd>${date(d.source_report_at)} · ${ago(d.source_report_at)}</dd>
+      <dt>Drive</dt><dd>${esc(t.backend||"desconocido")} · autenticación ${t.auth_blocked?"bloqueada":"sin bloqueo registrado"} · pausa hasta ${t.pause_until?date(t.pause_until*1000):"—"}<br>Último éxito: ${t.last_success?date(t.last_success*1000):"—"}<br>Error: ${esc(JSON.stringify(t.last_error||null))}<br>Intentos de solicitudes por día UTC: ${esc(JSON.stringify(t.drive_api_requests_by_day||{}))}</dd>
+      <dt>Acceso compartido</dt><dd>${r.pipeline_locked===null?"desconocido":r.pipeline_locked?"ocupado":"libre"}${r.probable_owner?" · responsable probable: "+esc(r.probable_owner):""}${r.bridge_waiting?" · puente esperando; reintento al terminar extracción o por timer":""}</dd>
+      <dt>Servicios</dt><dd>${Object.entries(r.services||{}).map(([name,x])=>`${esc(name)}: ${esc(x.ActiveState)}/${esc(x.SubState)} · ${esc(x.Result||"")}${x.running_for_s!=null?" · en curso "+dur(x.running_for_s):""}<br>Inicio: ${esc(x.ExecMainStartTimestamp||"—")} · siguiente timer: ${esc(x.NextElapseUSecRealtime||"—")}`).join("<br>")}</dd>
+      <dt>Cruces semánticos</dt><dd>${esc(sem.status||"sin datos")} · informe ${date(sem.generated_at)}<br>${sem.jobs_available??0} disponibles · ${sem.jobs_uploaded??0} subidos en el ciclo · ${sem.jobs_reviewed??0} revisados · ${sem.jobs_rejected??0} rechazados<br>${esc((sem.errors||[]).join(" · "))}</dd></dl>`;
+    if(!eventVideo)renderEvents(d.events,false,eventRows.length>0);
+    $("banner").className = `banner s-${h.status}`;
+    $("banner").textContent = h.status === "ok" ? "Todo en orden." : `${STATE[h.status].toUpperCase()} · ${h.alerts_firing} alerta${h.alerts_firing === 1 ? "" : "s"} · ${d.errors.length ? d.errors.join("; ") : (d.warnings[0] || "")}`;
+    const fmt = s => s.observed == null ? "" : " · " + (SECONDS.has(s.threshold_id) ? dur(s.observed) : esc(s.observed));
+    $("tiles").innerHTML = h.components.map(c => `<article class="card tile"><h3>${NAMES[c.id]}<span class="tag s-${c.status}">${STATE[c.status]}</span></h3><p>${esc(c.summary)}</p>
+      <div class="sig">${c.signals.map(s => `<span class="s-${s.level}" title="${esc(ALERT[s.threshold_id] || s.threshold_id)}">${s.threshold_id}${fmt(s)}</span>`).join("")}</div></article>`).join("");
+    $("alerts").innerHTML = d.alerts.length ? `<table><tr><th>Umbral</th><th>Qué pasa</th><th>Observado</th><th>Nivel</th></tr>${d.alerts.map(a =>
+      `<tr><td>${a.threshold_id}</td><td>${esc(ALERT[a.threshold_id] || "")} <span class="muted">(${NAMES[a.component]})</span></td><td class="num">${SECONDS.has(a.threshold_id) ? dur(a.observed) : esc(a.observed)}</td><td class="s-${a.level}">${STATE[a.level]}</td></tr>`).join("")}</table>`
+      + (d.warnings.length ? `<p class="small muted" style="margin:10px 0 0">Avisos del puente: ${d.warnings.map(esc).join(" · ")}</p>` : "") : `<p class="muted">Ninguna alerta abierta.</p>`;
+    $("cycles").innerHTML = d.channels.map(c => `<div class="cyc-row"><span>${esc(c.name)}</span><div class="cells">${d.cycles.map(x => `<i class="${x.ok[c.slug] || ""}" title="${hhmm(x.t)} Bogotá · ${x.ok[c.slug] || "sin dato"}"></i>`).join("")}</div></div>`).join("")
+      + `<div class="cyc-row"><span>transcritos</span><div class="cells">${d.cycles.map(x => `<i class="${x.transcribed ? "ok" : ""}" title="${hhmm(x.t)} Bogotá · ${x.transcribed} nuevas"></i>`).join("")}</div></div>`;
+    const order = ["queued", "upload_uncertain", "uploaded", "imported", "needs_transcript", "rejected", "conflict", "blocked"];
+    $("queue").innerHTML = `<p>${order.filter(k => d.jobs[k]).map(k => `<b>${k}</b> ${d.jobs[k]}`).join(" · ")}</p>${d.receipts.map(r=>`<details style="margin:10px 0"><summary>${date(r.started_at)} · ${esc(r.status)} · ${r.uploaded}/${r.attempted} subidos · ${dur(r.duration_s)}</summary><p class="small">Ejecución: ${esc(r.run_id)}<br>Fin: ${date(r.finished_at)}</p>${r.attempted_job_ids.map(j=>`<div class="small"><button class="btn small" data-open-video="${esc(j.split("__")[0])}">${esc(j.split("__")[0])}</button> ${r.uploaded_job_ids.includes(j)?"subida declarada":"sin subida declarada"}<br>${esc(j)}</div>`).join("")}<pre class="event-detail">${esc((r.errors||[]).join("\n")||"Sin errores declarados")}</pre></details>`).join("")}<p class="muted small">Comprobantes recibidos por el servidor. No mide directamente si la tarea de ChatGPT está activa.</p>`;
+    const BN = { supadata_credits: "Supadata (créditos)", scrapertech_requests: "Scraper.Tech (peticiones)", social_operations:"Feed de X (operaciones)", model_api_usd: "API de modelos (USD)" };
+    $("budgets").innerHTML = h.budgets.map(b => { const p = b.limit ? Math.min(100, 100 * b.used / b.limit) : 0;
+      return `<div style="margin-bottom:10px"><div class="small">${BN[b.name]} · <b>${b.used}</b> de ${b.limit}${b.limit === 0 ? " (guarda cerrada)" : ""}</div><div class="bar"><i style="width:${p}%;background:${p >= 95 ? "var(--crit)" : p >= 80 ? "var(--warn)" : "var(--ok)"}"></i></div></div>`; }).join("");
+  }
+
+  // ------------------------------------------------------------- contenidos
+  const stCls = s => "st st-" + s.replace(/ /g, "-");
+  function renderVideos() {
+    const sel = $("f-ch"), chans = [...new Map(videosCache.map(v => [v.channel, v.channel_name])).entries()];
+    if (sel.options.length !== chans.length + 1) sel.innerHTML = `<option value="">Todos los creadores</option>` + chans.map(([s, n]) => `<option value="${esc(s)}">${esc(n)}</option>`).join("");
+    const counts = {}; videosCache.forEach(v => counts[v.stage] = (counts[v.stage] || 0) + 1);
+    $("stages").innerHTML = [["", `Todos · ${videosCache.length}`], ...Object.entries(counts).map(([s, n]) => [s, `${s} · ${n}`])]
+      .map(([s, l]) => `<button class="chip" data-stage="${esc(s)}" aria-pressed="${stageFilter === s}">${esc(l)}</button>`).join("");
+    const q = $("q").value.trim().toLowerCase(), ch = sel.value;
+    const list = videosCache.filter(v => (!stageFilter || v.stage === stageFilter) && (!ch || v.channel === ch) && (!q || (v.title + " " + v.id).toLowerCase().includes(q)));
+    $("videos").innerHTML = `<table><tr><th>Publicado</th><th>Creador</th><th>Título</th><th>Transcripción</th><th>Análisis</th><th>Etapa</th></tr>${list.map(v => `
+      <tr class="click" data-video="${v.id}"><td>${ago(v.published_at)}</td><td>${esc(v.channel_name)}</td>
+      <td>${v.editorial.featured ? "★ " : ""}${esc(v.title)}${v.short ? ' <span class="muted">· short</span>' : ""}${v.editorial.note ? ' <span class="muted">· 📝</span>' : ""}</td>
+      <td class="${v.transcript ? (v.transcript.quality === "valid" ? "s-ok" : v.transcript.quality === "warning" ? "s-warning" : "s-critical") : "s-unknown"}">${v.transcript ? `${v.transcript.quality} · ${v.transcript.provider}` : esc(v.status)}</td>
+      <td>${v.analysis ? `${esc(v.analysis.status)} · ${esc(v.analysis.completeness || "")} · ${v.analysis.claims} af.` : v.job ? `trabajo ${esc(v.job.state)}` : "—"}${v.analysis_stale ? ' <span class="s-warning">· desfasado</span>' : ""}</td>
+      <td><span class="${stCls(v.stage)}">${esc(v.stage)}</span></td></tr>`).join("") || `<tr><td colspan="6" class="muted">Nada con este filtro.</td></tr>`}</table>`;
+  }
+  $("stages").addEventListener("click", e => { const b = e.target.closest("[data-stage]"); if (b) { stageFilter = b.dataset.stage; renderVideos(); } });
+  $("q").addEventListener("input", renderVideos); $("f-ch").addEventListener("change", renderVideos);
+  $("videos").addEventListener("click", e => { const r = e.target.closest("[data-video]"); if (r) openVideo(r.dataset.video); });
+
+  function techHtml(v){
+    const t=v.transcript,a=v.analysis,j=v.job;
+    return `<dt>Video</dt><dd>${esc(v.status)} · ${v.attempts} intento(s)${v.last_error?" · "+esc(v.last_error):""}</dd>
+      <dt>Transcripción</dt><dd>${t?`${esc(t.quality)} · ${esc(t.provider)}/${esc(t.language)} · ${t.segments} segmentos · cobertura ${t.coverage??"—"}<br>${esc(t.reasons.join(", "))}`:"—"}</dd>
+      <dt>Trabajo</dt><dd>${j?`${esc(j.state)} · ${date(j.updated_at)} · ${esc(j.detail||"")}<br>${esc(j.job_id)}`:"—"}</dd>
+      <dt>Análisis</dt><dd>${a?`${esc(a.status)} · ${esc(a.completeness||"")} · ${a.claims} afirmaciones · ${a.evidences} evidencias · ${esc(a.provider)} · ${esc(a.model||"modelo no verificable")}`:"—"}</dd>
+      <dt>Validación</dt><dd>${date(a?.validated_at)}</dd><dt>Importación</dt><dd>${date(a?.imported_at)}</dd>
+      <dt>Origen en Drive</dt><dd>${esc(a?.source_drive_file_id||"—")}</dd>
+      <dt>Versión del análisis</dt><dd>${esc(a?.analysis_sha256||"—")}${v.analysis_stale?' · <span class="s-warning">Desfasado respecto a la transcripción</span>':""}</dd>
+      <dt>Publicación vigente</dt><dd>sitio: ${v.published.site_analysis?"sí":"no"} · Urania: ${v.published.urania_analysis?"sí":"no"}</dd>
+      ${a?.thesis?`<dt>Tesis</dt><dd>${esc(a.thesis)}</dd>`:""}`;
+  }
+  async function openVideo(id,quiet=false) {
+    let v; try { v = await api("videos/" + id); } catch (e) { return toast(e.message, true); }
+    if(quiet && ($("drawer").hidden || $("drawer").dataset.video!==id))return;
+    if(quiet){
+      const timeline=$("video-timeline");
+      for(const e of v.timeline){
+        if(timeline.querySelector('[data-event-seq="'+e.seq+'"]'))continue;
+        const later=[...timeline.querySelectorAll('li[data-event-at]')].find(node=>node.dataset.eventAt>e.at);
+        if(later)later.insertAdjacentHTML("beforebegin",eventHtml(e));else timeline.insertAdjacentHTML("beforeend",eventHtml(e));
+      }
+      $("detail-tech").innerHTML=techHtml(v);
+      $("detail-stage").textContent=v.stage;$("detail-stage").className=stCls(v.stage);
+      $("detail-at").textContent="Consulta: "+date(v.detail_observed_at)+" · Bogotá";
+      $("detail-published").textContent=`Video visible: sitio ${v.published.site?"sí":"no"} · Urania ${v.published.urania?"sí":"no"}. Análisis vigente publicado: sitio ${v.published.site_analysis?"sí":"no"} · Urania ${v.published.urania_analysis?"sí":"no"}. Trabajo: ${v.job?.state||"—"}`;
+      return;
+    }
+    const t = v.transcript, a = v.analysis, j = v.job;
+    $("drawer").innerHTML = `
+      <div style="display:flex;justify-content:space-between;gap:10px;align-items:start"><div><p class="small muted" style="margin:0">${esc(v.channel_name)} · ${date(v.published_at)} · Bogotá · ${dur(v.duration_s)}${v.short ? " · short" : ""}</p>
+      <h2 style="text-transform:none;letter-spacing:0;color:var(--ink);font-size:16px;margin:4px 0 6px">${esc(v.title)}</h2><span id="detail-stage" class="${stCls(v.stage)}">${esc(v.stage)}</span>
+      <a class="small" style="color:var(--acc);margin-left:8px" href="https://www.youtube.com/watch?v=${v.id}" target="_blank" rel="noopener">abrir en YouTube ↗</a></div><button class="btn" data-close>Cerrar</button></div>
+      <p class="small muted" id="detail-at">Consulta: ${date(v.detail_observed_at)} · Bogotá</p><p class="small" id="detail-published">Video visible: sitio ${v.published.site?"sí":"no"} · Urania ${v.published.urania?"sí":"no"}. Análisis vigente publicado: sitio ${v.published.site_analysis?"sí":"no"} · Urania ${v.published.urania_analysis?"sí":"no"}. Trabajo: ${esc(v.job?.state||"—")}</p>
+      <h2 style="margin-top:18px">Historial del video</h2><p class="small muted">Hitos registrados, reportados por Schedule o reconstruidos desde metadatos. No se inventan horas históricas faltantes.</p><ul class="timeline" id="video-timeline">${v.timeline.map(eventHtml).join("")||'<li class="muted">Sin historial registrado.</li>'}</ul>
+      ${v.timeline_next_before?`<button class="btn" id="video-more" data-before="${v.timeline_next_before}">Cargar historial anterior</button>`:""}
+      <h2 style="margin-top:14px">Editorial</h2>
+      <div class="row-actions">
+        <button class="btn ${v.editorial.hidden ? "" : "danger"}" data-ed="hidden" data-val="${v.editorial.hidden ? "" : "1"}">${v.editorial.hidden ? "Mostrar de nuevo" : "Ocultar del sitio y Urania"}</button>
+        <button class="btn" data-ed="featured" data-val="${v.editorial.featured ? "" : "1"}">${v.editorial.featured ? "Quitar destacado" : "★ Destacar"}</button>
+      </div>
+      <div style="display:flex;gap:6px;margin-top:8px"><input id="note" style="flex:1" placeholder="Nota interna" value="${esc(v.editorial.note?.value || "")}"><button class="btn" data-ed="notes">Guardar nota</button></div>
+      <h2 style="margin-top:16px">Estado técnico</h2>
+      <dl class="kv" id="detail-tech">${techHtml(v)}</dl>
+      ${j && j.state === "blocked" ? `<h2 style="margin-top:16px">Reintentar análisis</h2><div style="display:flex;gap:6px"><input id="retry-reason" style="flex:1" placeholder="Motivo del reintento"><button class="btn primary" data-retry>Reintentar</button></div>` : ""}
+      <h2 style="margin-top:16px">Intentos de proveedores</h2>
+      <table><tr><th>Cuándo</th><th>Proveedor</th><th>Resultado</th><th class="num">s</th></tr>${(v.attempt_log || []).map(x => `<tr><td>${ago(x.at)}</td><td>${esc(x.provider)}</td><td>${esc(x.outcome)}${x.detail ? ` <span class="muted">· ${esc(String(x.detail).slice(0, 80))}</span>` : ""}</td><td class="num">${x.elapsed_s ?? ""}</td></tr>`).join("")}</table>
+      ${v.preview ? `<h2 style="margin-top:16px">Inicio de la transcripción</h2><p class="small" style="white-space:pre-wrap">${v.preview.map(([s, txt]) => `[${Math.floor(s / 60)}:${String(s % 60).padStart(2, "0")}] ${esc(txt)}`).join("\n")}</p>` : ""}`;
+    $("drawer").dataset.video = id; $("drawer").hidden = false; $("scrim").hidden = false;
+  }
+  function closeDrawer() { $("drawer").hidden = true; $("scrim").hidden = true; }
+  $("scrim").addEventListener("click", closeDrawer);
+  document.addEventListener("keydown", e => { if (e.key === "Escape") closeDrawer(); });
+  $("drawer").addEventListener("click", async e => {
+    const id = $("drawer").dataset.video;
+    if(e.target.id==="video-more"){
+      return act(async()=>{const page=await api("events?video_id="+encodeURIComponent(id)+"&before="+e.target.dataset.before);$("video-timeline").insertAdjacentHTML("afterbegin",page.events.slice().sort((a,b)=>a.at.localeCompare(b.at)).map(eventHtml).join(""));e.target.dataset.before=page.next_before;e.target.hidden=!page.next_before;});
+    }
+    if (e.target.closest("[data-close]")) return closeDrawer();
+    const ed = e.target.closest("[data-ed]");
+    if (ed) {
+      const field = ed.dataset.ed, value = field === "notes" ? $("note").value.trim() : (ed.dataset.val ? true : null);
+      if (field === "hidden" && value && !confirm("¿Ocultar este video del sitio y de Urania? Se puede deshacer.")) return;
+      if (await act(() => api("editorial", { video_id: id, field, value }))) { videosCache = await api("videos"); renderVideos(); openVideo(id); }
+    }
+    if (e.target.closest("[data-retry]")) {
+      if (await act(() => api("actions", { kind: "retry_job", params: { video_id: id, reason: $("retry-reason").value } }))) trackJobs();
+    }
+  });
+
+  // ------------------------------------------------------------- creadores
+  let xCatalog=null,xPreview=null;
+  function renderXAccounts(data){
+    xCatalog=data;
+    $("x-accounts").innerHTML=`<p class="small muted">${data.accounts.filter(a=>a.enabled).length} activas de ${data.max_accounts} posibles · tope estimado compartido USD ${(data.monthly_credit_limit/100000).toFixed(2)}/mes; sin recargas automáticas.</p><table><tr><th>Cuenta</th><th>Nombre / categoría</th><th>Días</th><th>Activa</th><th></th></tr>${data.accounts.map(a=>`<tr data-x-account="${esc(a.handle)}"><td>@${esc(a.handle)}<div class="small muted">ID ${esc(a.author_id)}</div></td><td><input data-x-name aria-label="Nombre de ${esc(a.handle)}" value="${esc(a.name)}" maxlength="80"><input data-x-label aria-label="Categoría de ${esc(a.handle)}" value="${esc(a.label)}" maxlength="40"></td><td><input data-x-days aria-label="Días de ${esc(a.handle)}" type="number" min="1" max="30" value="${a.lookback_days}" style="width:72px"></td><td><input data-x-enabled aria-label="Activar ${esc(a.handle)}" type="checkbox" ${a.enabled?'checked':''}></td><td><button class="btn small" data-x-save="${esc(a.handle)}">Guardar</button></td></tr>`).join('')}</table>`;
+  }
+  $("x-preview").addEventListener('click',async()=>{
+    const b=$("x-preview");b.disabled=true;xPreview=null;$("x-result").textContent='Comprobando perfil…';
+    try{
+      xPreview=await api('social/accounts/preview',{ref:$("x-ref").value});
+      $("x-result").innerHTML=`<p><b>${esc(xPreview.name)}</b> · @${esc(xPreview.handle)} · ID ${esc(xPreview.author_id)}</p>${xPreview.exists?'<p class="muted">Ya está registrada; edítala arriba.</p>':`<div class="filters"><label>Días <input id="x-days" type="number" min="1" max="30" value="3" style="width:72px"></label><label>Categoría <input id="x-label" value="Cripto" maxlength="40"></label><button id="x-add" class="btn primary">Añadir al Feed</button></div>`}`;
+    }catch(e){$("x-result").textContent=e.message;}finally{b.disabled=false;}
+  });
+  $("x-result").addEventListener('click',async e=>{
+    if(e.target.id!=='x-add'||!xPreview||!xCatalog)return;
+    const b=e.target;b.disabled=true;
+    const d=await act(()=>api('social/accounts',{handle:xPreview.handle,name:xPreview.name,label:$("x-label").value,
+      lookback_days:Number($("x-days").value),enabled:true,preview_token:xPreview.preview_token,revision:xCatalog.revision}));
+    if(d){renderXAccounts(d);$("x-result").textContent=d.message;$("x-ref").value='';xPreview=null;}else b.disabled=false;
+  });
+  $("x-accounts").addEventListener('click',async e=>{
+    const b=e.target.closest('[data-x-save]');if(!b||!xCatalog)return;
+    const row=b.closest('[data-x-account]');b.disabled=true;
+    const d=await act(()=>api('social/accounts',{handle:b.dataset.xSave,revision:xCatalog.revision,name:row.querySelector('[data-x-name]').value,
+      label:row.querySelector('[data-x-label]').value,lookback_days:Number(row.querySelector('[data-x-days]').value),enabled:row.querySelector('[data-x-enabled]').checked}));
+    if(d)renderXAccounts(d);else b.disabled=false;
+  });
+  function renderCreators(list) {
+    $("creators").innerHTML = `<table><tr><th>Creador</th><th>ID interno</th><th>Último ciclo</th><th class="num">Videos</th><th class="num">Analizados</th><th class="num">Ocultos</th><th>Último video</th><th></th></tr>${list.map(c =>
+      `<tr><td>${esc(c.name)}</td><td><code>${esc(c.slug)}</code></td><td class="${String(c.feed).startsWith("ok") ? "s-ok" : "s-warning"}">${esc(c.feed)}</td><td class="num">${c.videos}</td><td class="num">${c.analyzed}</td><td class="num">${c.hidden}</td><td>${ago(c.last_published)}</td>
+      <td><button class="btn danger small" data-remove="${esc(c.slug)}">Retirar</button></td></tr>`).join("")}</table>`;
+  }
+  $("creators").addEventListener("click", async e => {
+    const b = e.target.closest("[data-remove]");
+    if (b && confirm(`¿Dejar de vigilar a «${b.dataset.remove}»? Su contenido ya guardado se conserva.`)) { await act(() => api("creators/remove", { slug: b.dataset.remove })); refresh(); }
+  });
+  $("c-preview").addEventListener("click", async () => {
+    $("c-result").innerHTML = `<p class="muted small">Consultando YouTube…</p>`;
+    try {
+      const c = await api("creators/preview", { ref: $("c-ref").value });
+      const slug = c.name.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/[^a-z0-9]+/g, "").slice(0, 20);
+      const ini = c.name.split(/\s+/).filter(Boolean).map(w => w[0]).join("").toUpperCase().replace(/[^A-Z]/g, "").slice(0, 2).padEnd(2, "X");
+      $("c-result").innerHTML = `<div class="card" style="background:var(--card2)"><b>${esc(c.name)}</b> <span class="muted small">${esc(c.channel_id)}</span>${c.exists ? ' <span class="s-warning">· ya está vigilado</span>' : ""}
+        <p class="small muted">Últimos videos: ${c.recent.map(r => esc(r.title)).join(" · ") || esc(c.feed_error || "sin RSS")}</p>
+        <div class="filters"><label class="small">ID interno <input id="c-slug" value="${esc(slug)}" size="14"></label><label class="small">Iniciales <input id="c-ini" value="${esc(ini)}" size="3"></label>
+        <button class="btn primary" id="c-add" ${c.exists ? "disabled" : ""}>Añadir creador</button></div></div>`;
+    } catch (e) { $("c-result").innerHTML = `<p class="s-critical small">${esc(e.message)}</p>`; }
+  });
+  $("c-result").addEventListener("click", async e => {
+    if (e.target.id === "c-add" && await act(() => api("creators", { ref: $("c-ref").value, slug: $("c-slug").value, initials: $("c-ini").value }))) { $("c-result").innerHTML = ""; refresh(); }
+  });
+  $("sync-instr").addEventListener("click", () => act(() => api("instructions/sync", {})));
+
+  // ------------------------------------------------------------- parámetros
+  const CAT = { routing: "Enrutamiento", retry_fallback: "Reintentos", budget: "Presupuestos", tool_registry: "Herramientas", guardrail: "Guardas", alerting: "Avisos", model: "Modelos", prompt: "Prompts", quality_gate: "Puertas de calidad", tone: "Tono", scheduling: "Calendario" };
+  function paramInput(p) {
+    const v = Array.isArray(p.value) ? p.value.join(",") : p.value;
+    if (p.type === "boolean") return `<select data-pin="${p.key}"><option ${String(v) === "true" ? "selected" : ""}>true</option><option ${String(v) === "false" ? "selected" : ""}>false</option></select>`;
+    return `<input data-pin="${p.key}" value="${esc(v ?? "")}" size="${p.type === "string_list" ? 26 : 8}">`;
+  }
+  function renderParams(list) {
+    const groups = {}; list.forEach(p => (groups[p.editable ? "Editables" : "Solo lectura"] ||= []).push(p));
+    $("params").innerHTML = Object.entries(groups).map(([g, ps]) => `<h2 style="margin-top:14px">${g}</h2><table><tr><th>Parámetro</th><th>Valor</th><th>Rango</th><th>Riesgo</th><th>Aplicación</th><th></th></tr>${ps.map(p => `
+      <tr><td><b>${esc(p.title)}</b><div class="small muted">${esc(p.key)}${p.env ? " · " + esc(p.env) : ""} · ${CAT[p.category] || p.category}${p.overridden ? ' · <span class="s-warning">cambiado desde el panel</span>' : ""}</div><div class="small muted">${esc(p.description)}</div></td>
+      <td>${p.editable ? paramInput(p) : `<code>${esc(Array.isArray(p.value) ? p.value.join(", ") : (typeof p.value === "object" && p.value ? (p.value.version || p.value.canonical_sha256?.slice(0, 12) + "…") : p.value))}</code>`}${p.unit ? ` <span class="muted small">${esc(p.unit)}</span>` : ""}</td>
+      <td class="small muted">${p.bounds ? `${p.bounds.min ?? ""}${p.bounds.max != null ? "–" + p.bounds.max : ""}` : "—"}</td><td class="small">${esc(p.risk)}</td><td class="small muted">${esc(p.apply)}</td>
+      <td>${p.editable ? `<div class="row-actions"><button class="btn small" data-psave="${p.key}">Guardar</button>${p.overridden ? `<button class="btn small" data-preset="${p.key}">Restablecer</button>` : ""}</div>` : ""}</td></tr>`).join("")}</table>`).join("");
+  }
+  $("params").addEventListener("click", async e => {
+    const s = e.target.closest("[data-psave]"), r = e.target.closest("[data-preset]");
+    if (s) {
+      const key = s.dataset.psave, value = document.querySelector(`[data-pin="${key}"]`).value;
+      if (key === "providers.supadata.generate" && value === "true" && !confirm("Esto activa la transcripción de PAGO de Supadata (2 créditos por minuto de audio). ¿Seguro?")) return;
+      if (await act(() => api("parameters", { key, value }))) refresh();
+    }
+    if (r && await act(() => api("parameters", { key: r.dataset.preset, reset: true }))) refresh();
+  });
+
+  // ------------------------------------------------------------- acciones
+  const launched = [];
+  document.querySelectorAll("[data-action]").forEach(b => b.addEventListener("click", async () => {
+    const d = await act(() => api("actions", { kind: b.dataset.action, params: {} }));
+    if (d) { launched.unshift({ name: b.textContent, job: d.job, at: new Date() }); trackJobs(); }
+  }));
+  async function trackJobs() {
+    const rows = await Promise.all(launched.slice(0, 10).map(async l => l.job ? { ...l, ...(await api("jobs/" + l.job).catch(() => ({}))) } : { ...l, state: "lanzada" }));
+    $("jobs").innerHTML = rows.length ? `<table><tr><th>Acción</th><th>Hora</th><th>Estado</th></tr>${rows.map(r => `<tr><td>${esc(r.name)}</td><td>${r.at.toLocaleTimeString("es")}</td><td class="${r.state === "ok" ? "s-ok" : r.state === "failed" ? "s-critical" : ""}">${esc(r.state)}${r.output ? `<div class="small muted" style="white-space:pre-wrap">${esc(r.output.slice(-300))}</div>` : ""}</td></tr>`).join("")}</table>` : `<p class="muted small">Ninguna.</p>`;
+    if (rows.some(r => r.state === "running")) setTimeout(trackJobs, 5000);
+  }
+
+  // ------------------------------------------------------------- auditoría
+  function renderAudit(d) {
+    $("audit").innerHTML = `<p class="${d.intact ? "s-ok" : "s-critical"}">${d.intact ? "✓ Cadena íntegra" : "✗ Cadena rota en el evento " + d.first_bad_seq} · ${d.count} eventos</p>
+      <table><tr><th>#</th><th>Cuándo</th><th>Acción</th><th>Objetivo</th><th>Resultado</th><th>Detalle</th></tr>${d.events.map(ev => `<tr><td>${ev.seq}</td><td>${new Date(ev.at).toLocaleString("es")}</td><td>${esc(ev.action)}</td><td>${esc(ev.target)}</td><td class="${ev.outcome === "success" ? "s-ok" : "s-critical"}">${esc(ev.outcome)}</td><td class="small muted">${esc(JSON.stringify(ev.detail))}</td></tr>`).join("")}</table>`;
+  }
+
+  // ------------------------------------------------------------- arranque
+  async function start() {
+    $("login").hidden = true; $("app").hidden = false; $("tabs").hidden = false;
+    const tab = location.hash.slice(1);
+    show(["resumen", "contenidos", "creadores", "parametros", "acciones", "auditoria"].includes(tab) ? tab : "resumen");
+  }
+  setInterval(() => { if($("app").hidden)return;if(!$("drawer").hidden){openVideo($("drawer").dataset.video,true);return;}if(["resumen","contenidos"].includes(current))refresh(); }, 30000);
+  api("session").then(s => s.authenticated ? start() : showLogin()).catch(showLogin);
+</script>
+</body>
+</html>

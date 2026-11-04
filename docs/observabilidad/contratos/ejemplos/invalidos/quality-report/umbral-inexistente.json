@@ -1,0 +1,86 @@
+{
+  "descripcion": "Cada comprobación cita un umbral que existe.",
+  "error_esperado": {
+    "keyword": "semantic",
+    "ruta": "/checks/12/threshold_id"
+  },
+  "instancia": {
+    "report_id": "7890a1d2-3415-4233-8fc7-a1a4b2b4ea42",
+    "subject": {
+      "asset_id": "transcript:OwrAjFdTQ4s",
+      "version": "fd6c08dad186b10431bf1fb0d35142c715b453d2d58f2ed83e4aa96d0c54f75f"
+    },
+    "stage": "transcript",
+    "evaluated_at": "2026-10-09T10:31:43Z",
+    "gate": {
+      "id": "crtranscripts.quality.assess",
+      "code_version": "04a86b9-dirty"
+    },
+    "verdict": "valid",
+    "checks": [
+      {
+        "threshold_id": "DQ-T-01",
+        "status": "pass"
+      },
+      {
+        "threshold_id": "DQ-T-02",
+        "status": "pass"
+      },
+      {
+        "threshold_id": "DQ-T-03",
+        "status": "pass"
+      },
+      {
+        "threshold_id": "DQ-T-04",
+        "status": "pass"
+      },
+      {
+        "threshold_id": "DQ-T-05",
+        "status": "pass"
+      },
+      {
+        "threshold_id": "DQ-T-06",
+        "status": "pass"
+      },
+      {
+        "threshold_id": "DQ-T-07",
+        "status": "pass"
+      },
+      {
+        "threshold_id": "DQ-T-08",
+        "status": "pass"
+      },
+      {
+        "threshold_id": "DQ-T-09",
+        "status": "pass"
+      },
+      {
+        "threshold_id": "DQ-T-10",
+        "status": "pass",
+        "observed": 1.0
+      },
+      {
+        "threshold_id": "DQ-T-11",
+        "status": "pass",
+        "observed": 193.3
+      },
+      {
+        "threshold_id": "DQ-T-12",
+        "status": "pass",
+        "observed": 0.0
+      },
+      {
+        "threshold_id": "DQ-T-99",
+        "status": "pass"
+      }
+    ],
+    "metrics": {
+      "duration_s": 1079.0,
+      "segment_count": 499,
+      "coverage": 1.0,
+      "words_per_minute": 193.3,
+      "nonverbal_share": 0.0,
+      "max_gap_s": 0.0
+    }
+  }
+}

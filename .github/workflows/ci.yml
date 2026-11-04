@@ -1,0 +1,43 @@
+name: Offline checks
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: offline-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    strategy:
+      matrix:
+        python: ['3.12', '3.14']
+    env:
+      CRA_ALLOW_API_ANALYSIS: 'false'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python }}
+      - run: python -m pip install -r services/analysis/requirements.txt
+      - run: python -m pip install -r services/bridge/requirements.txt
+      - run: python -m unittest discover -s tests -t .
+        working-directory: services/analysis
+      - run: python -m unittest discover -s tests -t .
+        working-directory: services/transcripts
+      - run: PYTHONPATH=../analysis:../transcripts python -m unittest discover -s tests -t .
+        working-directory: services/bridge
+      - run: python -m unittest discover -s tests
+        working-directory: services/social
+      - run: python -B -m unittest discover -s tests
+        working-directory: services/panel
+      - run: python -m unittest discover -s prototypes/movil -p 'test_*.py'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: node --test prototypes/movil/b4-urania/radar.test.cjs
+      - run: node --test prototypes/movil/b4-urania/feed.test.cjs
+      - run: node --check prototypes/movil/b4-urania/app.js && node --check prototypes/movil/shared/core.js

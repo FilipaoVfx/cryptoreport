@@ -1,0 +1,9 @@
+{
+  "id": "admin-1",
+  "display_name": "Cuenta de administración 1",
+  "roles": [
+    "admin",
+    "auditor"
+  ],
+  "mfa_enabled": true
+}

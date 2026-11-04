@@ -1,0 +1,26 @@
+{
+  "rows": [
+    {
+      "handle": "BullTheoryio",
+      "status": "added_through_authenticated_ui",
+      "days": 3
+    },
+    {
+      "handle": "BitcoinArchive",
+      "status": "added_through_authenticated_ui",
+      "days": 3
+    },
+    {
+      "handle": "WatcherGuru",
+      "status": "added_through_authenticated_ui",
+      "days": 3
+    },
+    {
+      "handle": "CredibleCrypto",
+      "status": "added_through_authenticated_ui",
+      "days": 3
+    }
+  ],
+  "consoleExceptions": 0,
+  "auth": "real password login; credentials not retained in evidence"
+}

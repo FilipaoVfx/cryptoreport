@@ -1,0 +1,14 @@
+{
+  "descripcion": "Un parámetro enum lista sus valores.",
+  "error_esperado": {
+    "keyword": "required",
+    "ruta": "/parameters/[key=analysis.provider]"
+  },
+  "base": "registros/parametros.json",
+  "parche": [
+    {
+      "op": "remove",
+      "path": "/parameters/[key=analysis.provider]/enum"
+    }
+  ]
+}

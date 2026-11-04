@@ -1,0 +1,48 @@
+{
+  "asset_id": "transcript:OwrAjFdTQ4s",
+  "kind": "transcript",
+  "title": "Transcripción es · OwrAjFdTQ4s",
+  "video_id": "OwrAjFdTQ4s",
+  "channel": "nacho",
+  "created_at": "2026-10-09T10:31:43Z",
+  "current_version": "fd6c08dad186b10431bf1fb0d35142c715b453d2d58f2ed83e4aa96d0c54f75f",
+  "versions": [
+    {
+      "version": "fd6c08dad186b10431bf1fb0d35142c715b453d2d58f2ed83e4aa96d0c54f75f",
+      "created_at": "2026-10-09T10:31:43Z",
+      "created_by": {
+        "kind": "service",
+        "id": "cr-extractor"
+      },
+      "status": "current",
+      "storage": {
+        "mode": "local",
+        "uri": "file:///var/lib/cryptoreport-transcripts/transcripts/nacho/2026-10-09_OwrAjFdTQ4s.json",
+        "bytes": null,
+        "media_type": "application/json"
+      },
+      "quality": {
+        "verdict": "valid",
+        "report_id": "7890a1d2-3415-4233-8fc7-a1a4b2b4ea42"
+      },
+      "provenance": {
+        "source": "supadata",
+        "language": "es",
+        "track_kind": "unknown",
+        "fetched_at": "2026-10-09T10:31:43Z"
+      }
+    }
+  ],
+  "lineage": [
+    {
+      "relation": "derived_from",
+      "asset_id": "video:OwrAjFdTQ4s"
+    }
+  ],
+  "access": {
+    "visibility": "internal",
+    "retention": {
+      "policy": "keep_all"
+    }
+  }
+}

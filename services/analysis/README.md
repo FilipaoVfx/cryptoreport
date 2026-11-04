@@ -2,7 +2,19 @@
 
 El [system prompt de análisis](prompts/narrative-analysis.system.md) define el rol de **analista especulativo** de CryptoReport. Reconstruye la tesis del creador, analiza sus recursos persuasivos, contrasta las afirmaciones cuando hay fuentes y propone escenarios con condiciones observables e invalidación.
 
-Estado: integración probada con OpenAI (`gpt-6.1-sol`), sin conectar todavía al timer.
+Operación actual (desde el 20 de octubre): análisis con la **suscripción de Claude Code** mediante su CLI, modelo solicitado `claude-sonnet-5` y esfuerzo `max` (elección del usuario del 20 de octubre; el tope de salida se fija en 64.000 tokens y la respuesta se reconstruye desde el flujo de eventos, porque un análisis largo llega partido en varios mensajes). Codex con la sesión de ChatGPT (`gpt-6-luna`, razonamiento `max`, elegido por el usuario el 16 de octubre) queda como respaldo mientras su sesión no esté disponible. La [revisión editorial del prompt](prompts/narrative-analysis.system.md) incorpora su texto completo y conserva el contrato JSON 1.0.0. Las llamadas a proveedores mediante claves API siguen bloqueadas por defecto (`CRA_ALLOW_API_ANALYSIS=false`); no hay fallback de pago.
+
+El ejecutor [cranalysis.plan](cranalysis/plan.py) mantiene un registro de ejecutores de suscripción y usa el primero con sesión viva: `claude` (CLI de Claude Code, `provider=claude-code-plan`, `billing=claude_plan`) y `codex` (CLI de Codex con sesión ChatGPT). El orden se fija con `CR_ANALYSIS_EXECUTOR` (`claude,codex` en el servicio, mediante `ops/analysis-plan-executor.conf`); sin ninguna sesión válida el estado es `auth_blocked` y nunca hay API de pago como alternativa. Una autorización de reintento del operador (`crbridge retry` o el panel) posterior al fallo reabre un trabajo `invalid` o `blocked`. El ejecutor elimina claves API del entorno del hijo, separa el rol de los materiales y deshabilita herramientas en la extracción estructurada. Esta ejecución no realiza verificación externa: debe declarar el límite. Conserva modelo solicitado, esfuerzo, tokens reportados y hashes reales; `model` queda `null` si el servicio no informa la identidad resuelta. El consumo corresponde a los límites del plan, no es ilimitado.
+
+```sh
+# Desde la raíz del repo, solo pendientes del día de Bogotá; máximo cinco trabajos.
+PYTHONPATH=services/analysis:services/transcripts services/bridge/.venv/bin/python -m cranalysis.plan --today --limit 5
+# Añadir --resume únicamente después de una instrucción del usuario para levantar su pausa.
+```
+
+Hay un cerrojo propio, máximo 16 intentos por día de Bogotá y dos intentos automáticos por trabajo, incluyendo una corrección de validación. Una revisión operativa explícita tras corregir un fallo técnico puede autorizar un tercer y último intento; conserva el contador acumulado. Un error de ejecución detiene el lote; no se cambia de modelo ni se usa una API alternativa. Estado y contadores: `/var/lib/cryptoreport-transcripts/analysis-plan/status.json`. Los localizadores se pueden derivar de una cita literal con coincidencia única en la transcripción; las palabras citadas no se reescriben y los ajustes quedan registrados. Las citas inexistentes o ambiguas se mantienen para que la validación las rechace. Cada nueva salida del modelo se conserva en `analysis-plan/attempts/` antes de validarla. Los resultados preparados se vuelven a validar antes de su promoción y activan la publicación habitual del puente. No se instala un cron de análisis con este comando.
+
+Una revisión editorial se aplica a pendientes nuevos. El puente conserva los resultados históricos aceptados, con sus hashes originales, mientras no cambien transcripción o contrato. No atribuye el nuevo prompt a análisis antiguos. Drive recibe el mismo prompt de control con lectura de comprobación. `pending`, `dry-run` y `validate` siguen disponibles sin inferencia.
 
 Los [dos análisis reales guardados el 12 oct, con sus resultados completos y procedencia](../../docs/validaciones/analisis-narrativas-2026-10-12/README.md), están respaldados en el repositorio. Los originales del servicio permanecen en `/var/lib/cryptoreport-transcripts/analysis/nacho/`.
 
@@ -11,7 +23,7 @@ Los [dos análisis reales guardados el 12 oct, con sus resultados completos y pr
 - **En la web:** los análisis válidos aparecen en la pestaña **Análisis** del visor y en la etapa 05; los publica el ciclo del servicio de transcripciones, en un máximo de 15 min.
 - **Pendiente:** ejecutar el resto de casos de evaluación de abajo antes de conectarlo al timer.
 
-## Integración
+## Integración API histórica (deshabilitada)
 
 ```sh
 cd services/analysis
@@ -60,7 +72,7 @@ Un análisis con errores se guarda como `rechazado` y no se publica.
 - `evidencias[].origen` usa `transcripcion | titulo | descripcion | audio | miniatura | fotograma`;
 - `escenarios[].plausibilidad` usa `limitada | plausible | bien_sustentada | null`, y `origen_horizonte` usa `creador | analista | null`.
 
-Si el prompt cambia de versión, hay que actualizar el schema y `PROMPT_VERSION`.
+Las revisiones editoriales compatibles conservan la versión del contrato y cambian su hash. Un cambio incompatible del contrato exige migrar el schema y `PROMPT_VERSION`, con una política explícita para los resultados históricos.
 
 **Costo medido con `gpt-6.1-sol`, effort `high`.**
 - **Entrada sintética:** $0,07 en 100 s.

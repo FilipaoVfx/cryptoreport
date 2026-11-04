@@ -1,0 +1,8 @@
+{
+  "descripcion": "Un job_id con el hash truncado (defecto del primer comprobante manual del 13-oct) no es un job_id.",
+  "error_esperado": {
+    "keyword": "pattern",
+    "ruta": ""
+  },
+  "instancia": "PPWCETjvgVk__ba333ffb8201d52b6f3eae12e4766e51f659f7ef769578a87d1"
+}

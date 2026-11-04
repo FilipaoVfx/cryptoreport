@@ -1,0 +1,11 @@
+[Unit]
+Description=Resolver un cruce semántico cada dos horas, fuera de los demás ciclos
+
+[Timer]
+OnCalendar=*-*-* 0/2:40:00
+RandomizedDelaySec=60
+Persistent=true
+Unit=cryptoreport-semantic.service
+
+[Install]
+WantedBy=timers.target

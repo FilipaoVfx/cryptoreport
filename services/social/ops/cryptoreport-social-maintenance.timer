@@ -1,0 +1,11 @@
+[Unit]
+Description=CryptoReport: caducidad persistente del Feed cada 15 minutos
+
+[Timer]
+OnCalendar=*-*-* *:00/15:00 UTC
+RandomizedDelaySec=20
+Persistent=true
+Unit=cryptoreport-social-maintenance.service
+
+[Install]
+WantedBy=timers.target

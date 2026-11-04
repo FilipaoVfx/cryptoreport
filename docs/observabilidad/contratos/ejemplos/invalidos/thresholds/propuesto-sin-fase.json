@@ -1,0 +1,14 @@
+{
+  "descripcion": "Un umbral propuesto indica la fase que lo hace medible.",
+  "error_esperado": {
+    "keyword": "required",
+    "ruta": "/thresholds/[id=AP-05]"
+  },
+  "base": "registros/umbrales.json",
+  "parche": [
+    {
+      "op": "remove",
+      "path": "/thresholds/[id=AP-05]/phase"
+    }
+  ]
+}

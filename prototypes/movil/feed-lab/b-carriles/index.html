@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#140a08">
+<meta name="robots" content="noindex">
+<title>Feed · B Carriles</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,500;12..96,700;12..96,800&display=swap">
+<link rel="stylesheet" href="../base.css">
+<style>
+  :root { --bg: #140a08; --accent: #ffb547; --on-accent: #1d0f05; --muted: #c4a99a; --ink: #fff4ea; --sans: "Bricolage Grotesque", ui-sans-serif, system-ui, sans-serif;
+    --glass: rgba(255, 220, 190, .07); --glass-hi: rgba(255, 230, 205, .2); --glass-line: rgba(255, 225, 200, .24); --sheet: rgba(36, 16, 10, .78); }
+  .aurora i:nth-child(1) { background: #ff7a2f; left: -20%; top: -10%; }
+  .aurora i:nth-child(2) { background: #c2185b; right: -25%; top: 25%; opacity: .45; }
+  .aurora i:nth-child(3) { background: #ffcf5c; left: 0; bottom: -25%; opacity: .3; }
+
+  .top { display: flex; align-items: flex-end; justify-content: space-between; gap: 12px; padding: 22px 2px 10px; }
+  .top h1 { margin: 0; font-size: 34px; line-height: .95; font-weight: 800; letter-spacing: -.04em; }
+  .top p { margin: 6px 0 0; color: var(--muted); font-size: 13px; }
+  .live { display: inline-flex; align-items: center; gap: 6px; min-height: 36px; padding: 0 12px; border-radius: 999px; font-size: 12px; font-weight: 700; }
+  .live::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 10px var(--accent); animation: pulse 1.6s infinite; }
+  @keyframes pulse { 50% { opacity: .35; } }
+
+  .rail { margin: 18px 0 0; scroll-margin-top: 64px; }
+  .rail-h { display: flex; align-items: baseline; gap: 8px; margin: 0 2px 8px; }
+  .rail-h h2 { margin: 0; font-size: 18px; font-weight: 800; letter-spacing: -.02em; }
+  .rail-h small { color: var(--muted); font-size: 12px; font-weight: 700; }
+  .rail-h button { margin-left: auto; min-height: 36px; padding: 0 12px; border-radius: 999px; border: 1px solid var(--glass-line); background: var(--glass); font-size: 12px; font-weight: 700; }
+  .track { display: flex; gap: 10px; margin: 0 calc(var(--g) * -1); padding: 2px var(--g) 10px; overflow-x: auto; scroll-snap-type: x mandatory; scroll-padding: var(--g); scrollbar-width: none; overscroll-behavior-x: contain; }
+  .track::-webkit-scrollbar { display: none; }
+  .rail.expanded .track { display: grid; grid-template-columns: 1fr 1fr; overflow: visible; margin: 0; padding: 0; }
+  .rail.expanded .card { width: auto; }
+
+  .card { flex: 0 0 auto; width: 72%; max-width: 330px; height: 176px; display: flex; flex-direction: column; gap: 8px; padding: 14px; border-radius: 22px; scroll-snap-align: start; cursor: pointer; }
+  .card.hero { width: 86%; height: 232px; background: linear-gradient(150deg, color-mix(in srgb, var(--ac) 38%, transparent), rgba(255,230,205,.06) 65%); }
+  .card.hero .c-x { font-size: 18px; -webkit-line-clamp: 6; }
+  .card.mini { width: 46%; height: 132px; }
+  .card.mini .c-x { font-size: 17px; font-weight: 700; -webkit-line-clamp: 3; line-height: 1.2; }
+  .c-h { display: flex; align-items: center; gap: 7px; font-size: 12px; color: var(--muted); }
+  .c-h b { color: var(--ink); flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .c-x { font-size: 14.5px; line-height: 1.4; white-space: pre-line; overflow-wrap: anywhere; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 5; overflow: hidden; }
+  .c-x a { color: var(--accent); pointer-events: none; }
+  .c-f { display: flex; gap: 5px; margin-top: auto; }
+  .c-f span { padding: 2px 8px; border-radius: 999px; background: rgba(255,230,205,.14); font-size: 11px; font-weight: 700; }
+  .card:active { transform: scale(.98); }
+  .rail { animation: slide .55s cubic-bezier(.2,.8,.2,1) both; animation-delay: var(--d); }
+  @keyframes slide { from { opacity: 0; transform: translateX(26px); } }
+  .tabs { position: sticky; top: 0; z-index: 10; display: flex; gap: 6px; margin: 0 calc(var(--g) * -1); padding: 10px var(--g); overflow-x: auto; scrollbar-width: none; border-radius: 0; border-left: 0; border-right: 0; }
+  .tabs::-webkit-scrollbar { display: none; }
+  .tabs a { flex: 0 0 auto; min-height: 36px; display: inline-flex; align-items: center; padding: 0 12px; border-radius: 999px; font-size: 13px; font-weight: 700; text-decoration: none; color: var(--muted); }
+  .tabs a.on { background: var(--accent); color: var(--on-accent); }
+  @media (prefers-reduced-motion: reduce) { .rail { animation: none; } .live::before { animation: none; } }
+</style>
+</head>
+<body>
+<div class="aurora" aria-hidden="true"><i></i><i></i><i></i></div>
+<main class="wrap">
+  <header class="top"><div><h1>Lo que<br>dicen hoy</h1><p id="sub">Cargando…</p></div><span class="live glass" id="live">en vivo</span></header>
+  <nav class="tabs glass" id="tabs" aria-label="Ir a carril"></nav>
+  <div id="rails" aria-live="polite"></div>
+</main>
+<script src="../../b4-urania/feed.js"></script>
+<script src="../common.js"></script>
+<script>
+(async () => {
+  const { esc, rel, avatar, text } = FL;
+  let st;
+  try { st = await FL.load(); } catch (e) { document.getElementById('sub').textContent = 'No pudimos cargar el Feed.'; return; }
+  const posts = st.relevant, today = posts.filter((p) => Date.now() - Date.parse(p.published_at) < 86400000);
+  document.getElementById('sub').textContent = `${today.length} publicaciones en 24 h · ${st.accounts.size} cuentas`;
+  const card = (p, kind = '') => {
+    const a = st.accounts.get(p.author_handle);
+    return `<article role="button" tabindex="0" class="card glass ${kind}" data-id="${esc(p.id)}" style="--ac:${a.tone}"><span class="c-h">${avatar(a)}<b>${esc(a.name || a.handle)}</b>${esc(rel(p.published_at))}</span><span class="c-x">${text(p)}</span>${(p.quality?.assets || []).length ? `<span class="c-f">${p.quality.assets.slice(0, 3).map((s) => `<span>$${esc(s)}</span>`).join('')}</span>` : ''}</article>`;
+  };
+  const rails = [];
+  const hero = posts.filter((p) => p.text.length > 200).slice(0, 6);
+  if (hero.length) rails.push({ id: 'destacado', title: 'Para leer con calma', items: hero, kind: 'hero' });
+  const news = posts.filter((p) => /noticia/i.test(st.accounts.get(p.author_handle).label || ''));
+  if (news.length) rails.push({ id: 'noticias', title: 'Noticias', items: news });
+  for (const [sym] of FL.assetCounts(posts).slice(0, 3)) rails.push({ id: 'a-' + sym, title: '$' + sym, items: posts.filter((p) => p.quality?.assets?.includes(sym)) });
+  const quick = posts.filter((p) => p.text.length < 90);
+  if (quick.length) rails.push({ id: 'rapidas', title: 'En una línea', items: quick, kind: 'mini' });
+  for (const a of st.accounts.values()) {
+    const mine = posts.filter((p) => p.author_handle === a.handle);
+    if (mine.length) rails.push({ id: 'c-' + a.handle, title: a.name || a.handle, items: mine });
+  }
+  document.getElementById('tabs').innerHTML = rails.map((r, i) => `<a href="#${esc(r.id)}"${i === 0 ? ' class="on"' : ''}>${esc(r.title)}</a>`).join('');
+  document.getElementById('rails').innerHTML = rails.map((r, i) => `<section class="rail" id="${esc(r.id)}" style="--d:${i * 70}ms"><div class="rail-h"><h2>${esc(r.title)}</h2><small>${r.items.length}</small>${r.items.length > 3 ? '<button type="button" data-expand>Ver todo</button>' : ''}</div><div class="track">${r.items.slice(0, 14).map((p) => card(p, r.kind)).join('')}</div></section>`).join('');
+  const root = document.getElementById('rails');
+  root.addEventListener('click', (e) => {
+    const ex = e.target.closest('[data-expand]');
+    if (ex) { const sec = ex.closest('.rail'), r = rails.find((x) => x.id === sec.id), open = !sec.classList.contains('expanded');
+      sec.classList.toggle('expanded', open); ex.textContent = open ? 'Volver al carril' : 'Ver todo';
+      sec.querySelector('.track').innerHTML = (open ? r.items : r.items.slice(0, 14)).map((p) => card(p, open ? '' : r.kind)).join(''); return; }
+    const c = e.target.closest('[data-id]'); if (!c) return;
+    const p = st.all.find((x) => x.id === c.dataset.id); FL.sheet(p, st.accounts.get(p.author_handle));
+  });
+  root.addEventListener('keydown', (e) => { if ((e.key === 'Enter' || e.key === ' ') && e.target.dataset.id) { e.preventDefault(); e.target.click(); } });
+  // Pestaña activa según el carril visible.
+  const io = new IntersectionObserver((en) => { for (const x of en) if (x.isIntersecting) { document.querySelectorAll('#tabs a').forEach((a) => { const on = a.getAttribute('href') === '#' + x.target.id; a.classList.toggle('on', on); if (on) a.scrollIntoView({ inline: 'center', block: 'nearest', behavior: 'smooth' }); }); } }, { rootMargin: '-40% 0px -55% 0px' });
+  document.querySelectorAll('.rail').forEach((s) => io.observe(s));
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,26 @@
+# Relevo del 2026-11-03: los cruces usan solo Codex con sesión ChatGPT.
+# Instalar: cp ops/cryptoreport-semantic.{service,timer} /etc/systemd/system/
+#           systemctl daemon-reload && systemctl enable --now cryptoreport-semantic.timer
+[Unit]
+Description=CryptoReport: cruces semánticos con Codex y la suscripción ChatGPT
+After=network-online.target cryptoreport-bridge.service
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+WorkingDirectory=/root/cryptoreport/services/social
+ExecStart=/usr/bin/python3 -m crsocial semantic-solve --jobs 1
+Environment=HOME=/root
+Environment=PATH=/root/.local/bin:/usr/local/bin:/usr/bin:/bin
+Environment=PYTHONUNBUFFERED=1
+Environment=CRA_ALLOW_API_ANALYSIS=false
+Environment=CR_SOCIAL_ALLOW_MODEL_API=false
+Environment=CR_SOCIAL_EXECUTOR=codex
+UnsetEnvironment=OPENAI_API_KEY ANTHROPIC_API_KEY CODEX_API_KEY
+StateDirectory=cryptoreport-transcripts
+TimeoutStartSec=35min
+MemoryMax=1500M
+Nice=10
+NoNewPrivileges=true
+PrivateTmp=true
+# El puente revalida cada sobre antes de publicar: un fallo aquí no publica nada.

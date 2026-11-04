@@ -1,0 +1,13 @@
+{
+  "descripcion": "Una línea ERROR sin error_type no se puede agregar por clase.",
+  "error_esperado": {
+    "keyword": "required",
+    "ruta": ""
+  },
+  "instancia": {
+    "ts": "2026-10-14T16:03:21Z",
+    "severity": "ERROR",
+    "service": "cr-bridge",
+    "message": "fallo"
+  }
+}

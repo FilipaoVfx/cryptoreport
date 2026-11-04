@@ -1,0 +1,17 @@
+{
+  "query": "trampa bajista bitcoin",
+  "mode": "hybrid",
+  "top_k": 10,
+  "filters": {
+    "kinds": [
+      "transcript"
+    ],
+    "channels": [
+      "nacho"
+    ],
+    "quality": [
+      "valid",
+      "warning"
+    ]
+  }
+}

@@ -1,0 +1,22 @@
+[
+  {
+    "path": "b4-urania/app.js",
+    "sha256": "0a8fd73589b62ab326a0792305dcd124467b3d39fe3fa184f6bd38b2755879c6",
+    "matches_main": true
+  },
+  {
+    "path": "b4-urania/app.css",
+    "sha256": "e987c502017d86e0f48697467acf95c397a6f8b7974e52ab0405bc2f2ced4dec",
+    "matches_main": true
+  },
+  {
+    "path": "b4-urania/index.html",
+    "sha256": "e55a38ff7c0da115df22d9856d4d2b5807a5cc8575b800ad59a57ba3f725662b",
+    "matches_main": true
+  },
+  {
+    "path": "data/social-feed.json",
+    "sha256": "bfb286caf0d1e34c77ac095b7a01ab238dccddce21a827f78061fc6c31147081",
+    "matches_main": true
+  }
+]

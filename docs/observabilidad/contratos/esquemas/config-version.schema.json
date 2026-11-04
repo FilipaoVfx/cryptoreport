@@ -1,0 +1,27 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Versión de configuración",
+  "description": "Instantánea inmutable de los parámetros efectivos. Los servicios leen la versión activa al empezar cada ciclo y la registran en cr.config.version. Activar una versión nunca edita código ni archivos .env.",
+  "type": "object",
+  "required": ["version", "created_at", "created_by", "change_id", "parent_version", "status", "parameters", "digest"],
+  "additionalProperties": false,
+  "properties": {
+    "version": {"type": "integer", "minimum": 1},
+    "created_at": {"$ref": "common.schema.json#/$defs/Timestamp"},
+    "created_by": {"$ref": "common.schema.json#/$defs/Actor"},
+    "change_id": {"$ref": "common.schema.json#/$defs/Uuid"},
+    "parent_version": {"type": ["integer", "null"], "minimum": 1},
+    "status": {"enum": ["active", "superseded", "rolled_back"]},
+    "activated_at": {"$ref": "common.schema.json#/$defs/Timestamp"},
+    "parameters": {
+      "type": "object",
+      "minProperties": 1,
+      "propertyNames": {"$ref": "parameter-catalog.schema.json#/$defs/ParameterKey"},
+      "additionalProperties": true
+    },
+    "digest": {"$ref": "common.schema.json#/$defs/Sha256", "description": "sha256 del JSON canónico de parameters (claves ordenadas, separadores compactos, UTF-8)."}
+  },
+  "allOf": [
+    {"if": {"properties": {"status": {"const": "active"}}}, "then": {"required": ["activated_at"]}}
+  ]
+}

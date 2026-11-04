@@ -1,0 +1,94 @@
+[
+  {
+    "event_id": "0d25605e-045a-42f0-afeb-529805bb978d",
+    "at": "2026-10-14T16:19:30Z",
+    "actor": {
+      "kind": "user",
+      "id": "revisor-1",
+      "display_name": "Cuenta de revisión 1",
+      "roles": [
+        "reviewer"
+      ]
+    },
+    "action": "session.login",
+    "target": {
+      "kind": "session",
+      "id": "revisor-1"
+    },
+    "outcome": "success",
+    "request": {
+      "ip_hash": "2df6857e3f5c8132340373c58a61fbad82c6e6e9a71f1acef21e7018acbc162e"
+    },
+    "seq": 1,
+    "prev_hash": "0000000000000000000000000000000000000000000000000000000000000000",
+    "hash": "3f4c0a4fffd28bceb85ea71cd3614356d6b52e1db80209889aff65cdc36377fd"
+  },
+  {
+    "event_id": "937f12d3-a551-4a91-a0c3-b1a8beb33ca4",
+    "at": "2026-10-14T16:20:00Z",
+    "actor": {
+      "kind": "user",
+      "id": "revisor-1",
+      "display_name": "Cuenta de revisión 1",
+      "roles": [
+        "reviewer"
+      ]
+    },
+    "action": "intervention.request",
+    "target": {
+      "kind": "intervention",
+      "id": "50282833-ef1f-4e76-a133-27bae64b6c89"
+    },
+    "outcome": "success",
+    "reason": "El material ya se revisó: reintentar con la autorización nueva.",
+    "request": {
+      "idempotency_key": "retry-i2LUeRtROdg-20261014"
+    },
+    "seq": 2,
+    "prev_hash": "3f4c0a4fffd28bceb85ea71cd3614356d6b52e1db80209889aff65cdc36377fd",
+    "hash": "a087a713f85be52413e2cf5544d6b74f2710203b8e5c1cfc0978ef1137e52099"
+  },
+  {
+    "event_id": "f797f48e-e76d-402b-a00a-3ae16ec9485c",
+    "at": "2026-10-14T16:20:04Z",
+    "actor": {
+      "kind": "service",
+      "id": "cr-panel"
+    },
+    "action": "intervention.execute",
+    "target": {
+      "kind": "intervention",
+      "id": "50282833-ef1f-4e76-a133-27bae64b6c89"
+    },
+    "outcome": "success",
+    "diff": {
+      "before_sha256": "1bd3435a8fdce0977a887c0209679b057f185d1f10846a0f8a8cc01217e1c6e7",
+      "after_sha256": "077a9439d1c87709ca4bb0fa6bf5b0c7990869ae58569d7fcb9bcb833c63942a"
+    },
+    "seq": 3,
+    "prev_hash": "a087a713f85be52413e2cf5544d6b74f2710203b8e5c1cfc0978ef1137e52099",
+    "hash": "5b085394ee67c17f3116348441dbb6a017fd2324bdda93640eb77e466aaf26dc"
+  },
+  {
+    "event_id": "fb2bc436-69df-432c-b014-47aad4225c4e",
+    "at": "2026-10-14T16:31:00Z",
+    "actor": {
+      "kind": "user",
+      "id": "operador-1",
+      "display_name": "Cuenta de operación 1",
+      "roles": [
+        "operator"
+      ]
+    },
+    "action": "config.apply",
+    "target": {
+      "kind": "config_change",
+      "id": "1789c7d9-a34f-4f3f-9f34-a34b3e83967b"
+    },
+    "outcome": "denied",
+    "reason": "Riesgo high: aplicar exige rol admin.",
+    "seq": 4,
+    "prev_hash": "5b085394ee67c17f3116348441dbb6a017fd2324bdda93640eb77e466aaf26dc",
+    "hash": "5bb9f3592741b6cc98f35e8bedd1b33b7b52739e64a71016b0bfdaafa2ced93f"
+  }
+]

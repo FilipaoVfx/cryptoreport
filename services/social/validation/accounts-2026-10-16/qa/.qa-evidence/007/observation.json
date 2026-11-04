@@ -1,0 +1,61 @@
+{
+  "status": "PASS",
+  "verified_at": "2026-10-16T17:20:55.275900+00:00",
+  "http": 200,
+  "public_matches_local_ids": true,
+  "total_posts": 442,
+  "new_account_posts": 245,
+  "accounts": [
+    {
+      "handle": "bulltheoryio",
+      "author_id": "815942827968495616",
+      "lookback_days": 3,
+      "posts": 62,
+      "status": "ok",
+      "label": "Narrativas"
+    },
+    {
+      "handle": "bitcoinarchive",
+      "author_id": "970994516357472257",
+      "lookback_days": 3,
+      "posts": 72,
+      "status": "ok",
+      "label": "Bitcoin"
+    },
+    {
+      "handle": "watcherguru",
+      "author_id": "1387497871751196672",
+      "lookback_days": 3,
+      "posts": 56,
+      "status": "ok",
+      "label": "Noticias"
+    },
+    {
+      "handle": "crediblecrypto",
+      "author_id": "944746889194364928",
+      "lookback_days": 3,
+      "posts": 55,
+      "status": "ok",
+      "label": "Mercados"
+    }
+  ],
+  "pending_pages": 0,
+  "poll_interval_hours": 3,
+  "budget": {
+    "daily_used": 58,
+    "daily_limit": 320,
+    "backfill_daily_used": 29,
+    "normal_daily_used": 29,
+    "monthly_used": 69,
+    "monthly_limit": 10000
+  },
+  "monthly_estimated_credit_limit": 60000,
+  "analysis": "paused_by_user",
+  "model_api_enabled": false,
+  "classification": {
+    "version": "post-quality-1.0.0",
+    "relevant": 212,
+    "secondary": 230,
+    "semantic_eligible": 201
+  }
+}

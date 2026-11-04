@@ -1,0 +1,53 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Trazabilidad de requisitos y protocolos de validación",
+  "description": "Matriz que une cada requisito del encargo con las secciones del documento, los contratos y los protocolos de validación automatizados (PV). validate_contracts.py comprueba que todo lo citado existe.",
+  "type": "object",
+  "required": ["registry_version", "source", "requirements", "protocols"],
+  "additionalProperties": false,
+  "properties": {
+    "registry_version": {"$ref": "common.schema.json#/$defs/SemVer"},
+    "source": {"type": "string", "minLength": 10},
+    "requirements": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["id", "part", "text", "sections", "contracts", "protocols", "status"],
+        "additionalProperties": false,
+        "properties": {
+          "id": {"type": "string", "pattern": "^R-[0-9]{2}$"},
+          "part": {"type": "integer", "minimum": 1, "maximum": 5},
+          "text": {"type": "string", "minLength": 10},
+          "sections": {"type": "array", "minItems": 1, "items": {"type": "string", "pattern": "^[0-9]{2}-[a-z0-9-]+\\.md#[a-z0-9-]+$"}},
+          "contracts": {"type": "array", "items": {"type": "string", "pattern": "^(esquemas|registros)/[a-z0-9.-]+\\.json$|^openapi\\.yaml$"}},
+          "protocols": {"type": "array", "minItems": 1, "items": {"type": "string", "pattern": "^PV-[0-9]{2}$"}},
+          "status": {"enum": ["covered", "partial", "planned"]},
+          "note": {"type": "string"}
+        }
+      }
+    },
+    "protocols": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["id", "title", "what", "how", "when", "pass", "implemented"],
+        "additionalProperties": false,
+        "properties": {
+          "id": {"type": "string", "pattern": "^PV-[0-9]{2}$"},
+          "title": {"type": "string", "minLength": 5, "maxLength": 80},
+          "what": {"type": "string", "minLength": 10},
+          "how": {"type": "string", "minLength": 5},
+          "when": {"enum": ["ci", "pre_deploy", "daily", "weekly", "monthly", "on_change", "on_demand"]},
+          "pass": {"type": "string", "minLength": 5},
+          "implemented": {"type": "boolean", "description": "true si validate_contracts.py u otra herramienta del repo ya lo ejecuta."},
+          "phase": {"type": "integer", "minimum": 0, "maximum": 4}
+        },
+        "allOf": [
+          {"if": {"properties": {"implemented": {"const": false}}}, "then": {"required": ["phase"]}}
+        ]
+      }
+    }
+  }
+}

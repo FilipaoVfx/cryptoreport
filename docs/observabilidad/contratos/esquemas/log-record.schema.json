@@ -1,0 +1,38 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Línea de log estructurado",
+  "description": "Una línea JSON por evento en stdout (journald). Sustituye a los prints libres actuales; las líneas [sitio] y [aviso] pasan a eventos con nombre. Ningún campo lleva secretos ni cuerpos de respuesta.",
+  "type": "object",
+  "required": ["ts", "severity", "service", "message"],
+  "additionalProperties": false,
+  "properties": {
+    "ts": {"$ref": "common.schema.json#/$defs/Timestamp"},
+    "severity": {"enum": ["DEBUG", "INFO", "WARN", "ERROR", "FATAL"]},
+    "service": {"$ref": "common.schema.json#/$defs/ServiceName"},
+    "message": {"type": "string", "minLength": 1, "maxLength": 2000},
+    "event": {"type": "string", "pattern": "^(cr|gen_ai)(\\.[a-z0-9_]+)+$"},
+    "run_id": {"$ref": "common.schema.json#/$defs/RunId"},
+    "trace_id": {"$ref": "common.schema.json#/$defs/TraceId"},
+    "span_id": {"$ref": "common.schema.json#/$defs/SpanId"},
+    "error_type": {"type": "string", "pattern": "^[A-Za-z_][A-Za-z0-9_.]*$"},
+    "attributes": {
+      "type": "object",
+      "propertyNames": {"pattern": "^[a-z][a-z0-9_]*(\\.[a-z0-9_]+)+$"},
+      "additionalProperties": {"type": ["string", "number", "boolean", "array"]}
+    },
+    "exception": {
+      "type": "object",
+      "required": ["type", "message"],
+      "additionalProperties": false,
+      "properties": {
+        "type": {"type": "string"},
+        "message": {"type": "string", "maxLength": 1000},
+        "stacktrace": {"type": "string", "maxLength": 20000}
+      }
+    }
+  },
+  "allOf": [
+    {"if": {"properties": {"severity": {"enum": ["ERROR", "FATAL"]}}}, "then": {"required": ["error_type"]}},
+    {"if": {"required": ["span_id"]}, "then": {"required": ["trace_id"]}}
+  ]
+}

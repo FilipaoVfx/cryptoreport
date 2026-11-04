@@ -1,0 +1,14 @@
+{
+  "descripcion": "Un umbral en modo alert define su runbook.",
+  "error_esperado": {
+    "keyword": "required",
+    "ruta": "/thresholds/[id=SH-02]"
+  },
+  "base": "registros/umbrales.json",
+  "parche": [
+    {
+      "op": "remove",
+      "path": "/thresholds/[id=SH-02]/alert"
+    }
+  ]
+}

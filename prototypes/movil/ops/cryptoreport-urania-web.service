@@ -1,0 +1,20 @@
+[Unit]
+Description=CryptoReport Urania: mobile application from the main repository
+After=network.target
+
+[Service]
+Type=simple
+WorkingDirectory=/root/cryptoreport/prototypes/movil
+ExecStart=/usr/bin/python3 /root/cryptoreport/prototypes/movil/serve.py 8741
+Environment=PYTHONUNBUFFERED=1
+Environment=PYTHONDONTWRITEBYTECODE=1
+Restart=always
+RestartSec=3
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=read-only
+MemoryMax=192M
+
+[Install]
+WantedBy=multi-user.target

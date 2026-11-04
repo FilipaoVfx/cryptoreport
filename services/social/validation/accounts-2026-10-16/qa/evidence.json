@@ -1,0 +1,320 @@
+{
+  "revision": "04a86b9b56cdc6d504fa108816e8cd31746fe51b",
+  "runtime": "bun 1.3.10",
+  "cwd": "/root/cryptoreport",
+  "limits": [
+    "Live counts are time-bound: 443 posts during browser E2E, 442 at final verification after one legitimate expiration.",
+    "Third-party failures and admin deactivation/concurrency edges are exercised with owned fixtures; live provider extraction and publication were also verified.",
+    "No seven-day availability certification or absolute X coverage claim.",
+    "Existing monitor tests emit SQLite ResourceWarning messages; all 14 tests pass. Analysis is paused and its draft runner is outside this completed Feed delivery."
+  ],
+  "evidence": [
+    {
+      "command": "Retained exact command in capture 001",
+      "contract": "Live admin negative input",
+      "expected": "Busy 409 can precede field validation; retry after lock release",
+      "classification": "superseded",
+      "observed": ""
+    },
+    {
+      "command": "Retained exact command in capture 002",
+      "contract": "Authenticated admin edits and public Feed E2E",
+      "expected": "401/403 guards, invalid-window 422 with unchanged catalog, four source filters, exact modal text and canonical links at 390/1280 px",
+      "classification": "pass",
+      "observed": {
+        "authentication": "PASS",
+        "invalidInput": "422 with unchanged catalog",
+        "accounts": [
+          {
+            "handle": "bulltheoryio",
+            "label": "Narrativas",
+            "save": "PASS"
+          },
+          {
+            "handle": "bitcoinarchive",
+            "label": "Bitcoin",
+            "save": "PASS"
+          },
+          {
+            "handle": "watcherguru",
+            "label": "Noticias",
+            "save": "PASS"
+          },
+          {
+            "handle": "crediblecrypto",
+            "label": "Mercados",
+            "save": "PASS"
+          }
+        ],
+        "browser": [
+          {
+            "width": 390,
+            "handle": "bulltheoryio",
+            "published": 62,
+            "rendered": 24,
+            "authorAndTextFidelity": "PASS"
+          },
+          {
+            "width": 390,
+            "handle": "bitcoinarchive",
+            "published": 73,
+            "rendered": 24,
+            "authorAndTextFidelity": "PASS"
+          },
+          {
+            "width": 390,
+            "handle": "watcherguru",
+            "published": 56,
+            "rendered": 24,
+            "authorAndTextFidelity": "PASS"
+          },
+          {
+            "width": 390,
+            "handle": "crediblecrypto",
+            "published": 55,
+            "rendered": 24,
+            "authorAndTextFidelity": "PASS"
+          },
+          {
+            "width": 1280,
+            "handle": "bulltheoryio",
+            "published": 62,
+            "rendered": 24,
+            "authorAndTextFidelity": "PASS"
+          },
+          {
+            "width": 1280,
+            "handle": "bitcoinarchive",
+            "published": 73,
+            "rendered": 24,
+            "authorAndTextFidelity": "PASS"
+          },
+          {
+            "width": 1280,
+            "handle": "watcherguru",
+            "published": 56,
+            "rendered": 24,
+            "authorAndTextFidelity": "PASS"
+          },
+          {
+            "width": 1280,
+            "handle": "crediblecrypto",
+            "published": 55,
+            "rendered": 24,
+            "authorAndTextFidelity": "PASS"
+          }
+        ],
+        "exceptions": 0,
+        "posts": 443,
+        "status": "PASS"
+      }
+    },
+    {
+      "command": "Retained exact command in capture 003",
+      "contract": "Panel administration fixtures",
+      "expected": "14 tests pass; invalid/expired profile tokens, identity pinning, edit revisions, disable/reenable and lock exclusion",
+      "classification": "pass",
+      "observed": ""
+    },
+    {
+      "command": "Retained exact command in capture 004",
+      "contract": "Social ingestion fixtures",
+      "expected": "68 tests pass; 3 h cadence, account capacity, bounded credits, expiry during recovery and strict provider contracts",
+      "classification": "pass",
+      "observed": ""
+    },
+    {
+      "command": "Retained exact command in capture 005",
+      "contract": "Bridge regression fixtures",
+      "expected": "45 tests pass without paid inference",
+      "classification": "pass",
+      "observed": ""
+    },
+    {
+      "command": "Retained exact command in capture 006",
+      "contract": "Frontend contracts",
+      "expected": "32 tests pass for filtering, expiry, identity, evidence and narrative links",
+      "classification": "pass",
+      "observed": "✔ un brief solo se aplica al análisis exacto revisado (1.157533ms)\n✔ el título de lista oculta hashtags sin suprimir las palabras ni sus condiciones (0.687402ms)\n✔ account windows differ and 48h filters correctly (7.281016ms)\n✔ search normalizes accents without generating analysis (0.274642ms)\n✔ expired and future posts disappear even in cached feed (0.141101ms)\n✔ unknown account and mismatched pinned author do not render (0.22358ms)\n✔ invalid identifiers and absent expiration are rejected (0.22613ms)\n✔ URLs require HTTPS and avatar origin is restricted (1.047652ms)\n✔ post HTML is escaped while safe URLs remain clickable (1.373574ms)\n✔ editorial filters separate relevant posts and preserve access to conversations (0.953291ms)\n✔ short ETH resolves canonical asset (1.812784ms)\n✔ ordinary search, negations, Shorts and closed positions are not hijacked (0.26849ms)\n✔ unknown or colliding tickers never broaden to all assets (0.508961ms)\n✔ rolling periods are measured from current time and exclude future dates (0.20656ms)\n✔ repeat videos by one author do not inflate creator count (6.903586ms)\n✔ creator and period filters produce consistent evidence (0.561981ms)\n✔ bearish tone alone does not pass declared-short filter (0.38397ms)\n✔ closed or third-party evidence does not establish a declared position (0.181511ms)\n✔ asset-specific exception overrides the generic thesis (0.291141ms)\n✔ global grouping puts neutral analyses after directional transcript quotes (0.430531ms)\n✔ same passage is not repeated as a detected and analyzed quote (0.322701ms)\n✔ opposing horizons in the same passage survive deduplication (0.393942ms)\n✔ diez vídeos de un creador cuentan como un creador en ranking y tesis (3.601809ms)\n✔ el total de creadores es una unión, no la suma de columnas; se marca quien está en varios lados (0.838281ms)\n✔ orden: creadores, luego tesis, luego fecha y luego id; las citas de terceros y sin cita no cuentan (0.488461ms)\n✔ los filtros de creador y periodo se aplican igual a ranking y tesis (0.645241ms)\n✔ sin proyección de tesis la cobertura es desconocida, no cero tesis (0.351381ms)\n✔ conexiones con X: solo aceptadas, vigentes, del mismo análisis y con el post intacto (0.330971ms)\n✔ un ticker coincidente en X es contexto por activo, no apoyo (0.16491ms)\n✔ un «cambio» entre autores distintos es contraste entre fuentes, no cambio de postura (0.109989ms)\n✔ Síntesis: tesis de un vídeo con su relación (0.351001ms)\n✔ una tesis con activos propios no se vincula a otro activo citado de paso; una tesis de grupo sí (0.32015ms)\nℹ tests 32\nℹ suites 0\nℹ pass 32\nℹ fail 0\nℹ cancelled 0\nℹ skipped 0\nℹ todo 0\nℹ duration_ms 282.682812\n"
+    },
+    {
+      "command": "Retained exact command in capture 007",
+      "contract": "Current production publication and pause",
+      "expected": "HTTP200, matching public/local IDs, eight sources, zero pending pages, 3 h polling and analysis paused by user",
+      "classification": "pass",
+      "observed": {
+        "status": "PASS",
+        "verified_at": "2026-10-16T17:20:55.275900+00:00",
+        "http": 200,
+        "public_matches_local_ids": true,
+        "total_posts": 442,
+        "new_account_posts": 245,
+        "accounts": [
+          {
+            "handle": "bulltheoryio",
+            "author_id": "815942827968495616",
+            "lookback_days": 3,
+            "posts": 62,
+            "status": "ok",
+            "label": "Narrativas"
+          },
+          {
+            "handle": "bitcoinarchive",
+            "author_id": "970994516357472257",
+            "lookback_days": 3,
+            "posts": 72,
+            "status": "ok",
+            "label": "Bitcoin"
+          },
+          {
+            "handle": "watcherguru",
+            "author_id": "1387497871751196672",
+            "lookback_days": 3,
+            "posts": 56,
+            "status": "ok",
+            "label": "Noticias"
+          },
+          {
+            "handle": "crediblecrypto",
+            "author_id": "944746889194364928",
+            "lookback_days": 3,
+            "posts": 55,
+            "status": "ok",
+            "label": "Mercados"
+          }
+        ],
+        "pending_pages": 0,
+        "poll_interval_hours": 3,
+        "budget": {
+          "daily_used": 58,
+          "daily_limit": 320,
+          "backfill_daily_used": 29,
+          "normal_daily_used": 29,
+          "monthly_used": 69,
+          "monthly_limit": 10000
+        },
+        "monthly_estimated_credit_limit": 60000,
+        "analysis": "paused_by_user",
+        "model_api_enabled": false,
+        "classification": {
+          "version": "post-quality-1.0.0",
+          "relevant": 212,
+          "secondary": 230,
+          "semantic_eligible": 201
+        }
+      }
+    }
+  ],
+  "learning": [
+    {
+      "observationCapture": "002",
+      "observationArgv": [
+        "env",
+        "CR_SOCIAL_LIVE_E2E=1",
+        "NODE_PATH=/root/gstack/node_modules",
+        "node",
+        "/root/cryptoreport/services/panel/tests/social-live.browser.cjs"
+      ],
+      "hypothesis": "The live UI journey passed; now exercise invalid profiles, expired previews, forged IDs, disabling/reactivating, stale revisions and lock contention in owned fixtures.",
+      "nextCapture": "003",
+      "nextArgv": [
+        "env",
+        "PYTHONPATH=/root/cryptoreport/services/panel:/root/cryptoreport/services/transcripts",
+        "/usr/bin/python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "/root/cryptoreport/services/panel/tests"
+      ]
+    },
+    {
+      "observationCapture": "003",
+      "observationArgv": [
+        "env",
+        "PYTHONPATH=/root/cryptoreport/services/panel:/root/cryptoreport/services/transcripts",
+        "/usr/bin/python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "/root/cryptoreport/services/panel/tests"
+      ],
+      "hypothesis": "Admin fixtures passed; verify cadence, eight-account capacity, credential isolation, expiry between pages, pagination, restart safety, shared monthly credits and manual bootstrap limits.",
+      "nextCapture": "004",
+      "nextArgv": [
+        "env",
+        "PYTHONPATH=/root/cryptoreport/services/social",
+        "/usr/bin/python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "/root/cryptoreport/services/social/tests"
+      ]
+    },
+    {
+      "observationCapture": "004",
+      "observationArgv": [
+        "env",
+        "PYTHONPATH=/root/cryptoreport/services/social",
+        "/usr/bin/python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "/root/cryptoreport/services/social/tests"
+      ],
+      "hypothesis": "Social contracts passed; ensure the Drive/semantic bridge still validates and publishes without invoking inference after the catalog expansion.",
+      "nextCapture": "005",
+      "nextArgv": [
+        "env",
+        "PYTHONPATH=/root/cryptoreport/services/bridge:/root/cryptoreport/services/analysis:/root/cryptoreport/services/transcripts",
+        "/root/cryptoreport/services/bridge/.venv/bin/python",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "/root/cryptoreport/services/bridge/tests"
+      ]
+    },
+    {
+      "observationCapture": "005",
+      "observationArgv": [
+        "env",
+        "PYTHONPATH=/root/cryptoreport/services/bridge:/root/cryptoreport/services/analysis:/root/cryptoreport/services/transcripts",
+        "/root/cryptoreport/services/bridge/.venv/bin/python",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "/root/cryptoreport/services/bridge/tests"
+      ],
+      "hypothesis": "Bridge regression passed; verify the unchanged frontend filters, expiry and narrative linkage contracts against the expanded Feed source catalog.",
+      "nextCapture": "006",
+      "nextArgv": [
+        "/bin/bash",
+        "-c",
+        "node --test prototypes/movil/b4-urania/*.test.cjs"
+      ]
+    },
+    {
+      "observationCapture": "006",
+      "observationArgv": [
+        "/bin/bash",
+        "-c",
+        "node --test prototypes/movil/b4-urania/*.test.cjs"
+      ],
+      "hypothesis": "All scoped suites passed. Verify current public publication, all four new accounts, absence of pending pages, three-hour cadence, unchanged monthly monetary ceiling and the user-requested analysis pause.",
+      "nextCapture": "007",
+      "nextArgv": [
+        "/usr/bin/python3",
+        "/root/cryptoreport/services/social/validation/accounts-2026-10-16/verify-live.py"
+      ]
+    }
+  ],
+  "verdict": {
+    "status": "pass",
+    "open": []
+  }
+}

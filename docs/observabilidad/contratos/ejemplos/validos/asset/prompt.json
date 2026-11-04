@@ -1,0 +1,36 @@
+{
+  "asset_id": "prompt:narrative-analysis",
+  "kind": "prompt",
+  "title": "Analista especulativo de narrativas v1.0.0",
+  "created_at": "2026-10-12T19:01:43Z",
+  "current_version": "082e5acbefbb832e35736ce85acf66cffbeefb7813133878666ec3578d29248f",
+  "versions": [
+    {
+      "version": "082e5acbefbb832e35736ce85acf66cffbeefb7813133878666ec3578d29248f",
+      "created_at": "2026-10-12T19:01:43Z",
+      "created_by": {
+        "kind": "system",
+        "id": "repo"
+      },
+      "status": "current",
+      "storage": {
+        "mode": "local",
+        "uri": "repo://services/analysis/prompts/narrative-analysis.system.md",
+        "bytes": null,
+        "media_type": "text/markdown"
+      },
+      "provenance": {
+        "source": "repo",
+        "prompt_version": "1.0.0",
+        "git_commit": "4850ea9"
+      }
+    }
+  ],
+  "lineage": [],
+  "access": {
+    "visibility": "restricted",
+    "retention": {
+      "policy": "keep_all"
+    }
+  }
+}

@@ -1,0 +1,30 @@
+{
+  "descripcion": "Una evaluación de trayectoria publica los pasos esperados y observados.",
+  "error_esperado": {
+    "keyword": "required",
+    "ruta": ""
+  },
+  "instancia": {
+    "evaluation_id": "1c4970b4-d29e-4480-904d-b1ae04f3f01e",
+    "name": "cr.trajectory.precision",
+    "kind": "trajectory",
+    "evaluated_at": "2026-11-05T06:30:00Z",
+    "target": {
+      "kind": "run",
+      "id": "da2b3317-7bf1-5d0a-bef3-68607fe8db73"
+    },
+    "evaluator": {
+      "kind": "code",
+      "id": "trajectory_metrics",
+      "version": "1.0.0"
+    },
+    "score": {
+      "value": 0.8947,
+      "label": null,
+      "normalized": 0.8947,
+      "scale": "0-1"
+    },
+    "explanation": "17 de 19 pasos observados pertenecen a la referencia: el segundo trabajo repite analizar y validar y omite revisar_contenido.",
+    "mode": "monitor"
+  }
+}

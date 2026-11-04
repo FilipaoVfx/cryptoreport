@@ -7,6 +7,8 @@ import sqlite3
 from datetime import datetime, timezone
 from pathlib import Path
 
+from .observability import record
+
 SCHEMA = """
 CREATE TABLE IF NOT EXISTS videos (
     video_id          TEXT PRIMARY KEY,
@@ -73,6 +75,7 @@ class Store:
         self.db.row_factory = sqlite3.Row
         self.db.executescript(SCHEMA)
         self._migrate()
+        self.data_dir = db_path.parent
 
     def _migrate(self) -> None:
         columns = {row[1] for row in self.db.execute("PRAGMA table_info(videos)")}
@@ -97,6 +100,8 @@ class Store:
             self.db.execute("UPDATE videos SET title = ?, published_at = ? WHERE video_id = ? AND (title != ? OR published_at != ?)",
                             (title, iso(published_at), video_id, title, iso(published_at)))
         self.db.commit()
+        if cur.rowcount == 1:
+            record(self.data_dir, "video.discovered", component="extractor", video_id=video_id, at=stamp, dedupe="discovered:"+video_id)
         return cur.rowcount == 1
 
     def known(self, video_id: str) -> bool:
@@ -117,12 +122,28 @@ class Store:
                         " VALUES (?, ?, ?, ?, ?, ?, ?)",
                         (video_id, provider, outcome, detail, requests, elapsed_s, iso(now_utc())))
         self.db.commit()
+        record(self.data_dir, "transcript.attempt", component="extractor", video_id=video_id,
+               outcome=outcome, detail={"provider":provider,"requests":requests,"elapsed_s":elapsed_s,"reason":detail})
 
     def update(self, video_id: str, **fields) -> None:
+        previous = self.get(video_id)
         fields["updated_at"] = iso(now_utc())
         cols = ", ".join(f"{k} = ?" for k in fields)
         self.db.execute(f"UPDATE videos SET {cols} WHERE video_id = ?", (*fields.values(), video_id))
         self.db.commit()
+        if "status" in fields and (not previous or previous["status"] != fields["status"]):
+            record(self.data_dir, "transcript."+fields["status"], component="extractor", video_id=video_id,
+                   detail={"previous":previous["status"] if previous else None,"provider":fields.get("provider"),"reason":fields.get("last_error"),"retry_at":fields.get("next_attempt_at")})
+
+        if fields.get("next_attempt_at") and (not previous or previous["next_attempt_at"] != fields["next_attempt_at"]):
+            record(self.data_dir,"transcript.retry_scheduled",component="extractor",video_id=video_id,outcome="waiting",
+                   detail={"retry_at":fields["next_attempt_at"],"reason":fields.get("last_error")})
+        if fields.get("fetched_at") and (not previous or previous["fetched_at"] != fields["fetched_at"]):
+            import hashlib
+            source=Path(fields["transcript_path"]) if fields.get("transcript_path") else None
+            sha=hashlib.sha256(source.read_bytes()).hexdigest() if source and source.exists() else None
+            record(self.data_dir,"transcript.available",component="extractor",video_id=video_id,
+                   detail={"provider":fields.get("provider"),"transcript_sha256":sha},at=fields["fetched_at"])
 
     def requests_since(self, since: datetime, provider: str) -> int:
         """Solicitudes (Scraper.Tech) o créditos (Supadata, incluida la generación) registrados desde `since`."""

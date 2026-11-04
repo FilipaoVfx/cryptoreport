@@ -1,0 +1,18 @@
+{
+  "descripcion": "El runbook de la alerta debe ser el del umbral (SH-12 → RB-06).",
+  "error_esperado": {
+    "keyword": "semantic",
+    "ruta": "/runbook"
+  },
+  "instancia": {
+    "alert_id": "4539e4b4-8890-49c2-a00a-feae0bfc1439",
+    "threshold_id": "SH-12",
+    "severity": "warning",
+    "state": "firing",
+    "fired_at": "2026-10-14T13:18:17Z",
+    "observed": 38404,
+    "condition": "> 28800 s",
+    "summary": "Comprobante atrasado",
+    "runbook": "RB-01"
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "query": "trampa bajista bitcoin",
+  "mode_used": "lexical",
+  "degraded_from": "hybrid",
+  "index": {
+    "lexical": "ready",
+    "vector": "not_provisioned"
+  },
+  "hits": [
+    {
+      "asset_id": "transcript:agFTCuv80XE",
+      "version": "7b51825c07c0cfe7612c279ac53a7dc2719e4b6628de55ea3ce6d77a63652e84",
+      "score": 12.7,
+      "start_s": 31.4,
+      "end_s": 44.9,
+      "snippet": "…confirmar la trampa bajista en tres días…",
+      "quality": "valid"
+    }
+  ],
+  "took_ms": 8.4
+}

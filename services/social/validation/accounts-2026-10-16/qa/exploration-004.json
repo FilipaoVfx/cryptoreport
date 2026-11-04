@@ -1,0 +1,26 @@
+{
+  "observationCapture": "003",
+  "observationArgv": [
+    "env",
+    "PYTHONPATH=/root/cryptoreport/services/panel:/root/cryptoreport/services/transcripts",
+    "/usr/bin/python3",
+    "-m",
+    "unittest",
+    "discover",
+    "-s",
+    "/root/cryptoreport/services/panel/tests"
+  ],
+  "observed": "",
+  "hypothesis": "Admin fixtures passed; verify cadence, eight-account capacity, credential isolation, expiry between pages, pagination, restart safety, shared monthly credits and manual bootstrap limits.",
+  "nextCapture": "004",
+  "nextArgv": [
+    "env",
+    "PYTHONPATH=/root/cryptoreport/services/social",
+    "/usr/bin/python3",
+    "-m",
+    "unittest",
+    "discover",
+    "-s",
+    "/root/cryptoreport/services/social/tests"
+  ]
+}

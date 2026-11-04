@@ -1,0 +1,31 @@
+{
+  "evaluation_id": "a485154a-3972-4ad4-8ff1-ffc856f3201b",
+  "name": "cr.autorater.no_fabrication",
+  "kind": "autorater",
+  "evaluated_at": "2026-11-06T10:00:00Z",
+  "target": {
+    "kind": "analysis",
+    "id": "analysis:agFTCuv80XE",
+    "version": "d96416ddc27e8a77f9d1e9b80ce4c996e2c108b0fa90b561f3f1558613eac93a"
+  },
+  "evaluator": {
+    "kind": "llm",
+    "id": "juez-narrativas",
+    "version": "1.0.0",
+    "provider": "anthropic",
+    "model": "claude-sonnet-5-5",
+    "prompt_sha256": "60090e3d71dc75c0e66cdded04a4968c0a751fbb2ceef9929e12f8e5bc448727"
+  },
+  "score": {
+    "value": 3,
+    "label": "parcial",
+    "normalized": 0.5,
+    "scale": "1-5"
+  },
+  "explanation": "Una afirmación del resumen no tiene evidencia en la transcripción.",
+  "rubric": {
+    "id": "rubrica-narrativas",
+    "version": "1.0.0"
+  },
+  "mode": "monitor"
+}

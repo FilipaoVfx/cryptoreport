@@ -1,0 +1,11 @@
+[Unit]
+Description=Reconciliar Drive y publicar CryptoReport cada 15 minutos
+
+[Timer]
+OnCalendar=*-*-* *:03,18,33,48:00
+RandomizedDelaySec=30
+Persistent=true
+Unit=cryptoreport-bridge.service
+
+[Install]
+WantedBy=timers.target

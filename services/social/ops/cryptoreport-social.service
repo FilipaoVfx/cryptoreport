@@ -1,0 +1,26 @@
+[Unit]
+Description=CryptoReport: feed acotado de X, sin modelos
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+WorkingDirectory=/root/cryptoreport/services/social
+ExecStart=/usr/bin/python3 -m crsocial run
+Environment=CRA_ALLOW_API_ANALYSIS=false
+Environment=CR_SOCIAL_ALLOW_MODEL_API=false
+Environment=CR_SOCIAL_MAX_CALLS=24
+Environment=CR_SOCIAL_DAILY_CALLS=320
+Environment=CR_SOCIAL_MONTHLY_CALLS=10000
+Environment=CR_SOCIAL_INTERVAL_HOURS=3
+Environment=CR_SOCIAL_PROVIDERS=twitterapi-io,scraper,agent-reach
+Environment=CR_SOCIAL_TWITTERAPI_DAILY_CREDITS=12000
+Environment=CR_SOCIAL_TWITTERAPI_BACKFILL_DAILY_CREDITS=6000
+Environment=CR_SOCIAL_TWITTERAPI_MONTHLY_CREDITS=60000
+Environment=PYTHONUNBUFFERED=1
+StateDirectory=cryptoreport-transcripts
+TimeoutStartSec=15min
+MemoryMax=300M
+Nice=10
+NoNewPrivileges=true
+PrivateTmp=true

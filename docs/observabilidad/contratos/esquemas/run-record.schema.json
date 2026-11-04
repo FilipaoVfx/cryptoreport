@@ -1,0 +1,105 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Registro de ejecución",
+  "description": "Libro de ejecuciones (Fase 0): un registro por ciclo del extractor, del puente, de build_data, por invocación del análisis y por ejecución reconstruida del agente Scheduled. Sustituye a la tabla runs, que solo guarda conteos y nunca expone su ID.",
+  "type": "object",
+  "required": ["run_id", "service", "trigger", "started_at", "outcome", "trace_id", "code"],
+  "additionalProperties": false,
+  "properties": {
+    "run_id": {"$ref": "common.schema.json#/$defs/RunId"},
+    "service": {"$ref": "common.schema.json#/$defs/ServiceName"},
+    "trigger": {"enum": ["timer", "post_extract", "manual", "panel", "backfill", "retry", "external_schedule"]},
+    "started_at": {"$ref": "common.schema.json#/$defs/Timestamp"},
+    "finished_at": {"anyOf": [{"$ref": "common.schema.json#/$defs/Timestamp"}, {"type": "null"}]},
+    "duration_s": {"type": "number", "minimum": 0},
+    "outcome": {"enum": ["running", "ok", "degraded", "failed", "busy", "skipped"]},
+    "exit_code": {"type": ["integer", "null"]},
+    "trace_id": {"$ref": "common.schema.json#/$defs/TraceId"},
+    "parent_run_id": {"$ref": "common.schema.json#/$defs/RunId"},
+    "code": {
+      "type": "object",
+      "required": ["version", "digest"],
+      "additionalProperties": false,
+      "properties": {
+        "version": {"type": "string", "minLength": 1, "maxLength": 64},
+        "digest": {"$ref": "common.schema.json#/$defs/Sha256"}
+      }
+    },
+    "config_version": {"type": ["integer", "null"], "minimum": 1},
+    "channels": {
+      "type": "object",
+      "propertyNames": {"$ref": "common.schema.json#/$defs/ChannelSlug"},
+      "additionalProperties": {
+        "type": "object",
+        "required": ["source", "status"],
+        "additionalProperties": false,
+        "properties": {
+          "source": {"enum": ["rss", "channel_pages", "none"]},
+          "status": {"enum": ["ok", "error"]},
+          "entries": {"type": "integer", "minimum": 0},
+          "new_videos": {"type": "integer", "minimum": 0},
+          "detail": {"type": "string", "maxLength": 300}
+        }
+      }
+    },
+    "counts": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "videos_due": {"type": "integer", "minimum": 0},
+        "transcribed": {"type": "integer", "minimum": 0},
+        "pending": {"type": "integer", "minimum": 0},
+        "errors": {"type": "integer", "minimum": 0},
+        "repaired": {"type": "integer", "minimum": 0},
+        "recovered": {"type": "integer", "minimum": 0},
+        "published_items": {"type": "integer", "minimum": 0},
+        "jobs_by_state": {"type": "object", "additionalProperties": {"type": "integer", "minimum": 0}}
+      }
+    },
+    "errors": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["class", "message"],
+        "additionalProperties": false,
+        "properties": {
+          "class": {"type": "string", "pattern": "^[A-Za-z_][A-Za-z0-9_.]*$"},
+          "message": {"type": "string", "maxLength": 300},
+          "video_id": {"$ref": "common.schema.json#/$defs/VideoId"}
+        }
+      }
+    },
+    "warnings": {"type": "array", "items": {"type": "string", "maxLength": 300}},
+    "costs": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "scrapertech_requests": {"type": "integer", "minimum": 0},
+        "supadata_credits": {"type": "integer", "minimum": 0},
+        "model_api": {"$ref": "common.schema.json#/$defs/Money"}
+      }
+    },
+    "external": {
+      "description": "Datos del comprobante cuando la ejecución es del agente externo. No incluye IDs de archivos de Drive.",
+      "type": "object",
+      "required": ["agent", "agent_run_id", "receipt_status", "attempted_job_ids", "uploaded_job_ids", "receipt_sha256"],
+      "additionalProperties": false,
+      "properties": {
+        "agent": {"const": "chatgpt_scheduled"},
+        "agent_run_id": {"type": "string", "minLength": 1, "maxLength": 200},
+        "receipt_status": {"enum": ["resultados_subidos", "sin_pendientes", "error"]},
+        "protocol_version": {"$ref": "common.schema.json#/$defs/SemVer"},
+        "attempted_job_ids": {"type": "array", "items": {"$ref": "common.schema.json#/$defs/JobId"}, "uniqueItems": true},
+        "uploaded_job_ids": {"type": "array", "items": {"$ref": "common.schema.json#/$defs/JobId"}, "uniqueItems": true},
+        "remaining_count": {"type": ["integer", "null"], "minimum": 0},
+        "declared_mode": {"enum": ["scheduled", "manual"], "description": "Propuesto para las instrucciones 1.4; hoy no existe."},
+        "errors": {"type": "array", "items": {"type": "string", "maxLength": 500}},
+        "receipt_sha256": {"$ref": "common.schema.json#/$defs/Sha256"}
+      }
+    }
+  },
+  "allOf": [
+    {"if": {"properties": {"service": {"const": "cr-scheduled-agent"}}}, "then": {"required": ["external"], "properties": {"trigger": {"const": "external_schedule"}}}},
+    {"if": {"properties": {"outcome": {"not": {"const": "running"}}}}, "then": {"required": ["finished_at"], "properties": {"finished_at": {"$ref": "common.schema.json#/$defs/Timestamp"}}}}
+  ]
+}

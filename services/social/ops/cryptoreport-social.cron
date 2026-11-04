@@ -1,0 +1,5 @@
+# UTC server clock. Dispatch is cheap: collector decides head/recovery due dates.
+SHELL=/bin/sh
+PATH=/usr/sbin:/usr/bin:/sbin:/bin
+*/15 * * * * root /usr/bin/flock -n /run/cryptoreport-social-cron.lock /usr/bin/systemctl start cryptoreport-social.service
+@reboot root /usr/bin/systemctl start cryptoreport-social.service

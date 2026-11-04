@@ -1,0 +1,18 @@
+{
+  "descripcion": "Una alerta resuelta necesita resolved_at.",
+  "error_esperado": {
+    "keyword": "required",
+    "ruta": ""
+  },
+  "instancia": {
+    "alert_id": "2c3a4249-d770-4005-8649-dbd822dcaf79",
+    "threshold_id": "SH-04",
+    "severity": "warning",
+    "state": "resolved",
+    "fired_at": "2026-10-14T16:00:00Z",
+    "observed": 3000,
+    "condition": "> 2700 s",
+    "summary": "Puente sin sincronizar",
+    "runbook": "RB-04"
+  }
+}

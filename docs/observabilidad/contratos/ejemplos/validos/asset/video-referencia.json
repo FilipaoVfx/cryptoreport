@@ -1,0 +1,41 @@
+{
+  "asset_id": "video:OwrAjFdTQ4s",
+  "kind": "video",
+  "title": "¿Ya están TODOS Bajistas? Bitcoin Va a Hacer ESTO antes de los $90.000",
+  "video_id": "OwrAjFdTQ4s",
+  "channel": "nacho",
+  "created_at": "2026-10-09T10:31:01Z",
+  "current_version": "a576994486c6bf262cb08194d1bd592b2f722e800e853985a925d1a05763ce38",
+  "versions": [
+    {
+      "version": "a576994486c6bf262cb08194d1bd592b2f722e800e853985a925d1a05763ce38",
+      "created_at": "2026-10-09T10:31:01Z",
+      "created_by": {
+        "kind": "service",
+        "id": "cr-extractor"
+      },
+      "status": "current",
+      "storage": {
+        "mode": "reference",
+        "uri": "https://www.youtube.com/watch?v=OwrAjFdTQ4s",
+        "bytes": null,
+        "media_type": "text/html"
+      },
+      "provenance": {
+        "source": "youtube",
+        "fetched_at": "2026-10-09T10:31:01Z"
+      }
+    }
+  ],
+  "lineage": [],
+  "labels": {
+    "duration_s": "1079",
+    "is_short": "false"
+  },
+  "access": {
+    "visibility": "public_source",
+    "retention": {
+      "policy": "keep_all"
+    }
+  }
+}

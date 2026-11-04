@@ -1,0 +1,32 @@
+[
+  {
+    "path": "b4-urania/app.js",
+    "sha256": "ee131c1430c42ff46d54f4525c011e18299d651ed41b6b0096d7bccd06de5539",
+    "matches_main": true
+  },
+  {
+    "path": "b4-urania/app.css",
+    "sha256": "d3c618c3af66595090ba29640552d80ecd15bbbbe90349ddeb645005fc6f9fa3",
+    "matches_main": true
+  },
+  {
+    "path": "b4-urania/index.html",
+    "sha256": "5c1a9028d5146eb2d99e5b119655290cb88bed10c5de095b7bc696a5c60e3937",
+    "matches_main": true
+  },
+  {
+    "path": "b4-urania/theses.js",
+    "sha256": "bbe45e01c633dd69e5fc7eea31c9ce5964045e259222e43185740ad4d5e327b1",
+    "matches_main": true
+  },
+  {
+    "path": "b4-urania/editorial.js",
+    "sha256": "0cc00d7a4c93b166287ddaf51c63d067c253195a703a9c680d1998c448618e32",
+    "matches_main": true
+  },
+  {
+    "path": "data/index.json",
+    "sha256": "17c6cb2954c424dbccda54583725006c99fb2268f93495d508e857a466461a42",
+    "matches_main": true
+  }
+]

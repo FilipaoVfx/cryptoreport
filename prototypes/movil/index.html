@@ -12,12 +12,12 @@
 <style>
   :root {
     --bg: #f3f2ee; --card: #ffffff; --ink: #18181a; --ink-2: #48484d; --muted: #6a6a70; --line: #deddd6;
-    --a1: #2741c9; --a2: #0e5a63; --a3: #a5491b; --a4: #3b7d0f; --focus: #2741c9;
+    --a1: #2741c9; --a2: #0e5a63; --a3: #a5491b; --a4: #3b7d0f; --a5: #4a5a6a; --focus: #2741c9;
     --sans: "Schibsted Grotesk", ui-sans-serif, system-ui, sans-serif;
     color-scheme: light;
   }
   @media (prefers-color-scheme: dark) {
-    :root:not([data-theme="light"]) { --bg: #121214; --card: #1b1b1e; --ink: #f0efea; --ink-2: #c9c8c2; --muted: #9b9a94; --line: #2d2d31; --a1: #9aa9ff; --a2: #7fc8cf; --a3: #f09a63; --a4: #b5f56a; --focus: #9aa9ff; color-scheme: dark; }
+    :root:not([data-theme="light"]) { --bg: #121214; --card: #1b1b1e; --ink: #f0efea; --ink-2: #c9c8c2; --muted: #9b9a94; --line: #2d2d31; --a1: #9aa9ff; --a2: #7fc8cf; --a3: #f09a63; --a4: #b5f56a; --a5: #a9b8c8; --focus: #9aa9ff; color-scheme: dark; }
   }
   *, *::before, *::after { box-sizing: border-box; }
   body { margin: 0; background: var(--bg); color: var(--ink); font: 400 16px/1.5 var(--sans); -webkit-font-smoothing: antialiased; }
@@ -53,6 +53,26 @@
   .v.solo { grid-template-columns: 200px 200px 1fr; margin-top: 18px; align-items: start; }
   .v.solo .shot { max-width: 200px; }
   @media (max-width: 920px) { .v.solo { grid-template-columns: 1fr 1fr; } .v.solo > div { grid-column: 1 / -1; } .v.solo .shot { max-width: none; } }
+  .options { margin-top: 18px; padding: 20px; border-radius: 18px; background: var(--card); border: 1px solid var(--line); }
+  .options h3 { font-size: 15px; font-weight: 800; }
+  .options > p { margin-top: 4px; font-size: 14.5px; color: var(--ink-2); max-width: 70ch; }
+  .opt-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; margin-top: 14px; }
+  .opt { padding: 12px; border-radius: 14px; border: 1px solid var(--line); background: var(--bg); font-size: 14px; color: var(--ink-2); }
+  .opt b { display: block; font-size: 15px; color: var(--ink); }
+  .opt .where { display: inline-block; margin-top: 8px; font-size: 13px; font-weight: 800; color: var(--accent); text-decoration: none; }
+  .opt .where:hover { text-decoration: underline; }
+  @media (max-width: 920px) { .opt-grid { grid-template-columns: 1fr 1fr; } }
+  @media (max-width: 480px) { .opt-grid { grid-template-columns: 1fr; } }
+  .density { margin-top: 18px; padding: 20px; border-radius: 18px; background: var(--card); border: 1px solid var(--line); }
+  .density h3 { font-size: 15px; font-weight: 800; }
+  .density > p { margin-top: 4px; font-size: 14.5px; color: var(--ink-2); max-width: 70ch; }
+  .density table { width: 100%; margin-top: 12px; border-collapse: collapse; font-size: 14px; font-variant-numeric: tabular-nums; }
+  .density th, .density td { padding: 8px 6px; border-bottom: 1px solid var(--line); text-align: right; }
+  .density th:first-child, .density td:first-child { text-align: left; }
+  .density thead th { font-size: 12.5px; color: var(--muted); font-weight: 700; }
+  .density tr.now td { font-weight: 700; }
+  .density tr.now td:first-child { color: var(--accent); }
+  .density-wrap { overflow-x: auto; }
   .tone-box { margin-top: 18px; padding: 20px; border-radius: 18px; background: var(--card); border: 1px solid var(--line); display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; font-size: 14.5px; color: var(--ink-2); }
   .tone-box h3 { font-size: 15px; font-weight: 800; color: var(--ink); margin-bottom: 4px; }
   .sw { display: inline-flex; align-items: center; gap: 6px; font-weight: 700; }
@@ -76,9 +96,126 @@
 <main class="wrap">
   <header>
     <h1>Propuestas móviles para CryptoReport</h1>
-    <p>Arriba, la tercera ronda: la Nébula con termómetros de urania y fuego y el sismógrafo en un cajón lateral. Debajo, la segunda ronda (tres iteraciones de Bitácora con tono alcista y bajista) y las seis propuestas iniciales. Ábrelas en el móvil: están pensadas para 360–430 px.</p>
-    <div class="facts" id="facts"><span>24 vídeos con transcripción</span><span>2 análisis completos (Nacho IC, 9 y 12 oct)</span><span>Un cambio de postura real detectado</span></div>
+    <p>Arriba, la quinta ronda: una línea minimalista tras el comentario de un usuario sobre el exceso de texto. Son tres portadas con bitácora y ranking: una clara, una oscura y una editorial. Debajo siguen las rondas anteriores. Ábrelas en el móvil: están pensadas para 360–430 px.</p>
+    <div class="facts" id="facts"><span>Archivo real de vídeos con transcripción</span></div>
   </header>
+
+  <section class="approach" style="--accent: var(--a5)">
+    <div class="approach-h"><span class="n">5.ª ronda</span><h2>Línea minimalista</h2><p>Menos texto: cada vídeo en una línea; el resto, al tocarlo.</p></div>
+    <div class="trio">
+      <article class="v">
+        <a class="shot" href="m1-cuaderno/" aria-label="Abrir Cuaderno"><img src="data/board/m1-cuaderno.webp" alt="Cuaderno: titular del día, lo más nombrado y la bitácora en papel"></a>
+        <div>
+          <h3>Cuaderno<small>Claro · papel y tinta</small><span class="new">Nueva</span></h3>
+          <p class="idea">Una bitácora de verdad: papel, tinta y un margen rojo.</p>
+          <ul>
+            <li>Arriba, el titular del día («Tono mixto, como ayer»), calculado con el propio archivo.</li>
+            <li>Lo más nombrado: los 5 primeros con su marca de tono y una cifra.</li>
+            <li>Bitácora: hora, marca en el margen y título sin mayúsculas de reclamo. Al tocar se despliegan el tono, la onda y la frase clave.</li>
+          </ul>
+          <a class="open" href="m1-cuaderno/">Abrir Cuaderno <svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+        </div>
+      </article>
+      <article class="v">
+        <a class="shot" href="m2-linea/" aria-label="Abrir Línea"><img src="data/board/m2-linea.webp" alt="Línea: una línea vertical con un punto por vídeo"></a>
+        <div>
+          <h3>Línea<small>Oscuro · grafito</small><span class="new">Nueva</span></h3>
+          <p class="idea">La línea es la interfaz: un punto por vídeo y un solo título a la vista.</p>
+          <ul>
+            <li>Cada punto se separa de la línea: a la derecha si el vídeo empuja al alza, a la izquierda si empuja a la baja.</li>
+            <li>Al hacer scroll, el punto que cruza la marca muestra su título abajo; tócalo para abrirlo.</li>
+            <li>«Ranking» recorre los activos con la misma línea, por secciones.</li>
+          </ul>
+          <a class="open" href="m2-linea/">Abrir Línea <svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+        </div>
+      </article>
+      <article class="v">
+        <a class="shot" href="m3-titular/" aria-label="Abrir Titular"><img src="data/board/m3-titular.webp" alt="Titular: portada editorial en blanco y negro con ranking y bitácora"></a>
+        <div>
+          <h3>Titular<small>Editorial · blanco y negro</small><span class="new">Nueva</span></h3>
+          <p class="idea">Una edición por día; el único color, el naranja de lo que cambió.</p>
+          <ul>
+            <li>Titular grande, recuento ▲ ▼ ◆ y la evolución de los últimos días en una línea.</li>
+            <li>Ranking como tabla: un punto naranja marca el activo que cambió de signo en su último día.</li>
+            <li>Bitácora de una línea por vídeo; «≠» en naranja cuando el título no cuadra con el tono.</li>
+          </ul>
+          <a class="open" href="m3-titular/">Abrir Titular <svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+        </div>
+      </article>
+    </div>
+    <div class="density">
+      <h3>Cuánto se lee antes de decidir</h3>
+      <p>Medido en la primera pantalla de un móvil (390 × 844). En las tres, el tono es una sola marca (▲ ▼ ◆ ·); la palabra, el porcentaje y las citas aparecen al abrir.</p>
+      <div class="density-wrap"><table>
+        <thead><tr><th>Portada</th><th>Palabras</th><th>Tamaños de letra</th><th>Colores de texto</th></tr></thead>
+        <tbody>
+          <tr><td>Urania · Diario</td><td>136</td><td>11</td><td>9</td></tr>
+          <tr><td>Horizonte</td><td>113</td><td>9</td><td>8</td></tr>
+          <tr><td>Rollo</td><td>168</td><td>9</td><td>9</td></tr>
+          <tr class="now"><td>Cuaderno</td><td>75</td><td>4</td><td>5</td></tr>
+          <tr class="now"><td>Línea</td><td>44</td><td>4</td><td>4</td></tr>
+          <tr class="now"><td>Titular</td><td>63</td><td>5</td><td>4</td></tr>
+        </tbody>
+      </table></div>
+    </div>
+  </section>
+
+  <section class="approach" style="--accent: var(--a4)">
+    <div class="approach-h"><span class="n">4.ª ronda</span><h2>El sismógrafo dentro de la interfaz</h2><p>Sin cajón aparte: el sismógrafo filtra, ordena o es la propia portada.</p></div>
+    <div class="trio">
+      <article class="v">
+        <a class="shot" href="b5-horizonte/" aria-label="Abrir Horizonte"><img src="data/board/b5-horizonte.webp" alt="Horizonte: una línea por creador con los días como teclas"></a>
+        <div>
+          <h3>Horizonte<small>B5 · opciones A, D y E</small><span class="new">Nueva</span></h3>
+          <p class="idea">El sismógrafo del archivo es el filtro de Explorar.</p>
+          <ul>
+            <li>Una línea por creador; cada pico es un vídeo, con la urania arriba y el fuego abajo.</li>
+            <li>Toca un día o dos para elegir el tramo; toca un nombre para aislar su línea. Sustituye a los dos desplegables.</li>
+            <li>El ranking y los termómetros se recalculan al momento, y los cambios de postura salen marcados con un rombo.</li>
+            <li>Al bajar, el tramo elegido queda fijo arriba en una franja plegada.</li>
+          </ul>
+          <a class="open" href="b5-horizonte/">Abrir Horizonte <svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+        </div>
+      </article>
+      <article class="v">
+        <a class="shot" href="b6-trayectorias/" aria-label="Abrir Trayectorias"><img src="data/board/b6-trayectorias.webp" alt="Ethereum con su trayectoria de tono día a día"></a>
+        <div>
+          <h3>Trayectorias<small>B6 · opción B</small><span class="new">Nueva</span></h3>
+          <p class="idea">Cada activo con su propio sismógrafo en el tiempo.</p>
+          <ul>
+            <li>Cada fila del ranking dibuja el tono del activo día a día; la línea blanca acaba donde está hoy.</li>
+            <li>El ranking se ordena por «gira al alza» o «gira a la baja»: el último día frente a los anteriores.</li>
+            <li>La #01 y la ficha llevan la trayectoria grande, con las frases extremas marcadas y una línea de tiempo por días.</li>
+          </ul>
+          <a class="open" href="b6-trayectorias/">Abrir Trayectorias <svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+        </div>
+      </article>
+      <article class="v">
+        <a class="shot" href="b7-rollo/" aria-label="Abrir Rollo"><img src="data/board/b7-rollo.webp" alt="El rollo: el diario convertido en sismógrafo vertical"></a>
+        <div>
+          <h3>Rollo<small>B7 · opción C</small><span class="new">Nueva</span></h3>
+          <p class="idea">El diario es el sismógrafo y pasa a ser la portada.</p>
+          <ul>
+            <li>Cada vídeo es un tramo vertical del trazo, más largo cuanto más dura: urania a la derecha, fuego a la izquierda.</li>
+            <li>Tocar el trazo a una altura abre el vídeo en ese minuto; los puntos marcan su frase más alcista y la más bajista.</li>
+            <li>Filtro por creador con chips; los activos y las narrativas pasan a la pestaña «Activos».</li>
+          </ul>
+          <a class="open" href="b7-rollo/">Abrir Rollo <svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+        </div>
+      </article>
+    </div>
+    <div class="options">
+      <h3>Las cinco opciones del brainstorming, y dónde verlas</h3>
+      <p>En las tres desaparecen el cajón, el botón «Sismógrafo», la aguja aparte y el carrusel. La animación solo salta cuando cambias algo.</p>
+      <div class="opt-grid">
+        <div class="opt"><b>A · Horizonte</b>El sismógrafo como filtro de tiempo.<br><a class="where" href="b5-horizonte/">→ Horizonte</a></div>
+        <div class="opt"><b>B · Activo con sismógrafo</b>Hacia dónde va el tono de cada activo.<br><a class="where" href="b6-trayectorias/">→ Trayectorias</a></div>
+        <div class="opt"><b>C · Rollo</b>El diario convertido en el trazo.<br><a class="where" href="b7-rollo/">→ Rollo</a></div>
+        <div class="opt"><b>D · Coro de creadores</b>Una línea por creador para compararlos (ahora son 5).<br><a class="where" href="b5-horizonte/">→ Horizonte</a></div>
+        <div class="opt"><b>E · Versión mínima</b>Una franja plegada con el tramo elegido.<br><a class="where" href="b5-horizonte/">→ Horizonte, al bajar</a></div>
+      </div>
+    </div>
+  </section>
 
   <section class="approach" style="--accent: var(--a4)">
     <div class="approach-h"><span class="n">3.ª ronda</span><h2>Nébula · Urania</h2><p>La Nébula que elegiste, con termómetros y el sismógrafo a mano.</p></div>
@@ -269,7 +406,7 @@
   </section>
 
   <div class="notes">
-    <div><h3>Datos reales, sin inventar</h3><p>Las afirmaciones, citas y tiempos salen de los dos análisis guardados. Los demás vídeos muestran su transcripción y el estado «análisis pendiente». Nada aparece como verificado: no se consultaron fuentes externas.</p></div>
+    <div><h3>Datos reales, sin inventar</h3><p>Las afirmaciones, citas y tiempos salen de los análisis guardados. Los demás vídeos muestran su transcripción y el estado «análisis pendiente». Nada aparece como verificado: no se consultaron fuentes externas.</p></div>
     <div><h3>Reproductor</h3><p>Los vídeos se reproducen desde YouTube y saltan al segundo citado. En algunos móviles hay que tocar el vídeo la primera vez. Si YouTube no carga, cada interfaz sigue funcionando con un reloj sincronizado.</p></div>
     <div><h3>Estados del producto</h3><p>Cada propuesta incluye una pantalla de estados: vídeo detectado, análisis pendiente, sin transcripción, inaccesible y error de carga. Los que hoy no existen en el archivo van marcados como ejemplo.</p></div>
   </div>
@@ -278,9 +415,14 @@
   // Fecha de la foto de datos, leída del propio índice (sin bloquear la página si falla).
   fetch('data/index.json', { cache: 'no-cache' }).then((r) => r.json()).then((d) => {
     const when = new Date(d.generatedAt);
-    const el = document.createElement('span');
-    el.textContent = `Datos del ${when.getDate()}/${when.getMonth() + 1}, ${when.getHours()}:${String(when.getMinutes()).padStart(2, '0')}`;
-    document.getElementById('facts').appendChild(el);
+    const creators = new Set(d.videos.map((v) => v.ch)).size;
+    const analyzed = d.videos.filter((v) => v.analysis).length;
+    const changes = d.contrasts.filter((c) => c.kind === 'cambio').length;
+    const facts = [`${d.videos.length} vídeos con transcripción`, `${creators} creadores`, `${analyzed} análisis completos`];
+    if (changes) facts.push(`${changes} ${changes === 1 ? 'cambio' : 'cambios'} de postura detectados`);
+    facts.push(`Datos del ${when.getDate()}/${when.getMonth() + 1}, ${when.getHours()}:${String(when.getMinutes()).padStart(2, '0')}`);
+    const box = document.getElementById('facts');
+    box.replaceChildren(...facts.map((t) => { const el = document.createElement('span'); el.textContent = t; return el; }));
   }).catch(() => {});
 </script>
 </body>

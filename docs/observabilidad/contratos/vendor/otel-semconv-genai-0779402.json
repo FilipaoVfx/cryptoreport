@@ -1,0 +1,1021 @@
+{
+ "source": {
+  "genai": {
+   "repository": "open-telemetry/semantic-conventions-genai",
+   "commit": "07794021bfe46e1c241408b6f55cb4354bd28318",
+   "schema_url": "https://opentelemetry.io/schemas/gen-ai-dev/1.42.0-dev",
+   "stability": "development",
+   "files": {
+    "model/manifest.yaml": "53f3589761cd853c6d234761cd07290ee6bc58b4b9758bc4b7b7039c3343e7b6",
+    "model/gen-ai/registry.yaml": "fc7326952a9666e791a0af0ea3e07c9bdde4c46a526d36c2057685518ef37f1e",
+    "model/gen-ai/spans.yaml": "1f60d7d2685f07de8f4bb0c1834a0cf4124c2f1779ca8e855ceb131b0b48e657",
+    "model/gen-ai/metrics.yaml": "2d96085fa29546af30de36c48579ef703365f1eb7cbc43b6a6d2d20dcef01cf6",
+    "model/gen-ai/token-metrics.yaml": "66431869685e0f7b75d50f68fdfc228dfc0ad2a16c1188928fa69e619b4e4a19",
+    "model/gen-ai/events.yaml": "09095a702c18da3c883a5d2f053135c9ea253beac1f73079a253fe36e62f08d2",
+    "model/openai/registry.yaml": "c22607e88e2829fe22ee15fd9a7b4de9326e6034fdf42c66d80a612c071ddd7a"
+   }
+  },
+  "core": {
+   "repository": "open-telemetry/semantic-conventions",
+   "tag": "v1.44.0",
+   "files": {
+    "model/error/registry.yaml": "57917c22a8ae56ebc0f048742a0caafece16abc7f405cba6e51319be32866561",
+    "model/server/registry.yaml": "4f959b0f58f129ea07b85ddf9daf6fa1572e4fb936f8ef4c823f26f941ed6633",
+    "model/http/registry.yaml": "8d44e243c6f18bb21dea653fdbf2e34b40750cafc0604d894e914c637c0a8c5d",
+    "model/service/registry.yaml": "1d0be703a9970e94f8f52000d63f0660bf485434df941923abbc03b110f97ef7",
+    "model/deployment/registry.yaml": "08b1e5ebc6b419476b849863a7f310fdaba344888f28e80be1044ea8e93c9649",
+    "model/host/registry.yaml": "ccc9c78f0128cf788293ac53f05896df6435c6cdd2b6788cda0d4d13eee94049",
+    "model/url/registry.yaml": "17d311a7c0b249f03d4ad6605d0fe23ed9f8ecae3dce934302e25e9108dc4fba",
+    "model/exceptions/registry.yaml": "6754a8d009e6f4dc9cb799e55aa35db89c9f818e4daf8e5a4ef024760e73af6e"
+   }
+  }
+ },
+ "operation_names": [
+  "chat",
+  "generate_content",
+  "text_completion",
+  "embeddings",
+  "retrieval",
+  "fetch_response",
+  "create_agent",
+  "invoke_agent",
+  "execute_tool",
+  "invoke_workflow",
+  "plan",
+  "search_memory",
+  "create_memory",
+  "update_memory",
+  "upsert_memory",
+  "delete_memory",
+  "create_memory_store",
+  "delete_memory_store"
+ ],
+ "attributes": {
+  "deployment.environment.name": {
+   "stability": "stable",
+   "origin": "core",
+   "type": "enum",
+   "members": [
+    "production",
+    "staging",
+    "test",
+    "development"
+   ]
+  },
+  "deployment.id": {
+   "stability": "development",
+   "origin": "core",
+   "type": "string"
+  },
+  "deployment.name": {
+   "stability": "development",
+   "origin": "core",
+   "type": "string"
+  },
+  "deployment.status": {
+   "stability": "development",
+   "origin": "core",
+   "type": "enum",
+   "members": [
+    "failed",
+    "succeeded"
+   ]
+  },
+  "error.type": {
+   "stability": "stable",
+   "origin": "core",
+   "type": "enum",
+   "members": [
+    "_OTHER"
+   ]
+  },
+  "exception.message": {
+   "stability": "stable",
+   "origin": "core",
+   "type": "string"
+  },
+  "exception.stacktrace": {
+   "stability": "stable",
+   "origin": "core",
+   "type": "string"
+  },
+  "exception.type": {
+   "stability": "stable",
+   "origin": "core",
+   "type": "string"
+  },
+  "gen_ai.agent.description": {
+   "stability": "development",
+   "origin": "genai",
+   "type": "string"
+  },
+  "gen_ai.agent.id": {
+   "stability": "development",
+   "origin": "genai",
+   "type": "string"
+  },
+  "gen_ai.agent.name": {
+   "stability": "development",
+   "origin": "genai",
+   "type": "string"
+  },
+  "gen_ai.agent.version": {
+   "stability": "development",
+   "origin": "genai",
+   "type": "string"
+  },
+  "gen_ai.conversation.compacted": {
+   "stability": "development",
+   "origin": "genai",
+   "type": "boolean"
+  },
+  "gen_ai.conversation.id": {
+   "stability": "development",
+   "origin": "genai",
+   "type": "string"
+  },
+  "gen_ai.data_source.id": {
+   "stability": "development",
+   "origin": "genai",
+   "type": "string"
+  },
+  "gen_ai.embeddings.dimension.count": {
+   "stability": "development",
+   "origin": "genai",
+   "type": "int"
+  },
+  "gen_ai.evaluation.explanation": {
+   "stability": "development",
+   "origin": "genai",
+   "type": "string"
+  },
+  "gen_ai.evaluation.name": {
+   "stability": "development",
+   "origin": "genai",
+   "type": "string"
+  },
+  "gen_ai.evaluation.score.label": {
+   "stability": "development",
+   "origin": "genai",
+   "type": "string"
+  },
+  "gen_ai.evaluation.score.value": {
+   "stability": "development",
+   "origin": "genai",
+   "type": "double"
+  },
+  "gen_ai.input.messages": {
+   "stability": "development",
+   "origin": "genai",
+   "type": "any"
+  },
+  "gen_ai.main_agent.description": {
+   "stability": "development",
+   "origin": "genai",
+   "type": "string"
+  },
+  "gen_ai.main_agent.id": {
+   "stability": "development",
+   "origin": "genai",
+   "type": "string"
+  },
+  "gen_ai.main_agent.name": {
+   "stability": "development",
+   "origin": "genai",
+   "type": "string"
+  },
+  "gen_ai.memory.query.text": {
+   "stability": "development",
+   "origin": "genai",
+   "type": "string"
+  },
+  "gen_ai.memory.record.count": {
+   "stability": "development",
+   "origin": "genai",
+   "type": "int"
+  },
+  "gen_ai.memory.record.id": {
+   "stability": "development",
+   "origin": "genai",
+   "type": "string"
+  },
+  "gen_ai.memory.records": {
+   "stability": "development",
+   "origin": "genai",
+   "type": "any"
+  },
+  "gen_ai.memory.store.id": {
+   "stability": "development",
+   "origin": "genai",
+   "type": "string"
+  },
+  "gen_ai.operation.name": {
+   "stability": "development",
+   "origin": "genai",
+   "type": "enum",
+   "members": [
+    "chat",
+    "generate_content",
+    "text_completion",
+    "embeddings",
+    "retrieval",
+    "fetch_response",
+    "create_agent",
+    "invoke_agent",
+    "execute_tool",
+    "invoke_workflow",
+    "plan",
+    "search_memory",
+    "create_memory",
+    "update_memory",
+    "upsert_memory",
+    "delete_memory",
+    "create_memory_store",
+    "delete_memory_store"
+   ]
+  },
+  "gen_ai.output.messages": {
+   "stability": "development",
+   "origin": "genai",
+   "type": "any"
+  },
+  "gen_ai.output.type": {
+   "stability": "development",
+   "origin": "genai",
+   "type": "enum",
+   "members": [
+    "text",
+    "json",
+    "image",
+    "speech"
+   ]
+  },
+  "gen_ai.prompt.name": {
+   "stability": "development",
+   "origin": "genai",
+   "type": "string"
+  },
+  "gen_ai.prompt.variable": {
+   "stability": "development",
+   "origin": "genai",
+   "type": "template[string]"
+  },
+  "gen_ai.prompt.version": {
+   "stability": "development",
+   "origin": "genai",
+   "type": "string"
+  },
+  "gen_ai.provider.name": {
+   "stability": "development",
+   "origin": "genai",
+   "type": "enum",
+   "members": [
+    "openai",
+    "gcp.gen_ai",
+    "gcp.vertex_ai",
+    "gcp.gemini",
+    "anthropic",
+    "cohere",
+    "azure.ai.inference",
+    "azure.ai.openai",
+    "ibm.watsonx.ai",
+    "aws.bedrock",
+    "perplexity",
+    "x_ai",
+    "deepseek",
+    "groq",
+    "mistral_ai",
+    "moonshot_ai"
+   ]
+  },
+  "gen_ai.request.choice.count": {
+   "stability": "development",
+   "origin": "genai",
+   "type": "int"
+  },
+  "gen_ai.request.encoding_formats": {
+   "stability": "development",
+   "origin": "genai",
+   "type": "string[]"
+  },
+  "gen_ai.request.frequency_penalty": {
+   "stability": "development",
+   "origin": "genai",
+   "type": "double"
+  },
+  "gen_ai.request.max_tokens": {
+   "stability": "development",
+   "origin": "genai",
+   "type": "int"
+  },
+  "gen_ai.request.model": {
+   "stability": "development",
+   "origin": "genai",
+   "type": "string"
+  },
+  "gen_ai.request.presence_penalty": {
+   "stability": "development",
+   "origin": "genai",
+   "type": "double"
+  },
+  "gen_ai.request.previous_response.id": {
+   "stability": "development",
+   "origin": "genai",
+   "type": "string"
+  },
+  "gen_ai.request.reasoning.level": {
+   "stability": "development",
+   "origin": "genai",
+   "type": "string"
+  },
+  "gen_ai.request.seed": {
+   "stability": "development",
+   "origin": "genai",
+   "type": "int"
+  },
+  "gen_ai.request.stop_sequences": {
+   "stability": "development",
+   "origin": "genai",
+   "type": "string[]"
+  },
+  "gen_ai.request.stream": {
+   "stability": "development",
+   "origin": "genai",
+   "type": "boolean"
+  },
+  "gen_ai.request.stream_cursor": {
+   "stability": "development",
+   "origin": "genai",
+   "type": "string"
+  },
+  "gen_ai.request.temperature": {
+   "stability": "development",
+   "origin": "genai",
+   "type": "double"
+  },
+  "gen_ai.request.top_k": {
+   "stability": "development",
+   "origin": "genai",
+   "type": "int"
+  },
+  "gen_ai.request.top_p": {
+   "stability": "development",
+   "origin": "genai",
+   "type": "double"
+  },
+  "gen_ai.response.finish_reasons": {
+   "stability": "development",
+   "origin": "genai",
+   "type": "string[]"
+  },
+  "gen_ai.response.id": {
+   "stability": "development",
+   "origin": "genai",
+   "type": "string"
+  },
+  "gen_ai.response.model": {
+   "stability": "development",
+   "origin": "genai",
+   "type": "string"
+  },
+  "gen_ai.response.status": {
+   "stability": "development",
+   "origin": "genai",
+   "type": "enum",
+   "members": [
+    "queued",
+    "in_progress",
+    "completed",
+    "incomplete",
+    "failed",
+    "cancelled"
+   ]
+  },
+  "gen_ai.response.time_to_first_chunk": {
+   "stability": "development",
+   "origin": "genai",
+   "type": "double"
+  },
+  "gen_ai.retrieval.documents": {
+   "stability": "development",
+   "origin": "genai",
+   "type": "any"
+  },
+  "gen_ai.retrieval.query.text": {
+   "stability": "development",
+   "origin": "genai",
+   "type": "string"
+  },
+  "gen_ai.retrieval.top_k": {
+   "stability": "development",
+   "origin": "genai",
+   "type": "int"
+  },
+  "gen_ai.skill.description": {
+   "stability": "development",
+   "origin": "genai",
+   "type": "string"
+  },
+  "gen_ai.skill.name": {
+   "stability": "development",
+   "origin": "genai",
+   "type": "string"
+  },
+  "gen_ai.skill.resource.name": {
+   "stability": "development",
+   "origin": "genai",
+   "type": "string"
+  },
+  "gen_ai.skill.source.uri": {
+   "stability": "development",
+   "origin": "genai",
+   "type": "string"
+  },
+  "gen_ai.system_instructions": {
+   "stability": "development",
+   "origin": "genai",
+   "type": "any"
+  },
+  "gen_ai.token.modality": {
+   "stability": "development",
+   "origin": "genai",
+   "type": "enum",
+   "members": [
+    "text",
+    "image",
+    "audio",
+    "unknown"
+   ]
+  },
+  "gen_ai.tool.call.arguments": {
+   "stability": "development",
+   "origin": "genai",
+   "type": "any"
+  },
+  "gen_ai.tool.call.id": {
+   "stability": "development",
+   "origin": "genai",
+   "type": "string"
+  },
+  "gen_ai.tool.call.result": {
+   "stability": "development",
+   "origin": "genai",
+   "type": "any"
+  },
+  "gen_ai.tool.definitions": {
+   "stability": "development",
+   "origin": "genai",
+   "type": "any"
+  },
+  "gen_ai.tool.description": {
+   "stability": "development",
+   "origin": "genai",
+   "type": "string"
+  },
+  "gen_ai.tool.name": {
+   "stability": "development",
+   "origin": "genai",
+   "type": "string"
+  },
+  "gen_ai.tool.type": {
+   "stability": "development",
+   "origin": "genai",
+   "type": "string"
+  },
+  "gen_ai.usage.audio.cache_read.input_tokens": {
+   "stability": "development",
+   "origin": "genai",
+   "type": "int"
+  },
+  "gen_ai.usage.audio.input_tokens": {
+   "stability": "development",
+   "origin": "genai",
+   "type": "int"
+  },
+  "gen_ai.usage.audio.output_tokens": {
+   "stability": "development",
+   "origin": "genai",
+   "type": "int"
+  },
+  "gen_ai.usage.cache_read.input_tokens": {
+   "stability": "development",
+   "origin": "genai",
+   "type": "int"
+  },
+  "gen_ai.usage.cache_write.input_tokens": {
+   "stability": "development",
+   "origin": "genai",
+   "type": "int"
+  },
+  "gen_ai.usage.image.cache_read.input_tokens": {
+   "stability": "development",
+   "origin": "genai",
+   "type": "int"
+  },
+  "gen_ai.usage.image.input_tokens": {
+   "stability": "development",
+   "origin": "genai",
+   "type": "int"
+  },
+  "gen_ai.usage.image.output_tokens": {
+   "stability": "development",
+   "origin": "genai",
+   "type": "int"
+  },
+  "gen_ai.usage.input_tokens": {
+   "stability": "development",
+   "origin": "genai",
+   "type": "int"
+  },
+  "gen_ai.usage.output_tokens": {
+   "stability": "development",
+   "origin": "genai",
+   "type": "int"
+  },
+  "gen_ai.usage.reasoning.output_tokens": {
+   "stability": "development",
+   "origin": "genai",
+   "type": "int"
+  },
+  "gen_ai.usage.text.cache_read.input_tokens": {
+   "stability": "development",
+   "origin": "genai",
+   "type": "int"
+  },
+  "gen_ai.usage.text.input_tokens": {
+   "stability": "development",
+   "origin": "genai",
+   "type": "int"
+  },
+  "gen_ai.usage.text.output_tokens": {
+   "stability": "development",
+   "origin": "genai",
+   "type": "int"
+  },
+  "gen_ai.workflow.name": {
+   "stability": "development",
+   "origin": "genai",
+   "type": "string"
+  },
+  "host.arch": {
+   "stability": "development",
+   "origin": "core",
+   "type": "enum",
+   "members": [
+    "amd64",
+    "arm32",
+    "arm64",
+    "ia64",
+    "ppc32",
+    "ppc64",
+    "s390x",
+    "x86"
+   ]
+  },
+  "host.cpu.cache.l2.size": {
+   "stability": "development",
+   "origin": "core",
+   "type": "int"
+  },
+  "host.cpu.family": {
+   "stability": "development",
+   "origin": "core",
+   "type": "string"
+  },
+  "host.cpu.model.id": {
+   "stability": "development",
+   "origin": "core",
+   "type": "string"
+  },
+  "host.cpu.model.name": {
+   "stability": "development",
+   "origin": "core",
+   "type": "string"
+  },
+  "host.cpu.stepping": {
+   "stability": "development",
+   "origin": "core",
+   "type": "string"
+  },
+  "host.cpu.vendor.id": {
+   "stability": "development",
+   "origin": "core",
+   "type": "string"
+  },
+  "host.id": {
+   "stability": "development",
+   "origin": "core",
+   "type": "string"
+  },
+  "host.image.id": {
+   "stability": "development",
+   "origin": "core",
+   "type": "string"
+  },
+  "host.image.name": {
+   "stability": "development",
+   "origin": "core",
+   "type": "string"
+  },
+  "host.image.version": {
+   "stability": "development",
+   "origin": "core",
+   "type": "string"
+  },
+  "host.ip": {
+   "stability": "development",
+   "origin": "core",
+   "type": "string[]"
+  },
+  "host.mac": {
+   "stability": "development",
+   "origin": "core",
+   "type": "string[]"
+  },
+  "host.name": {
+   "stability": "development",
+   "origin": "core",
+   "type": "string"
+  },
+  "host.type": {
+   "stability": "development",
+   "origin": "core",
+   "type": "string"
+  },
+  "http.connection.state": {
+   "stability": "development",
+   "origin": "core",
+   "type": "enum",
+   "members": [
+    "active",
+    "idle"
+   ]
+  },
+  "http.request.body.size": {
+   "stability": "development",
+   "origin": "core",
+   "type": "int"
+  },
+  "http.request.header": {
+   "stability": "stable",
+   "origin": "core",
+   "type": "template[string[]]"
+  },
+  "http.request.method": {
+   "stability": "stable",
+   "origin": "core",
+   "type": "enum",
+   "members": [
+    "CONNECT",
+    "DELETE",
+    "GET",
+    "HEAD",
+    "OPTIONS",
+    "PATCH",
+    "POST",
+    "PUT",
+    "TRACE",
+    "QUERY",
+    "_OTHER"
+   ]
+  },
+  "http.request.method_original": {
+   "stability": "stable",
+   "origin": "core",
+   "type": "string"
+  },
+  "http.request.resend_count": {
+   "stability": "stable",
+   "origin": "core",
+   "type": "int"
+  },
+  "http.request.size": {
+   "stability": "development",
+   "origin": "core",
+   "type": "int"
+  },
+  "http.response.body.size": {
+   "stability": "development",
+   "origin": "core",
+   "type": "int"
+  },
+  "http.response.header": {
+   "stability": "stable",
+   "origin": "core",
+   "type": "template[string[]]"
+  },
+  "http.response.size": {
+   "stability": "development",
+   "origin": "core",
+   "type": "int"
+  },
+  "http.response.status_code": {
+   "stability": "stable",
+   "origin": "core",
+   "type": "int"
+  },
+  "http.route": {
+   "stability": "stable",
+   "origin": "core",
+   "type": "string"
+  },
+  "openai.api.type": {
+   "stability": "development",
+   "origin": "genai",
+   "type": "enum",
+   "members": [
+    "chat_completions",
+    "responses"
+   ]
+  },
+  "openai.request.service_tier": {
+   "stability": "development",
+   "origin": "genai",
+   "type": "enum",
+   "members": [
+    "auto",
+    "default"
+   ]
+  },
+  "openai.response.service_tier": {
+   "stability": "development",
+   "origin": "genai",
+   "type": "string"
+  },
+  "openai.response.system_fingerprint": {
+   "stability": "development",
+   "origin": "genai",
+   "type": "string"
+  },
+  "server.address": {
+   "stability": "stable",
+   "origin": "core",
+   "type": "string"
+  },
+  "server.port": {
+   "stability": "stable",
+   "origin": "core",
+   "type": "int"
+  },
+  "service.criticality": {
+   "stability": "alpha",
+   "origin": "core",
+   "type": "enum",
+   "members": [
+    "critical",
+    "high",
+    "medium",
+    "low"
+   ]
+  },
+  "service.instance.id": {
+   "stability": "stable",
+   "origin": "core",
+   "type": "string"
+  },
+  "service.name": {
+   "stability": "stable",
+   "origin": "core",
+   "type": "string"
+  },
+  "service.namespace": {
+   "stability": "stable",
+   "origin": "core",
+   "type": "string"
+  },
+  "service.peer.name": {
+   "stability": "development",
+   "origin": "core",
+   "type": "string"
+  },
+  "service.peer.namespace": {
+   "stability": "development",
+   "origin": "core",
+   "type": "string"
+  },
+  "service.version": {
+   "stability": "stable",
+   "origin": "core",
+   "type": "string"
+  },
+  "url.domain": {
+   "stability": "development",
+   "origin": "core",
+   "type": "string"
+  },
+  "url.extension": {
+   "stability": "development",
+   "origin": "core",
+   "type": "string"
+  },
+  "url.fragment": {
+   "stability": "stable",
+   "origin": "core",
+   "type": "string"
+  },
+  "url.full": {
+   "stability": "stable",
+   "origin": "core",
+   "type": "string"
+  },
+  "url.original": {
+   "stability": "development",
+   "origin": "core",
+   "type": "string"
+  },
+  "url.path": {
+   "stability": "stable",
+   "origin": "core",
+   "type": "string"
+  },
+  "url.port": {
+   "stability": "development",
+   "origin": "core",
+   "type": "int"
+  },
+  "url.query": {
+   "stability": "stable",
+   "origin": "core",
+   "type": "string"
+  },
+  "url.registered_domain": {
+   "stability": "development",
+   "origin": "core",
+   "type": "string"
+  },
+  "url.scheme": {
+   "stability": "stable",
+   "origin": "core",
+   "type": "string"
+  },
+  "url.subdomain": {
+   "stability": "development",
+   "origin": "core",
+   "type": "string"
+  },
+  "url.template": {
+   "stability": "development",
+   "origin": "core",
+   "type": "string"
+  },
+  "url.top_level_domain": {
+   "stability": "development",
+   "origin": "core",
+   "type": "string"
+  }
+ },
+ "metrics": {
+  "gen_ai.client.inference.duration": {
+   "instrument": "histogram",
+   "unit": "s",
+   "stability": "development"
+  },
+  "gen_ai.client.inference.operation.input_tokens": {
+   "instrument": "histogram",
+   "unit": "{token}",
+   "stability": "development"
+  },
+  "gen_ai.client.inference.operation.output_tokens": {
+   "instrument": "histogram",
+   "unit": "{token}",
+   "stability": "development"
+  },
+  "gen_ai.client.inference.time_per_output_chunk": {
+   "instrument": "histogram",
+   "unit": "s",
+   "stability": "development"
+  },
+  "gen_ai.client.inference.time_to_first_chunk": {
+   "instrument": "histogram",
+   "unit": "s",
+   "stability": "development"
+  },
+  "gen_ai.client.inference.usage.cache_read.input_tokens": {
+   "instrument": "counter",
+   "unit": "{token}",
+   "stability": "development"
+  },
+  "gen_ai.client.inference.usage.cache_write.input_tokens": {
+   "instrument": "counter",
+   "unit": "{token}",
+   "stability": "development"
+  },
+  "gen_ai.client.inference.usage.input_tokens": {
+   "instrument": "counter",
+   "unit": "{token}",
+   "stability": "development"
+  },
+  "gen_ai.client.inference.usage.output_tokens": {
+   "instrument": "counter",
+   "unit": "{token}",
+   "stability": "development"
+  },
+  "gen_ai.client.inference.usage.reasoning.output_tokens": {
+   "instrument": "counter",
+   "unit": "{token}",
+   "stability": "development"
+  },
+  "gen_ai.client.operation.duration": {
+   "instrument": "histogram",
+   "unit": "s",
+   "stability": "development"
+  },
+  "gen_ai.execute_tool.duration": {
+   "instrument": "histogram",
+   "unit": "s",
+   "stability": "development"
+  },
+  "gen_ai.invoke_agent.duration": {
+   "instrument": "histogram",
+   "unit": "s",
+   "stability": "development"
+  },
+  "gen_ai.invoke_agent.inference_calls": {
+   "instrument": "histogram",
+   "unit": "{inference_call}",
+   "stability": "development"
+  },
+  "gen_ai.invoke_agent.tool_calls": {
+   "instrument": "histogram",
+   "unit": "{tool_call}",
+   "stability": "development"
+  },
+  "gen_ai.invoke_workflow.duration": {
+   "instrument": "histogram",
+   "unit": "s",
+   "stability": "development"
+  },
+  "gen_ai.server.request.duration": {
+   "instrument": "histogram",
+   "unit": "s",
+   "stability": "development"
+  },
+  "gen_ai.server.time_per_output_token": {
+   "instrument": "histogram",
+   "unit": "s",
+   "stability": "development"
+  },
+  "gen_ai.server.time_to_first_token": {
+   "instrument": "histogram",
+   "unit": "s",
+   "stability": "development"
+  }
+ },
+ "events": {
+  "gen_ai.client.inference.operation.details": {
+   "stability": "development"
+  },
+  "gen_ai.client.operation.exception": {
+   "stability": "development"
+  },
+  "gen_ai.evaluation.result": {
+   "stability": "development"
+  }
+ },
+ "span_types": {
+  "gen_ai.client.inference": {
+   "kind": "client",
+   "stability": "development"
+  },
+  "gen_ai.create_agent.client": {
+   "kind": "client",
+   "stability": "development"
+  },
+  "gen_ai.embeddings.client": {
+   "kind": "client",
+   "stability": "development"
+  },
+  "gen_ai.execute_tool.internal": {
+   "kind": "internal",
+   "stability": "development"
+  },
+  "gen_ai.fetch_response.client": {
+   "kind": "client",
+   "stability": "development"
+  },
+  "gen_ai.invoke_agent.client": {
+   "kind": "client",
+   "stability": "development"
+  },
+  "gen_ai.invoke_agent.internal": {
+   "kind": "internal",
+   "stability": "development"
+  },
+  "gen_ai.invoke_workflow.internal": {
+   "kind": "internal",
+   "stability": "development"
+  },
+  "gen_ai.memory.client": {
+   "kind": "client",
+   "stability": "development"
+  },
+  "gen_ai.plan.internal": {
+   "kind": "internal",
+   "stability": "development"
+  },
+  "gen_ai.retrieval.client": {
+   "kind": "client",
+   "stability": "development"
+  }
+ }
+}

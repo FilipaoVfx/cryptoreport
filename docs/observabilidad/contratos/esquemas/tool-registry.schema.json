@@ -1,0 +1,75 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Registro de herramientas y proveedores",
+  "description": "Inventario dinámico de proveedores, transportes, modelos y agentes. Una herramienta nueva entra como proposed y avanza por sandbox y shadow antes de active; el panel nunca activa una herramienta sin pasar por solicitud de cambio.",
+  "type": "object",
+  "required": ["registry_version", "tools"],
+  "additionalProperties": false,
+  "properties": {
+    "registry_version": {"$ref": "common.schema.json#/$defs/SemVer"},
+    "tools": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/Tool"}}
+  },
+  "$defs": {
+    "Tool": {
+      "type": "object",
+      "required": ["id", "kind", "title", "lifecycle", "capabilities", "paid", "cost", "limits", "health_source", "endpoint", "secrets", "code", "services"],
+      "additionalProperties": false,
+      "properties": {
+        "id": {"type": "string", "pattern": "^[a-z][a-z0-9_]{1,40}$", "description": "Coincide con cr.provider.name cuando la herramienta se observa como proveedor."},
+        "kind": {"enum": ["transcript_provider", "discovery_source", "transport", "notifier", "model_provider", "agent"]},
+        "title": {"type": "string", "minLength": 3},
+        "lifecycle": {
+          "description": "proposed → sandbox (solo fixtures offline) → shadow (se llama pero su resultado no se usa) → active; degraded_known: activo con un bloqueo conocido; disabled: apagado por configuración; retired.",
+          "enum": ["proposed", "sandbox", "shadow", "active", "degraded_known", "disabled", "retired"]
+        },
+        "capabilities": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"enum": ["captions", "metadata", "generate", "feed", "channel_pages", "shorts_probe", "list", "read", "write", "notify", "inference", "analysis"]}},
+        "paid": {"type": "boolean"},
+        "cost": {
+          "type": "object",
+          "required": ["model"],
+          "additionalProperties": false,
+          "properties": {
+            "model": {"enum": ["free", "per_request", "per_credit", "per_token", "subscription"]},
+            "budget": {"enum": ["supadata_credits", "scrapertech_requests", "model_api_usd"]},
+            "note": {"type": "string"}
+          }
+        },
+        "limits": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "timeout_s": {"type": "number", "exclusiveMinimum": 0},
+            "tries": {"type": "integer", "minimum": 1},
+            "monthly_quota": {"type": "integer", "minimum": 0},
+            "parameters": {"type": "array", "items": {"type": "string", "pattern": "^[a-z][a-z0-9_]*(\\.[a-z0-9_]+)+$"}, "description": "Claves del catálogo de parámetros que gobiernan la herramienta."}
+          }
+        },
+        "health_source": {"type": "string", "minLength": 5},
+        "endpoint": {
+          "type": "object",
+          "required": ["server_address"],
+          "additionalProperties": false,
+          "properties": {
+            "server_address": {"type": "string"},
+            "method": {"enum": ["GET", "POST", "HEAD", "CLI"]}
+          }
+        },
+        "secrets": {"type": "array", "uniqueItems": true, "items": {"type": "string", "pattern": "^[A-Z][A-Z0-9_]+$"}, "description": "Solo nombres de variables; el panel muestra configurada/no configurada."},
+        "code": {
+          "type": "object",
+          "required": ["path", "anchor"],
+          "additionalProperties": false,
+          "properties": {
+            "path": {"type": "string", "pattern": "^[A-Za-z0-9_./-]+$"},
+            "anchor": {"type": "string", "minLength": 4}
+          }
+        },
+        "services": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"$ref": "common.schema.json#/$defs/ServiceName"}},
+        "known_issues": {"type": "array", "items": {"type": "string", "minLength": 5}}
+      },
+      "allOf": [
+        {"if": {"properties": {"paid": {"const": true}}}, "then": {"properties": {"cost": {"required": ["model", "budget"]}}}}
+      ]
+    }
+  }
+}

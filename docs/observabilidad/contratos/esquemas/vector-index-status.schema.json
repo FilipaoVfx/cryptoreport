@@ -1,0 +1,80 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Estado de un índice vectorial",
+  "description": "Estado, frescura y calidad de un índice de embeddings. Hoy no existe ningún índice: el estado vigente es not_provisioned.",
+  "type": "object",
+  "required": ["index_id", "state", "backend", "updated_at"],
+  "additionalProperties": false,
+  "properties": {
+    "index_id": {"type": "string", "pattern": "^vector_index:[a-z0-9][a-z0-9.-]{1,60}$"},
+    "state": {"enum": ["not_provisioned", "building", "ready", "stale", "degraded", "failed"]},
+    "backend": {"enum": ["none", "sqlite-vec", "pgvector"]},
+    "updated_at": {"$ref": "common.schema.json#/$defs/Timestamp"},
+    "embedding": {
+      "type": "object",
+      "required": ["model", "version", "dimension", "distance", "normalized", "runtime"],
+      "additionalProperties": false,
+      "properties": {
+        "model": {"type": "string", "minLength": 2},
+        "version": {"type": "string", "minLength": 1},
+        "dimension": {"type": "integer", "minimum": 1},
+        "distance": {"enum": ["cosine", "l2", "inner_product"]},
+        "normalized": {"type": "boolean"},
+        "runtime": {"enum": ["local_cpu", "api"]}
+      }
+    },
+    "chunking": {
+      "type": "object",
+      "required": ["strategy", "version", "target_tokens", "max_tokens"],
+      "additionalProperties": false,
+      "properties": {
+        "strategy": {"enum": ["segment_window"]},
+        "version": {"$ref": "common.schema.json#/$defs/SemVer"},
+        "target_tokens": {"type": "integer", "minimum": 50},
+        "max_tokens": {"type": "integer", "minimum": 50},
+        "overlap_segments": {"type": "integer", "minimum": 0, "maximum": 3}
+      }
+    },
+    "counts": {
+      "type": "object",
+      "required": ["sources_total", "sources_indexed", "chunks_total", "chunks_embedded", "chunks_stale", "chunks_failed"],
+      "additionalProperties": false,
+      "properties": {
+        "sources_total": {"type": "integer", "minimum": 0},
+        "sources_indexed": {"type": "integer", "minimum": 0},
+        "chunks_total": {"type": "integer", "minimum": 0},
+        "chunks_embedded": {"type": "integer", "minimum": 0},
+        "chunks_stale": {"type": "integer", "minimum": 0},
+        "chunks_failed": {"type": "integer", "minimum": 0}
+      }
+    },
+    "freshness": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "last_build_started_at": {"$ref": "common.schema.json#/$defs/Timestamp"},
+        "last_build_finished_at": {"$ref": "common.schema.json#/$defs/Timestamp"},
+        "max_source_lag_s": {"type": "number", "minimum": 0},
+        "oldest_unindexed_at": {"$ref": "common.schema.json#/$defs/Timestamp"}
+      }
+    },
+    "quality": {
+      "type": "object",
+      "required": ["query_set", "evaluated_at"],
+      "additionalProperties": false,
+      "properties": {
+        "query_set": {"type": "string", "minLength": 3},
+        "evaluated_at": {"$ref": "common.schema.json#/$defs/Timestamp"},
+        "recall_at_10": {"type": "number", "minimum": 0, "maximum": 1},
+        "ndcg_at_10": {"type": "number", "minimum": 0, "maximum": 1},
+        "queries": {"type": "integer", "minimum": 1}
+      }
+    },
+    "errors": {"type": "array", "items": {"type": "string", "maxLength": 300}},
+    "note": {"type": "string", "maxLength": 500}
+  },
+  "allOf": [
+    {"if": {"properties": {"state": {"const": "not_provisioned"}}}, "then": {"properties": {"backend": {"const": "none"}}}, "else": {"required": ["embedding", "chunking", "counts"]}},
+    {"if": {"properties": {"state": {"const": "ready"}}}, "then": {"required": ["freshness", "quality"]}}
+  ]
+}

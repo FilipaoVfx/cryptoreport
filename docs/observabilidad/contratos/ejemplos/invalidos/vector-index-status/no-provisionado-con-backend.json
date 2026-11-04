@@ -1,0 +1,13 @@
+{
+  "descripcion": "Sin índice no hay backend.",
+  "error_esperado": {
+    "keyword": "const",
+    "ruta": "/backend"
+  },
+  "instancia": {
+    "index_id": "vector_index:transcripts-es",
+    "state": "not_provisioned",
+    "backend": "sqlite-vec",
+    "updated_at": "2026-10-14T16:05:00Z"
+  }
+}

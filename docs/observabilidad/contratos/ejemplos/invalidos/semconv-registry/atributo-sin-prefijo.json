@@ -1,0 +1,15 @@
+{
+  "descripcion": "Los atributos propios llevan el prefijo cr.",
+  "error_esperado": {
+    "keyword": "pattern",
+    "ruta": "/attributes/[name=cr.run.id]/name"
+  },
+  "base": "registros/semconv.json",
+  "parche": [
+    {
+      "op": "replace",
+      "path": "/attributes/[name=cr.run.id]/name",
+      "value": "run.id"
+    }
+  ]
+}

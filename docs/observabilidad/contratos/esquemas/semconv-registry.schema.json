@@ -1,0 +1,131 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Registro de nombres de telemetría",
+  "description": "Vocabulario único de spans, atributos, eventos y métricas. Los nombres OTel se fijan contra una instantánea (vendor/) y los propios usan el prefijo cr. Ningún servicio emite un nombre que no esté aquí.",
+  "type": "object",
+  "required": ["registry_version", "pinned", "content_capture", "resource_attributes", "attributes", "spans", "events", "metrics"],
+  "additionalProperties": false,
+  "properties": {
+    "registry_version": {"$ref": "common.schema.json#/$defs/SemVer"},
+    "pinned": {
+      "type": "object",
+      "required": ["genai_commit", "core_tag", "schema_url", "snapshot_file"],
+      "additionalProperties": false,
+      "properties": {
+        "genai_commit": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+        "core_tag": {"type": "string", "pattern": "^v[0-9]+\\.[0-9]+\\.[0-9]+$"},
+        "schema_url": {"type": "string", "format": "uri"},
+        "snapshot_file": {"type": "string", "pattern": "^vendor/[A-Za-z0-9._-]+\\.json$"}
+      }
+    },
+    "content_capture": {
+      "description": "Política de captura de contenido (prompts, salidas, argumentos de herramientas).",
+      "type": "object",
+      "required": ["default", "opt_in_env", "opt_in_attributes", "redaction"],
+      "additionalProperties": false,
+      "properties": {
+        "default": {"const": "off"},
+        "opt_in_env": {"type": "string", "pattern": "^[A-Z][A-Z0-9_]+$"},
+        "opt_in_attributes": {"type": "array", "items": {"$ref": "#/$defs/AttributeName"}, "uniqueItems": true},
+        "redaction": {"type": "array", "items": {"type": "string", "minLength": 3}, "minItems": 1}
+      }
+    },
+    "resource_attributes": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["name", "requirement", "description"],
+        "additionalProperties": false,
+        "properties": {
+          "name": {"$ref": "#/$defs/AttributeName"},
+          "requirement": {"$ref": "#/$defs/Requirement"},
+          "description": {"type": "string", "minLength": 10},
+          "example": {}
+        }
+      }
+    },
+    "attributes": {
+      "description": "Atributos propios (cr.*). Los OTel se usan tal cual y se comprueban contra la instantánea.",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["name", "type", "cardinality", "pii", "description"],
+        "additionalProperties": false,
+        "properties": {
+          "name": {"type": "string", "pattern": "^cr(\\.[a-z0-9_]+)+$"},
+          "type": {"enum": ["string", "int", "double", "boolean", "string[]", "int[]"]},
+          "enum": {"type": "array", "items": {"type": "string"}, "minItems": 1, "uniqueItems": true},
+          "cardinality": {"enum": ["low", "medium", "high"], "description": "low: se permite en métricas; medium/high: solo en spans y logs."},
+          "pii": {"enum": ["none", "pseudonymous", "content"]},
+          "description": {"type": "string", "minLength": 10},
+          "example": {}
+        }
+      }
+    },
+    "spans": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["name", "kind", "origin", "services", "description", "required_attributes"],
+        "additionalProperties": false,
+        "properties": {
+          "name": {"type": "string", "description": "Plantilla de nombre; solo admite marcadores {atributo} de cardinalidad baja.", "pattern": "^[a-z_{][A-Za-z0-9_. {}/-]*$"},
+          "kind": {"enum": ["INTERNAL", "CLIENT", "SERVER", "PRODUCER", "CONSUMER"]},
+          "origin": {"enum": ["cr", "otel-genai", "otel-http"]},
+          "otel_span_type": {"type": "string"},
+          "services": {"type": "array", "items": {"$ref": "common.schema.json#/$defs/ServiceName"}, "minItems": 1, "uniqueItems": true},
+          "parent": {"type": "string", "description": "Nombre de span padre esperado o «raíz»."},
+          "description": {"type": "string", "minLength": 10},
+          "required_attributes": {"type": "array", "items": {"$ref": "#/$defs/AttributeName"}, "uniqueItems": true},
+          "recommended_attributes": {"type": "array", "items": {"$ref": "#/$defs/AttributeName"}, "uniqueItems": true},
+          "fixed_values": {"type": "object", "description": "Atributos con valor fijo para este span.", "additionalProperties": {"type": ["string", "boolean", "integer"]}},
+          "events": {"type": "array", "items": {"type": "string"}, "uniqueItems": true},
+          "links": {"type": "string", "description": "Regla de enlaces (span links) cuando el span cruza una frontera asíncrona."},
+          "error_rule": {"type": "string", "description": "Cuándo el span termina con status ERROR."}
+        },
+        "allOf": [
+          {"if": {"properties": {"origin": {"const": "otel-genai"}}}, "then": {"required": ["otel_span_type"]}}
+        ]
+      }
+    },
+    "events": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["name", "origin", "description", "attributes"],
+        "additionalProperties": false,
+        "properties": {
+          "name": {"type": "string", "pattern": "^(cr|gen_ai)(\\.[a-z0-9_]+)+$|^exception$"},
+          "origin": {"enum": ["cr", "otel-genai", "otel-core"]},
+          "description": {"type": "string", "minLength": 10},
+          "attributes": {"type": "array", "items": {"$ref": "#/$defs/AttributeName"}, "uniqueItems": true}
+        }
+      }
+    },
+    "metrics": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["name", "origin", "instrument", "unit", "description", "attributes", "emitted_by"],
+        "additionalProperties": false,
+        "properties": {
+          "name": {"type": "string", "pattern": "^(cr|gen_ai)(\\.[a-z0-9_]+)+$"},
+          "origin": {"enum": ["cr", "otel-genai"]},
+          "instrument": {"enum": ["counter", "updowncounter", "histogram", "gauge"]},
+          "unit": {"type": "string", "minLength": 1},
+          "description": {"type": "string", "minLength": 10},
+          "attributes": {"type": "array", "items": {"$ref": "#/$defs/AttributeName"}, "uniqueItems": true},
+          "emitted_by": {"type": "array", "items": {"$ref": "common.schema.json#/$defs/ServiceName"}, "minItems": 1, "uniqueItems": true},
+          "buckets": {"type": "array", "items": {"type": "number"}, "minItems": 2}
+        }
+      }
+    }
+  },
+  "$defs": {
+    "AttributeName": {"type": "string", "pattern": "^[a-z][a-z0-9_]*(\\.[a-z0-9_]+)+$"},
+    "Requirement": {"enum": ["required", "conditionally_required", "recommended", "opt_in"]}
+  }
+}

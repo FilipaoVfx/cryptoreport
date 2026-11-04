@@ -12,6 +12,9 @@ import argparse
 import json
 import os
 import tempfile
+import hashlib
+import shutil
+import time
 import re
 import sys
 from collections import defaultdict
@@ -20,6 +23,9 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import tono  # noqa: E402  (reglas de tono alcista/bajista, sin modelos)
+import postures
+import theses
+from sync_identities import refresh_if_due
 sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "services/transcripts"))
 from crtranscripts.quality import assess, analysis_matches
 
@@ -137,12 +143,27 @@ def iso(dt: str | None) -> str | None:
     return dt
 
 
+FEATURED: set[str] = set()
+
+
+def load_editorial():
+    """Decisiones del administrador en el panel: ocultos (no se publican) y destacados."""
+    try:
+        data = json.loads((DATA_DIR / "panel" / "editorial.json").read_text(encoding="utf-8"))
+        return set(data.get("hidden", {})), set(data.get("featured", {}))
+    except (OSError, ValueError, AttributeError):
+        return set(), set()
+
+
 def load_transcripts():
     docs = {}
+    hidden, _ = load_editorial()
     for f in sorted((DATA_DIR / "transcripts").glob("*/*.json")):
         try:
-            d = json.loads(f.read_text(encoding="utf-8"))
-            if assess(d)["valid"]:
+            raw = f.read_bytes()
+            d = json.loads(raw)
+            if assess(d)["valid"] and d["video"]["video_id"] not in hidden:
+                d["_source_sha256"] = hashlib.sha256(raw).hexdigest()
                 docs[d["video"]["video_id"]] = d
         except (OSError, ValueError, KeyError):
             continue
@@ -166,7 +187,7 @@ def load_analyses():
     return found
 
 
-def claim_record(vid: str, a: dict, c: dict, topics) -> dict:
+def claim_record(vid: str, a: dict, c: dict, topics, meta=None, creator_name="") -> dict:
     evs = {e["id"]: e for e in a["evidencias"]}
     m = c.get("mercado") or {}
     ev = [evs[e] for e in c["evidencia_ids"] if e in evs]
@@ -175,6 +196,16 @@ def claim_record(vid: str, a: dict, c: dict, topics) -> dict:
     asset_text = " ".join(filter(None, [m.get("activo_normalizado"), m.get("activo_literal")]))
     assets = find_topics(asset_text, topics) or find_topics(c["enunciado"] + " " + (m.get("postura") or ""), topics)
     postura = m.get("postura") or ""
+    radar = postures.project(c, m, first, meta or {}, creator_name)
+    spaced_posture = re.sub(r"(?<=[a-záéíóúñ])(?=[A-ZÁÉÍÓÚÑ])", " ", postura)
+    targets = find_topics(spaced_posture, topics)
+    asset_directions = {}
+    for asset in assets:
+        topic = next(t for t in topics if t["id"] == asset)
+        aliases = "|".join(re.escape(postures.norm(s)) for s in (topic["name"], topic["sym"]) if s)
+        excluded = re.search(r"(?:exclu\w*|excep\w*)[^.;]{0,55}\b(?:" + aliases + r")\b", postures.norm(c["enunciado"] + ";" + postura))
+        asset_directions[asset] = radar["direction"] if not excluded and (not targets or asset in targets) else "neutra"
+    radar["asset_directions"] = asset_directions
     return {
         "v": vid, "id": c["id"], "text": c["enunciado"], "tipo": c["tipo"], "verif": c["estado_verificacion"],
         "conv": c["conviccion_creador"], "conf": c["confianza_extraccion"], "emisor": c["emisor"],
@@ -184,6 +215,8 @@ def claim_record(vid: str, a: dict, c: dict, topics) -> dict:
         "dir": direction(postura) if postura else None,
         "hz": horizon(" ".join(filter(None, [m.get("horizonte_literal"), postura]))),
         "own": bool(m.get("operacion_propia_declarada")),
+        "evidence_ids": c["evidencia_ids"],
+        "radar": radar,
         **claim_tone(c, postura, first),
     }
 
@@ -208,7 +241,7 @@ def analysis_tone(a: dict) -> dict:
 
 
 def mentions(doc: dict, topics, check: bool):
-    """Menciones literales por tema: ocurrencias y hasta 3 fragmentos con su tiempo."""
+    """Count every match; retain non-overlapping passages and a balanced preview."""
     segs = doc["transcript"]["segments"]
     out = {}
     for t in topics:
@@ -222,10 +255,15 @@ def mentions(doc: dict, topics, check: bool):
             context = " ".join(s["text"] for s in segs[max(0, i - 1): i + 2])
             tone = tono.describe(context)
             sent[tone["pol"]] += hits
-            if len(frags) < 3 and (not frags or seg["start"] - frags[-1]["t"] > 20):
-                frags.append({"t": round(seg["start"], 2), "text": context, "pol": tone["pol"], "why": tone["why"][:3]})
+            if not frags or i > frags[-1]["segments"][-1]:
+                start = max(0, i - 1)
+                frags.append({"t": round(segs[start]["start"], 2), "text": context,
+                              "segments": list(range(start, min(len(segs), i + 2))),
+                              "pol": tone["pol"], "why": tone["why"][:3]})
         if count:
-            out[t["id"]] = {"n": count, "frags": frags, "sent": sent}
+            preview = [f for pol in ("alcista", "bajista", "mixta", "neutra")
+                       for f in [next((x for x in frags if x["pol"] == pol), None)] if f]
+            out[t["id"]] = {"n": count, "frags": preview, "allFrags": frags, "sent": sent}
             if check and t["note"]:
                 for fr in frags:
                     print(f"  [{t['id']}] {doc['video']['video_id']} {fr['t']:>7.1f}s  {fr['text'][:120]}")
@@ -292,9 +330,21 @@ def build(check: bool = False) -> dict:
     topics = compile_topics()
     docs = load_transcripts()
     analyses = load_analyses()
+    identities = refresh_if_due()
+    fingerprint = {
+        "transcripts": {vid: d["_source_sha256"] for vid, d in docs.items()},
+        "analyses": analyses, "identities": identities,
+        "builder": hashlib.sha256(Path(__file__).read_bytes() + (ROOT / "postures.py").read_bytes() + (ROOT / "theses.py").read_bytes()).hexdigest(),
+        # Las tesis aceptadas forman parte de la generación: cambiar una membresía publica un conjunto nuevo.
+        "theses": hashlib.sha256(theses.METADATA.read_bytes()).hexdigest() if theses.METADATA.exists() else None,
+    }
+    generation = hashlib.sha256(json.dumps(fingerprint, sort_keys=True, ensure_ascii=False).encode()).hexdigest()[:32]
+    generation_root = OUT / "g" / generation
+    asset_details = defaultdict(list)
     (OUT / "v").mkdir(parents=True, exist_ok=True)
 
     videos, all_claims = [], []
+    published_analyses = {}
     topic_rows = {t["id"]: {"id": t["id"], "name": t["name"], "sym": t["sym"], "section": t["section"], "note": t["note"],
                             "videos": [], "n": 0, "claims": [], "sent": {"alcista": 0, "bajista": 0, "mixta": 0, "neutra": 0}} for t in topics}
     if check:
@@ -335,16 +385,21 @@ def build(check: bool = False) -> dict:
         ment = mentions(doc, topics, check)
         full_text = " ".join(s["text"] for s in segs)
         doc_analysis = analyses.get(vid)
+        if doc_analysis and doc_analysis["meta"].get("transcript_sha256") != doc["_source_sha256"]:
+            doc_analysis = None
         claims = []
         record = None
         if doc_analysis:
+            published_analyses[vid] = doc_analysis
             a = doc_analysis["analysis"]
-            claims = [claim_record(vid, a, c, topics) for c in a["afirmaciones"]]
+            claims = [claim_record(vid, a, c, topics, doc_analysis["meta"], v["channel"]["name"]) for c in a["afirmaciones"]]
             all_claims.extend(claims)
             meta = doc_analysis["meta"]
             record = {
                 "estado": a["estado"], "claims": len(claims), "evidences": len(a["evidencias"]),
                 "thesis": a["resumen"]["tesis_principal"], "at": meta["analyzed_at"], "model": meta.get("model"),
+                "narrative": a["resumen"].get("narrativa_sugerida"),
+                "insight": a["resumen"].get("conclusion_provisional"),
                 "types": {k: sum(c["tipo"] == k for c in claims) for k in ("hecho_verificable", "opinion", "hipotesis", "prediccion", "insinuacion")},
                 "assets": sorted({x for c in claims for x in c["assets"] if x in ASSET_LIKE}),
                 "topics": sorted({x for c in claims for x in c["assets"]}),
@@ -354,12 +409,15 @@ def build(check: bool = False) -> dict:
             }
         sections = defaultdict(int)
         for tid, m in ment.items():
+            asset_details[tid].extend(dict(f, v=vid, transcript_hash=doc["_source_sha256"], provider=tr.get("provider")) for f in m["allFrags"])
             sections[topic_rows[tid]["section"]] += m["n"]
         sections["bolsa"] += len(GENERIC_BOLSA.findall(full_text))
         videos.append({
             "id": vid, "ch": v["channel"]["slug"], "title": v["title"], "pub": v["published_at"], "short": bool(v.get("is_short")),
             "dur": v.get("duration_s"), "segs": tr["segment_count"], "cov": tr.get("coverage"), "prov": tr.get("provider"),
             "fetched": tr.get("fetched_at"), "state": "analizado" if record else "transcrito", "analysis": record,
+            "analysis_sha256": hashlib.sha256(json.dumps(doc_analysis,sort_keys=True,ensure_ascii=False,allow_nan=False).encode()).hexdigest() if doc_analysis else None,
+            "featured": vid in FEATURED,
             "topics": {tid: m["n"] for tid, m in sorted(ment.items(), key=lambda kv: -kv[1]["n"])},
             "tone": video_tone,
             "peaks": peaks,
@@ -370,21 +428,30 @@ def build(check: bool = False) -> dict:
             topic_rows[tid]["n"] += m["n"]
             for k, n in m["sent"].items():
                 topic_rows[tid]["sent"][k] += n
-        atomic_json(OUT / "v" / f"{vid}.json", {
+        detail = {
             "id": vid,
             "segments": [[round(s["start"], 2), round(s["dur"], 2), s["text"], st] for s, st in zip(segs, seg_tone)],
             "segWhy": seg_why,
             "aTone": analysis_tone(doc_analysis["analysis"]) if doc_analysis else None,
             "analysis": doc_analysis["analysis"] if doc_analysis else None,
+            "analysis_sha256": hashlib.sha256(json.dumps(doc_analysis,sort_keys=True,ensure_ascii=False,allow_nan=False).encode()).hexdigest() if doc_analysis else None,
             "meta": {k: doc_analysis["meta"].get(k) for k in ("model", "analyzed_at", "prompt_version", "cost_usd_estimate")} if doc_analysis else None,
             "claims": claims,
-        })
+        }
+        atomic_json(generation_root / "v" / f"{vid}.json", detail)
+        atomic_json(OUT / "v" / f"{vid}.json", detail)  # compatibility for older clients
 
     by_id = {v["id"]: v for v in videos}
     for c in all_claims:
         for a in c["assets"]:
             topic_rows[a]["claims"].append({"v": c["v"], "id": c["id"]})
     for row in topic_rows.values():
+        row["image"] = identities.get("assets", {}).get(row["id"])
+        row["detail"] = f"g/{generation}/a/{row['id']}.json"
+        row["fragmentCount"] = len(asset_details[row["id"]])
+        atomic_json(generation_root / "a" / f"{row['id']}.json", {
+            "generation": generation, "id": row["id"], "frags": asset_details[row["id"]],
+        })
         row["videos"].sort(key=lambda x: by_id[x["v"]]["pub"], reverse=True)
         row["vc"] = len(row["videos"])
         row["cc"] = len({by_id[x["v"]]["ch"] for x in row["videos"]})
@@ -458,11 +525,26 @@ def build(check: bool = False) -> dict:
 
     stamp = datetime.now(timezone.utc).replace(microsecond=0).isoformat()
     videos.sort(key=lambda v: v["pub"], reverse=True)
+    # Tesis aceptadas: proyección derivada en la misma generación. Un fallo aquí deja la cobertura como
+    # desconocida («no disponible»), nunca bloquea la publicación de vídeos, análisis ni ranking.
+    try:
+        theses_block, theses_detail = theses.project(theses.load(), videos, all_claims, published_analyses, generation)
+        for tid, detail in theses_detail.items():
+            atomic_json(generation_root / "t" / f"{tid}.json", detail)
+    except Exception as exc:  # noqa: BLE001 — la exportación principal debe continuar
+        print(f"tesis no disponibles: {type(exc).__name__}: {exc}", file=sys.stderr)
+        theses_block = theses.unavailable(type(exc).__name__)
     index = {
         "generatedAt": stamp,
+        "generation": generation,
+        "detailBase": f"g/{generation}/v/",
+        "postureVersion": postures.VERSION,
         "period": {"from": videos[-1]["pub"] if videos else None, "to": videos[0]["pub"] if videos else None},
         "channels": [{"slug": c["slug"], "name": c["name"],
-                      "initials": {"nacho": "NI", "kmanu": "KM", "cava": "JC", "criptoniano": "CR", "healthy": "HP"}.get(c["slug"], c["slug"][:2].upper())}
+                      "channel_id": c.get("channel_id"),
+                      "image": identities.get("creators", {}).get(c["slug"]),
+                      "initials": c.get("initials") or {"nacho": "NI", "kmanu": "KM", "cava": "JC", "criptoniano": "CR", "healthy": "HP",
+                                   "battaglia": "DB", "planbtc": "PB"}.get(c["slug"], c["slug"][:2].upper())}
                      for c in json.loads((ROOT.parents[1] / "services/transcripts/channels.json").read_text())],
         "sections": SECTIONS,
         "videos": videos,
@@ -470,6 +552,7 @@ def build(check: bool = False) -> dict:
         "claims": all_claims,
         "contrasts": contrasts,
         "themes": themes,
+        "theses": theses_block,
         "method": {
             "mentions": "Coincidencias literales de un léxico revisado a mano sobre las transcripciones. Una mención acredita que se nombró, no que se analizó ni que sea cierto.",
             "contrasts": "Pares de afirmaciones de vídeos analizados con el mismo activo y el mismo horizonte; «cambio» si la postura extraída va en sentido contrario. Detectado por reglas: revisa los fragmentos.",
@@ -479,6 +562,14 @@ def build(check: bool = False) -> dict:
         },
     }
     atomic_json(OUT / "index.json", index)
+    from crtranscripts.observability import published
+    published(DATA_DIR, "urania", {v["id"]:v["analysis_sha256"] for v in videos if v.get("analysis_sha256")}, at=stamp)
+    # Readers pin a generation. Keep a week of complete sets, plus the newest
+    # three, so a rebuild cannot invalidate an already-open screen.
+    generations = sorted((p for p in (OUT / "g").iterdir() if p.is_dir() and re.fullmatch(r"[a-f0-9]{32}", p.name)), key=lambda p: p.stat().st_mtime, reverse=True)
+    for old in generations[3:]:
+        if old.name != generation and time.time() - old.stat().st_mtime > 7 * 86400:
+            shutil.rmtree(old)
     return index
 
 
@@ -486,6 +577,7 @@ def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--check", action="store_true")
     args = parser.parse_args()
+    FEATURED.update(load_editorial()[1])
     index = build(args.check)
     print(f"vídeos: {len(index['videos'])} · analizados: {sum(v['state'] == 'analizado' for v in index['videos'])}"
           f" · afirmaciones: {len(index['claims'])} · temas: {len(index['topics'])} · pares: {len(index['contrasts'])}")
@@ -494,6 +586,9 @@ def main() -> int:
         print(f"  {section}: " + ", ".join(f"{r['name']} {r['vc']}v/{r['n']}m" for r in rows[:8]))
     for p in index["contrasts"][:12]:
         print(f"  {p['kind']:<12} {p['asset']:<6} {p['hz']:<6} {p['a']['v']}:{p['a']['id']} ↔ {p['b']['v']}:{p['b']['id']} w={p['w']}")
+    cov = index["theses"].get("coverage") or {}
+    print(f"  tesis: {cov.get('theses', 0)} · membresías vigentes: {cov.get('accepted', 0)} · pendientes: {cov.get('pending', 0)}"
+          f" · excluidas: {cov.get('excluded', 0)} · errores: {cov.get('errors', 0)}" if cov else f"  tesis no disponibles: {index['theses'].get('error')}")
     for t in index["themes"]:
         print(f"  tema {t['id']:<14} vídeos={t['videoCount']:>2} analizados={t['analyzedCount']} afirmaciones={t['claimCount']:>2} creadores={t['creators']} contrastes={t['contrasts']}")
     return 0

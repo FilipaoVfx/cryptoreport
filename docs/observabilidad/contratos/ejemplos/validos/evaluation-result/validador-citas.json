@@ -1,0 +1,27 @@
+{
+  "evaluation_id": "6ae2f33e-93fa-4d81-8803-8f152791e388",
+  "name": "cr.validator.quotes",
+  "kind": "validator",
+  "evaluated_at": "2026-10-12T19:36:40Z",
+  "target": {
+    "kind": "analysis",
+    "id": "analysis:agFTCuv80XE",
+    "version": "d96416ddc27e8a77f9d1e9b80ce4c996e2c108b0fa90b561f3f1558613eac93a"
+  },
+  "evaluator": {
+    "kind": "code",
+    "id": "cranalysis.validate",
+    "version": "04a86b9-dirty"
+  },
+  "score": {
+    "value": 1,
+    "label": "pass",
+    "normalized": 1.0,
+    "scale": "pass_fail"
+  },
+  "mode": "gate",
+  "links": {
+    "trace_id": "01a1319794a07559aaecc5b3bf5625dd",
+    "span_id": "2fca9beed087fb73"
+  }
+}

@@ -1,0 +1,28 @@
+{
+  "descripcion": "Una acción denegada registra el motivo.",
+  "error_esperado": {
+    "keyword": "required",
+    "ruta": ""
+  },
+  "instancia": {
+    "event_id": "fb2bc436-69df-432c-b014-47aad4225c4e",
+    "at": "2026-10-14T16:31:00Z",
+    "actor": {
+      "kind": "user",
+      "id": "operador-1",
+      "display_name": "Cuenta de operación 1",
+      "roles": [
+        "operator"
+      ]
+    },
+    "action": "config.apply",
+    "target": {
+      "kind": "config_change",
+      "id": "1789c7d9-a34f-4f3f-9f34-a34b3e83967b"
+    },
+    "outcome": "denied",
+    "seq": 4,
+    "prev_hash": "5b085394ee67c17f3116348441dbb6a017fd2324bdda93640eb77e466aaf26dc",
+    "hash": "5bb9f3592741b6cc98f35e8bedd1b33b7b52739e64a71016b0bfdaafa2ced93f"
+  }
+}

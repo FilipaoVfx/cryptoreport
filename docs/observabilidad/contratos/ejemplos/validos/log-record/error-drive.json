@@ -1,0 +1,14 @@
+{
+  "ts": "2026-10-14T16:03:21.779Z",
+  "severity": "ERROR",
+  "service": "cr-bridge",
+  "message": "rclone lsjson: drive_quota (1)",
+  "event": "cr.drive.error",
+  "run_id": "01a13b27-1720-7eac-8aaf-1fb19af9d4cc",
+  "trace_id": "01a13b2717207eac8aaf1fb19af9d4cc",
+  "error_type": "drive_quota",
+  "attributes": {
+    "cr.drive.operation": "list",
+    "cr.drive.folder": "pendientes"
+  }
+}

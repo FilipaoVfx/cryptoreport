@@ -1,0 +1,68 @@
+{
+  "evaluation_id": "f080b724-b4ce-48bf-8e40-ab1de6243281",
+  "name": "cr.trajectory.in_order_match",
+  "kind": "trajectory",
+  "evaluated_at": "2026-11-05T06:30:00Z",
+  "target": {
+    "kind": "run",
+    "id": "da2b3317-7bf1-5d0a-bef3-68607fe8db73"
+  },
+  "evaluator": {
+    "kind": "code",
+    "id": "trajectory_metrics",
+    "version": "1.0.0"
+  },
+  "score": {
+    "value": 0,
+    "label": "fail",
+    "normalized": 0.0,
+    "scale": "pass_fail"
+  },
+  "explanation": "Falta revisar_contenido antes de subir_resultado en el segundo trabajo: la referencia no aparece en orden.",
+  "trajectory": {
+    "reference_id": "scheduled-analysis@1.3",
+    "expected": [
+      "registrar_inicio",
+      "leer_indice",
+      "verificar_contrato",
+      "seleccionar_trabajos",
+      "leer_trabajo",
+      "analizar",
+      "validar_con_codigo",
+      "revisar_contenido",
+      "subir_resultado",
+      "verificar_subida",
+      "leer_trabajo",
+      "analizar",
+      "validar_con_codigo",
+      "revisar_contenido",
+      "subir_resultado",
+      "verificar_subida",
+      "escribir_comprobante",
+      "verificar_comprobante"
+    ],
+    "observed": [
+      "registrar_inicio",
+      "leer_indice",
+      "verificar_contrato",
+      "seleccionar_trabajos",
+      "leer_trabajo",
+      "analizar",
+      "validar_con_codigo",
+      "revisar_contenido",
+      "subir_resultado",
+      "verificar_subida",
+      "leer_trabajo",
+      "analizar",
+      "validar_con_codigo",
+      "analizar",
+      "validar_con_codigo",
+      "subir_resultado",
+      "verificar_subida",
+      "escribir_comprobante",
+      "verificar_comprobante"
+    ],
+    "forbidden_observed": []
+  },
+  "mode": "monitor"
+}

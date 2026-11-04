@@ -1,0 +1,104 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Span normalizado",
+  "description": "Forma en que el panel intercambia y almacena un span (subconjunto aplanado de OTLP/JSON). La conformidad con el registro de nombres (nombre, atributos obligatorios, valores fijos) la comprueba validate_contracts.py; este esquema fija la estructura y prohíbe el contenido sin opt-in.",
+  "type": "object",
+  "required": ["trace_id", "span_id", "name", "kind", "start_time", "end_time", "status", "resource", "attributes"],
+  "additionalProperties": false,
+  "properties": {
+    "trace_id": {"$ref": "common.schema.json#/$defs/TraceId"},
+    "span_id": {"$ref": "common.schema.json#/$defs/SpanId"},
+    "parent_span_id": {"$ref": "common.schema.json#/$defs/SpanId"},
+    "name": {"type": "string", "minLength": 1, "maxLength": 120},
+    "kind": {"enum": ["INTERNAL", "CLIENT", "SERVER", "PRODUCER", "CONSUMER"]},
+    "start_time": {"$ref": "common.schema.json#/$defs/Timestamp"},
+    "end_time": {"$ref": "common.schema.json#/$defs/Timestamp"},
+    "status": {
+      "type": "object",
+      "required": ["code"],
+      "additionalProperties": false,
+      "properties": {
+        "code": {"enum": ["UNSET", "OK", "ERROR"]},
+        "message": {"type": "string", "maxLength": 300}
+      }
+    },
+    "resource": {
+      "type": "object",
+      "required": ["service.name", "service.version", "deployment.environment.name", "cr.code.digest", "cr.contract.version", "cr.telemetry.origin"],
+      "additionalProperties": false,
+      "properties": {
+        "service.name": {"$ref": "common.schema.json#/$defs/ServiceName"},
+        "service.version": {"type": "string", "minLength": 1, "maxLength": 64},
+        "service.instance.id": {"type": "string"},
+        "deployment.environment.name": {"enum": ["prod", "ci", "dev"]},
+        "host.name": {"type": "string"},
+        "cr.code.digest": {"$ref": "common.schema.json#/$defs/Sha256"},
+        "cr.contract.version": {"$ref": "common.schema.json#/$defs/SemVer"},
+        "cr.telemetry.origin": {"enum": ["native", "reconstructed"]},
+        "cr.reconstructed_by": {"$ref": "common.schema.json#/$defs/ServiceName"}
+      },
+      "allOf": [
+        {"if": {"properties": {"cr.telemetry.origin": {"const": "reconstructed"}}}, "then": {"required": ["cr.reconstructed_by"]}}
+      ]
+    },
+    "attributes": {
+      "type": "object",
+      "propertyNames": {"pattern": "^[a-z][a-z0-9_]*(\\.[a-z0-9_]+)+$"},
+      "additionalProperties": {
+        "anyOf": [
+          {"type": ["string", "number", "boolean"]},
+          {"type": "array", "items": {"type": ["string", "number", "boolean"]}, "maxItems": 64}
+        ]
+      }
+    },
+    "events": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["name", "time"],
+        "additionalProperties": false,
+        "properties": {
+          "name": {"type": "string", "minLength": 1},
+          "time": {"$ref": "common.schema.json#/$defs/Timestamp"},
+          "attributes": {"type": "object"}
+        }
+      }
+    },
+    "links": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["trace_id", "span_id"],
+        "additionalProperties": false,
+        "properties": {
+          "trace_id": {"$ref": "common.schema.json#/$defs/TraceId"},
+          "span_id": {"$ref": "common.schema.json#/$defs/SpanId"},
+          "attributes": {"type": "object"}
+        }
+      }
+    },
+    "content_capture": {"type": "boolean", "default": false, "description": "true solo si el servicio tenía activado el opt-in de captura de contenido."}
+  },
+  "allOf": [
+    {
+      "if": {"not": {"properties": {"content_capture": {"const": true}}, "required": ["content_capture"]}},
+      "then": {
+        "properties": {
+          "attributes": {
+            "not": {"anyOf": [
+              {"required": ["gen_ai.input.messages"]},
+              {"required": ["gen_ai.output.messages"]},
+              {"required": ["gen_ai.system_instructions"]},
+              {"required": ["gen_ai.tool.call.arguments"]},
+              {"required": ["gen_ai.tool.call.result"]}
+            ]}
+          }
+        }
+      }
+    },
+    {
+      "if": {"properties": {"status": {"properties": {"code": {"const": "ERROR"}}}}},
+      "then": {"properties": {"attributes": {"required": ["error.type"]}}}
+    }
+  ]
+}

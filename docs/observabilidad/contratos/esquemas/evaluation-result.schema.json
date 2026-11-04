@@ -1,0 +1,94 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Resultado de evaluación",
+  "description": "Validador determinista, trayectoria, autorater (LLM-as-a-Judge), evaluación humana, búsqueda o etiquetado. Se emite también como evento gen_ai.evaluation.result colgado del span evaluado (o correlacionado por gen_ai.response.id).",
+  "type": "object",
+  "required": ["evaluation_id", "name", "kind", "evaluated_at", "target", "evaluator", "score", "mode"],
+  "additionalProperties": false,
+  "properties": {
+    "evaluation_id": {"$ref": "common.schema.json#/$defs/Uuid"},
+    "name": {"$ref": "#/$defs/EvaluationName"},
+    "kind": {"enum": ["validator", "trajectory", "autorater", "human", "search", "tagging"]},
+    "evaluated_at": {"$ref": "common.schema.json#/$defs/Timestamp"},
+    "target": {"$ref": "common.schema.json#/$defs/TargetRef"},
+    "evaluator": {
+      "type": "object",
+      "required": ["kind", "id", "version"],
+      "additionalProperties": false,
+      "properties": {
+        "kind": {"enum": ["code", "llm", "human"]},
+        "id": {"type": "string", "minLength": 2, "maxLength": 80},
+        "version": {"type": "string", "minLength": 1, "maxLength": 64},
+        "provider": {"enum": ["openai", "anthropic", "chatgpt-scheduled"]},
+        "model": {"type": "string"},
+        "prompt_sha256": {"$ref": "common.schema.json#/$defs/Sha256"}
+      },
+      "allOf": [
+        {"if": {"properties": {"kind": {"const": "llm"}}}, "then": {"required": ["kind", "id", "version", "provider", "model", "prompt_sha256"]}}
+      ]
+    },
+    "score": {
+      "type": "object",
+      "required": ["value", "label", "normalized", "scale"],
+      "additionalProperties": false,
+      "properties": {
+        "value": {"type": ["number", "null"]},
+        "label": {"type": ["string", "null"], "maxLength": 40},
+        "normalized": {"type": ["number", "null"], "minimum": 0, "maximum": 1},
+        "scale": {"enum": ["pass_fail", "0-1", "1-5", "count", "kappa"]}
+      }
+    },
+    "explanation": {"type": "string", "maxLength": 2000},
+    "trajectory": {
+      "type": "object",
+      "required": ["reference_id", "expected", "observed", "forbidden_observed"],
+      "additionalProperties": false,
+      "properties": {
+        "reference_id": {"type": "string", "pattern": "^[a-z0-9_.-]+@[0-9]+(\\.[0-9]+)*$", "description": "Trayectoria de referencia y su versión, p. ej. scheduled-analysis@1.3."},
+        "expected": {"type": "array", "items": {"type": "string", "pattern": "^[a-z][a-z0-9_]*$"}, "minItems": 1},
+        "observed": {"type": "array", "items": {"type": "string", "pattern": "^[a-z][a-z0-9_]*$"}},
+        "forbidden_observed": {"type": "array", "items": {"type": "string", "pattern": "^[a-z][a-z0-9_]*$"}}
+      }
+    },
+    "rubric": {
+      "type": "object",
+      "required": ["id", "version"],
+      "additionalProperties": false,
+      "properties": {
+        "id": {"type": "string"},
+        "version": {"$ref": "common.schema.json#/$defs/SemVer"}
+      }
+    },
+    "mode": {"enum": ["monitor", "alert", "gate"]},
+    "links": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "trace_id": {"$ref": "common.schema.json#/$defs/TraceId"},
+        "span_id": {"$ref": "common.schema.json#/$defs/SpanId"},
+        "response_id": {"type": "string", "maxLength": 200}
+      }
+    },
+    "error_type": {"type": "string"}
+  },
+  "allOf": [
+    {"if": {"properties": {"kind": {"const": "trajectory"}}}, "then": {"required": ["trajectory"]}},
+    {"if": {"properties": {"kind": {"const": "autorater"}}}, "then": {"required": ["rubric"], "properties": {"evaluator": {"properties": {"kind": {"const": "llm"}}}}}},
+    {"if": {"properties": {"kind": {"const": "autorater"}, "mode": {"const": "gate"}}}, "then": false},
+    {"if": {"properties": {"kind": {"const": "validator"}}}, "then": {"properties": {"name": {"pattern": "^cr\\.validator\\."}, "score": {"properties": {"scale": {"const": "pass_fail"}}}}}},
+    {"if": {"properties": {"kind": {"const": "trajectory"}}}, "then": {"properties": {"name": {"pattern": "^cr\\.trajectory\\."}}}}
+  ],
+  "$defs": {
+    "EvaluationName": {
+      "description": "Valores de gen_ai.evaluation.name admitidos.",
+      "enum": [
+        "cr.validator.schema", "cr.validator.identity", "cr.validator.unique_ids", "cr.validator.references", "cr.validator.quotes", "cr.validator.sources", "cr.validator.probabilities", "cr.validator.history", "cr.validator.metadata", "cr.validator.ranges", "cr.validator.transcript_hash",
+        "cr.trajectory.precision", "cr.trajectory.recall", "cr.trajectory.in_order_match", "cr.trajectory.exact_match", "cr.trajectory.any_order_match", "cr.trajectory.forbidden_steps",
+        "cr.autorater.fidelity", "cr.autorater.coverage", "cr.autorater.no_fabrication", "cr.autorater.verification_calibration", "cr.autorater.insinuation", "cr.autorater.scenarios", "cr.autorater.overall", "cr.autorater.agreement_kappa",
+        "cr.human.approval",
+        "cr.search.recall_at_10", "cr.search.ndcg_at_10",
+        "cr.tagging.mention_precision", "cr.tagging.tone_kappa"
+      ]
+    }
+  }
+}

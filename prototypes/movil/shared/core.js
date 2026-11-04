@@ -99,27 +99,40 @@
     return res.json();
   }
 
+  function prepareIndex(idx) {
+    idx.channelsBySlug = Object.fromEntries(idx.channels.map((c) => [c.slug, c]));
+    idx.videosById = Object.fromEntries(idx.videos.map((v) => [v.id, v]));
+    idx.videos.forEach((v) => { v.channel = idx.channelsBySlug[v.ch]; v.cleanTitle = CR.cleanTitle(v.title); });
+    idx.topicsById = Object.fromEntries(idx.topics.map((t) => [t.id, t]));
+    idx.claimsByKey = Object.fromEntries(idx.claims.map((c) => [`${c.v}:${c.id}`, c]));
+    idx.themesById = Object.fromEntries(idx.themes.map((t) => [t.id, t]));
+    idx.analyzed = idx.videos.filter((v) => v.analysis);
+    CR.idx = idx;
+    return idx;
+  }
   CR.load = () => {
     if (!indexPromise) {
-      indexPromise = getJSON(DATA + 'index.json').then((idx) => {
-        idx.channelsBySlug = Object.fromEntries(idx.channels.map((c) => [c.slug, c]));
-        idx.videosById = Object.fromEntries(idx.videos.map((v) => [v.id, v]));
-        idx.videos.forEach((v) => { v.channel = idx.channelsBySlug[v.ch]; v.cleanTitle = CR.cleanTitle(v.title); });
-        idx.topicsById = Object.fromEntries(idx.topics.map((t) => [t.id, t]));
-        idx.claimsByKey = Object.fromEntries(idx.claims.map((c) => [`${c.v}:${c.id}`, c]));
-        idx.themesById = Object.fromEntries(idx.themes.map((t) => [t.id, t]));
-        idx.analyzed = idx.videos.filter((v) => v.analysis);
-        CR.idx = idx;
-        return idx;
-      });
+      indexPromise = getJSON(DATA + 'index.json').then(prepareIndex);
       indexPromise.catch(() => { indexPromise = null; });
     }
     return indexPromise;
   };
+  /** Comprueba si se publicó un índice nuevo. Devuelve el índice preparado si cambió, o null.
+      Con el servidor de propuestas la revalidación cuesta un 304 cuando no hay cambios. */
+  CR.checkForUpdate = async () => {
+    if (!CR.idx) return null;
+    const fresh = await getJSON(DATA + 'index.json');
+    if (fresh.generatedAt === CR.idx.generatedAt && fresh.generation === CR.idx.generation) return null;
+    videoCache.clear();
+    assetCache.clear();
+    const idx = prepareIndex(fresh);
+    indexPromise = Promise.resolve(idx);
+    return idx;
+  };
 
   CR.loadVideo = (id) => {
     if (!videoCache.has(id)) {
-      const p = getJSON(`${DATA}v/${encodeURIComponent(id)}.json`).then((doc) => {
+      const p = CR.load().then((idx) => getJSON(`${DATA}${idx.detailBase || 'v/'}${encodeURIComponent(id)}.json`)).then((doc) => {
         doc.segments = doc.segments.map(([start, dur, text, tone]) => ({ start, dur, text, s: tone || 0 }));
         doc.segWhy = doc.segWhy || {};
         const a = doc.analysis;
@@ -135,6 +148,23 @@
       videoCache.set(id, p);
     }
     return videoCache.get(id);
+  };
+
+  const assetCache = new Map();
+  CR.loadAsset = (id) => {
+    if (!assetCache.has(id)) {
+      const p = CR.load().then((idx) => {
+        const t = idx.topicsById[id];
+        if (!t || !t.detail || !/^g\/[a-f0-9]+\/a\/[a-z0-9]+\.json$/.test(t.detail)) throw new Error('Detalle no disponible');
+        return getJSON(DATA + t.detail).then((detail) => {
+          if (detail.generation !== idx.generation) throw new Error('Versión de datos distinta');
+          return detail;
+        });
+      });
+      p.catch(() => assetCache.delete(id));
+      assetCache.set(id, p);
+    }
+    return assetCache.get(id);
   };
 
   /** Afirmación lista para pintar: lo que dijo el creador, lo que interpreta el sistema y sus pruebas. */

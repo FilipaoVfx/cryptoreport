@@ -1,0 +1,21 @@
+{
+  "web_pid_before": "4105",
+  "web_pid_after": "4286",
+  "tunnel_pid_preserved": true,
+  "public_status": 200,
+  "web_enabled": "enabled",
+  "tunnel_enabled": "enabled",
+  "vps_boot": "2026-10-16 13:27:21",
+  "url": "https://software-johnston-seed-aimed.trycloudflare.com/b4-urania/#/diario",
+  "status": "DONE",
+  "symptom": "Previous quick-tunnel DNS no longer resolved; neither mobile origin port was listening",
+  "root_cause": "VPS restarted at 13:27:21 Bogotá. Mobile server and tunnel were nohup processes without boot-enabled services.",
+  "fix": [
+    "boot-enabled web service from main repo",
+    "independent boot-enabled tunnel service with Restart=always",
+    "tunnel.sh reuses the current systemd invocation URL"
+  ],
+  "verification": "Forced SIGKILL of web main process, observed new web PID with the same live tunnel PID and public HTTP200; 36 mobile Python tests passed.",
+  "limitation": "A quick tunnel can assign a different hostname when the tunnel process restarts; fixed domain requires a named tunnel.",
+  "regression_test": "prototypes/movil/test_runtime.py"
+}

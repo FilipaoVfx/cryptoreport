@@ -1,0 +1,32 @@
+{
+  "report_id": "bd7cb9a7-0c5e-48ee-94d2-658187ade0a7",
+  "subject": {
+    "asset_id": "transcript:Xk2pQ9r4ZtA",
+    "version": "debf62dee6d8b106afcdbb2f04529107556423f013613626cd450cd8e5855361"
+  },
+  "stage": "transcript",
+  "evaluated_at": "2026-10-13T08:15:22Z",
+  "gate": {
+    "id": "crtranscripts.quality.assess",
+    "code_version": "04a86b9-dirty"
+  },
+  "verdict": "invalid",
+  "checks": [
+    {
+      "threshold_id": "DQ-T-05",
+      "status": "fail",
+      "observed": 0.62,
+      "reason_code": "posible_corte_final",
+      "message": "Termina en el 62 % de la duración con 410 s sin cubrir."
+    },
+    {
+      "threshold_id": "DQ-T-01",
+      "status": "pass"
+    }
+  ],
+  "metrics": {
+    "duration_s": 1080.0,
+    "segment_count": 141,
+    "coverage": 0.62
+  }
+}

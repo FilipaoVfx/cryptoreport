@@ -1,0 +1,12 @@
+{
+  "descripcion": "top_k admite como máximo 50.",
+  "error_esperado": {
+    "keyword": "maximum",
+    "ruta": "/top_k"
+  },
+  "instancia": {
+    "query": "bitcoin",
+    "mode": "lexical",
+    "top_k": 100
+  }
+}

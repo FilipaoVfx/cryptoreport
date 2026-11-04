@@ -1,0 +1,21 @@
+{
+  "observationCapture": "005",
+  "observationArgv": [
+    "env",
+    "PYTHONPATH=/root/cryptoreport/services/bridge:/root/cryptoreport/services/analysis:/root/cryptoreport/services/transcripts",
+    "/root/cryptoreport/services/bridge/.venv/bin/python",
+    "-m",
+    "unittest",
+    "discover",
+    "-s",
+    "/root/cryptoreport/services/bridge/tests"
+  ],
+  "observed": "",
+  "hypothesis": "Bridge regression passed; verify the unchanged frontend filters, expiry and narrative linkage contracts against the expanded Feed source catalog.",
+  "nextCapture": "006",
+  "nextArgv": [
+    "/bin/bash",
+    "-c",
+    "node --test prototypes/movil/b4-urania/*.test.cjs"
+  ]
+}

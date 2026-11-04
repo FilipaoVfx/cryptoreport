@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#05060b">
+<meta name="robots" content="noindex">
+<title>Feed · A Mosaico</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600;700;800&display=swap">
+<link rel="stylesheet" href="../base.css">
+<style>
+  :root { --bg: #05060b; --accent: #c6ff4a; --muted: #9ea3bd; --glass: rgba(255,255,255,.06); --glass-hi: rgba(255,255,255,.15); --sheet: rgba(10,14,22,.75); }
+  .aurora i:nth-child(1) { background: #0fb5a6; left: -10%; top: -5%; }
+  .aurora i:nth-child(2) { background: #6a3df0; right: -15%; top: 30%; }
+  .aurora i:nth-child(3) { background: #9ad42a; left: 10%; bottom: -20%; opacity: .3; }
+
+  .bar { position: sticky; top: 0; z-index: 20; margin: 0 calc(var(--g) * -1); padding: 10px var(--g); border-radius: 0 0 24px 24px; border-top: 0; }
+  .bar-row { display: flex; align-items: center; gap: 10px; }
+  .bar h1 { flex: 1; margin: 0; font-size: 22px; font-weight: 800; letter-spacing: -.03em; }
+  .bar h1 em { font-style: normal; color: var(--accent); }
+  .seg { display: grid; grid-auto-flow: column; padding: 3px; border-radius: 999px; background: rgba(0,0,0,.25); border: 1px solid var(--glass-line); }
+  .seg button { min-height: 34px; padding: 0 12px; border: 0; border-radius: 999px; background: none; font-size: 12px; font-weight: 700; color: var(--muted); }
+  .seg button[aria-pressed="true"] { background: rgba(255,255,255,.9); color: #05060b; }
+  .search { display: flex; align-items: center; gap: 8px; margin-top: 10px; padding: 0 12px; min-height: 42px; border-radius: 14px; background: rgba(0,0,0,.22); border: 1px solid var(--glass-line); }
+  .search input { flex: 1; min-width: 0; min-height: 40px; border: 0; background: none; color: var(--ink); font: 500 16px var(--sans); outline: none; }
+
+  .rings { display: flex; gap: 14px; margin: 14px calc(var(--g) * -1) 6px; padding: 4px var(--g); overflow-x: auto; scrollbar-width: none; }
+  .rings::-webkit-scrollbar { display: none; }
+  .ring { display: grid; justify-items: center; gap: 5px; width: 66px; flex: 0 0 auto; border: 0; background: none; padding: 0; font-size: 11px; color: var(--muted); }
+  .ring .av { width: 58px; height: 58px; font-size: 16px; box-shadow: 0 0 0 2px var(--bg), 0 0 0 4px color-mix(in srgb, var(--ac) 55%, transparent); }
+  .ring[aria-pressed="true"] { color: var(--ink); font-weight: 700; }
+  .ring[aria-pressed="true"] .av { box-shadow: 0 0 0 2px var(--bg), 0 0 0 4px var(--ac), 0 0 22px var(--ac); }
+  .ring span.n { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 66px; }
+
+  .masonry { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 10px; align-items: start; margin-top: 8px; }
+  .col { display: grid; gap: 10px; min-width: 0; }
+  .tile { display: block; width: 100%; text-align: left; padding: 12px; border-radius: 20px; animation: rise .5s cubic-bezier(.2,.8,.2,1) both; animation-delay: var(--d, 0ms); }
+  .tile:active { transform: scale(.98); }
+  .t-h { display: flex; align-items: center; gap: 7px; font-size: 11px; color: var(--muted); }
+  .t-h b { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--ink); font-size: 12px; }
+  .t-x { margin-top: 8px; font-size: 14px; line-height: 1.45; white-space: pre-line; overflow-wrap: anywhere; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: var(--clamp, 9); overflow: hidden; }
+  .t-x a { color: var(--accent); pointer-events: none; }
+  .tile.quote .t-x { font-size: 21px; line-height: 1.2; font-weight: 700; letter-spacing: -.02em; }
+  .tile.news { background: linear-gradient(150deg, color-mix(in srgb, var(--ac) 30%, transparent), rgba(255,255,255,.05) 60%); }
+  .kick { display: inline-block; margin-top: 8px; padding: 2px 8px; border-radius: 6px; background: var(--ac); color: #05060b; font-size: 10px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; }
+  .chips { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 10px; }
+  .chip { padding: 3px 8px; border-radius: 999px; background: rgba(255,255,255,.12); border: 1px solid var(--glass-line); font-size: 11px; font-weight: 700; }
+  .divider { grid-column: 1 / -1; margin: 18px 2px 2px; font-size: 12px; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); }
+  .more { display: block; margin: 20px auto; min-height: 44px; padding: 0 20px; border-radius: 999px; }
+  .empty { margin-top: 40px; text-align: center; color: var(--muted); }
+  @keyframes rise { from { opacity: 0; transform: translateY(18px) scale(.97); } }
+  @media (prefers-reduced-motion: reduce) { .tile { animation: none; } }
+</style>
+</head>
+<body>
+<div class="aurora" aria-hidden="true"><i></i><i></i><i></i></div>
+<main class="wrap">
+  <header class="bar glass">
+    <div class="bar-row"><h1>Pulso <em>X</em></h1>
+      <div class="seg" role="group" aria-label="Contenido"><button type="button" data-q="rel" aria-pressed="true">Relevantes</button><button type="button" data-q="all" aria-pressed="false">Todo</button></div></div>
+    <label class="search"><span aria-hidden="true">⌕</span><span class="sr">Buscar</span><input id="q" type="search" placeholder="Buscar $BTC, ETF, Coldcard…" autocomplete="off"></label>
+  </header>
+  <nav class="rings" id="rings" aria-label="Cuentas"></nav>
+  <div id="feed" aria-live="polite"><p class="empty">Cargando…</p></div>
+  <button class="more glass" id="more" type="button" hidden>Cargar más</button>
+</main>
+<script src="../../b4-urania/feed.js"></script>
+<script src="../common.js"></script>
+<script>
+(async () => {
+  const { esc, rel, day, avatar, text } = FL;
+  let st;
+  try { st = await FL.load(); } catch (e) { document.getElementById('feed').innerHTML = '<p class="empty">No pudimos cargar el Feed.</p>'; return; }
+  const f = { pool: 'rel', account: null, q: '' };
+  let limit = 30;
+  const visible = () => (f.pool === 'rel' ? st.relevant : st.all).filter((p) => (!f.account || p.author_handle === f.account) &&
+    (!f.q || (p.text + ' ' + (p.quality?.assets || []).join(' ')).toLowerCase().includes(f.q.toLowerCase())));
+  const rings = () => {
+    document.getElementById('rings').innerHTML = [...st.accounts.values()].map((a) => `<button type="button" class="ring" data-acc="${esc(a.handle)}" aria-pressed="${f.account === a.handle}">${avatar(a)}<span class="n">${esc((a.name || a.handle).split(' ')[0])}</span></button>`).join('');
+  };
+  // Altura estimada para repartir en la columna más corta sin romper el orden temporal.
+  const weight = (p) => 70 + Math.min(p.text.length, 420) * 0.55 + (p.quality?.assets?.length ? 30 : 0);
+  const tile = (p, i) => {
+    const a = st.accounts.get(p.author_handle), news = /noticia/i.test(a.label || ''), short = p.text.length < 80 && !/https?:/.test(p.text);
+    return `<article role="button" tabindex="0" class="tile glass${news ? ' news' : ''}${short ? ' quote' : ''}" data-id="${esc(p.id)}" style="--ac:${a.tone};--d:${(i % 12) * 35}ms;--clamp:${p.text.length > 300 ? 11 : 8}">
+      <span class="t-h">${avatar(a)}<b>${esc(a.name || a.handle)}</b>${esc(rel(p.published_at))}</span>${news ? '<span class="kick">Noticia</span>' : ''}
+      <span class="t-x">${text(p)}</span>${(p.quality?.assets || []).length ? `<span class="chips">${p.quality.assets.slice(0, 3).map((s) => `<span class="chip">$${esc(s)}</span>`).join('')}</span>` : ''}</article>`;
+  };
+  const paint = () => {
+    const posts = visible(), out = [];
+    let cur = null, cols = null, h = [0, 0], i = 0;
+    const flush = () => { if (cols) out.push(`<div class="masonry"><div class="col">${cols[0].join('')}</div><div class="col">${cols[1].join('')}</div></div>`); };
+    for (const p of posts.slice(0, limit)) {
+      const d = day(p.published_at);
+      if (d !== cur) { flush(); out.push(`<p class="divider">${esc(d)}</p>`); cur = d; cols = [[], []]; h = [0, 0]; }
+      const k = h[0] <= h[1] ? 0 : 1; cols[k].push(tile(p, i++)); h[k] += weight(p);
+    }
+    flush();
+    document.getElementById('feed').innerHTML = posts.length ? out.join('') : '<p class="empty">Nada con estos filtros.</p>';
+    document.getElementById('more').hidden = posts.length <= limit;
+  };
+  document.querySelector('.seg').addEventListener('click', (e) => { const b = e.target.closest('[data-q]'); if (!b) return; f.pool = b.dataset.q; document.querySelectorAll('.seg button').forEach((x) => x.setAttribute('aria-pressed', x === b)); limit = 30; paint(); });
+  document.getElementById('rings').addEventListener('click', (e) => { const b = e.target.closest('[data-acc]'); if (!b) return; f.account = f.account === b.dataset.acc ? null : b.dataset.acc; rings(); limit = 30; paint(); });
+  let t; document.getElementById('q').addEventListener('input', (e) => { clearTimeout(t); t = setTimeout(() => { f.q = e.target.value.trim(); limit = 30; paint(); }, 160); });
+  document.getElementById('feed').addEventListener('click', (e) => { const b = e.target.closest('[data-id]'); if (!b) return; const p = st.all.find((x) => x.id === b.dataset.id); FL.sheet(p, st.accounts.get(p.author_handle)); });
+  document.getElementById('feed').addEventListener('keydown', (e) => { if ((e.key === 'Enter' || e.key === ' ') && e.target.dataset.id) { e.preventDefault(); e.target.click(); } });
+  const more = document.getElementById('more');
+  more.addEventListener('click', () => { limit += 30; paint(); });
+  new IntersectionObserver((en) => { if (en[0].isIntersecting && !more.hidden) { limit += 30; paint(); } }, { rootMargin: '500px' }).observe(more);
+  rings(); paint();
+})();
+</script>
+</body>
+</html>
