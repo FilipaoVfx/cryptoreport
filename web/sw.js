@@ -3,6 +3,7 @@ const SHELL = 'cryptoreport-shell-' + VERSION;
 const DATA = 'cryptoreport-data-v1';
 const MAX_ENTRIES = 64, MAX_TOTAL_BYTES = 32 * 1024 * 1024, MAX_ITEM_BYTES = 4_000_000;
 const ASSETS = new Set(PRECACHE);
+const dataReads = new Map();
 
 self.addEventListener('install', event => {
   event.waitUntil(caches.open(SHELL).then(cache => cache.addAll(PRECACHE)));
@@ -101,10 +102,20 @@ async function cachedData(request, clientId) {
   return response || new Response(JSON.stringify({ error: 'not_available_offline' }), { status: 503, headers: { 'Content-Type': 'application/json' } });
 }
 
+function orderedData(request, clientId) {
+  // Serialize reads of the same document, including its cache write and status.
+  // An older refresh must finish before a newer fallback can use that document.
+  const key = new URL(request.url).pathname;
+  const pending = (dataReads.get(key) || Promise.resolve()).catch(() => {}).then(() => cachedData(request, clientId));
+  dataReads.set(key, pending);
+  pending.finally(() => { if (dataReads.get(key) === pending) dataReads.delete(key); }).catch(() => {});
+  return pending;
+}
+
 self.addEventListener('fetch', event => {
   const request = event.request, url = new URL(request.url);
   if (request.method !== 'GET' || url.origin !== self.location.origin) return;
-  if (url.pathname.startsWith('/data/')) { event.respondWith(cachedData(request, event.clientId)); return; }
+  if (url.pathname.startsWith('/data/')) { event.respondWith(orderedData(request, event.clientId)); return; }
   if (request.mode === 'navigate' && url.pathname.startsWith('/b4-urania')) {
     event.respondWith(caches.open(SHELL).then(async cache => await cache.match('/b4-urania/') || fetch(request)));
     return;

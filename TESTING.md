@@ -2,7 +2,7 @@
 
 ## Web y adaptador de Vercel
 
-`npm ci` instala Playwright como dependencia de desarrollo; la app publicada no necesita un framework ni librerías de ejecución. `npm test` usa `node:test` y conserva las pruebas existentes de edición, feed, radar y tesis. También prueba la salida reproducible del build y la función HTTP de datos, incluidos límites, rutas rechazadas y respuestas inválidas. Los orígenes de prueba son servidores locales efímeros con datos sintéticos.
+`npm ci` instala Playwright como dependencia de desarrollo; la app publicada no necesita un framework ni librerías de ejecución. `npm test` usa `node:test` y conserva las pruebas existentes de edición, feed, radar y tesis. También prueba la salida reproducible del build, la función HTTP de datos y las actualizaciones simultáneas del mismo documento en el service worker, incluidos límites, rutas rechazadas y respuestas inválidas. Los orígenes de prueba son servidores locales efímeros con datos sintéticos.
 
 `npm run build` escribe exclusivamente `dist`, que se puede regenerar. `npm run test:browser` requiere `npx playwright install chromium`. Arranca sus propios servidores locales efímeros, abre contextos aislados en 390, 360 y 1280 píxeles y los cierra al terminar. Comprueba manifiesto, criterios de instalación de Chromium, rutas, caché, recarga sin conexión, coherencia entre generaciones del índice y videos visitados, recuperación del origen y activación de versiones con consentimiento del lector. Las capturas se guardan en `CAPTURE_DIR` o `/tmp/cryptoreport-pwa-check`.
 
