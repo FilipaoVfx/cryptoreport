@@ -1,0 +1,12 @@
+.git
+.gstack
+.env*
+node_modules
+dist
+docs
+services
+prototypes/movil/data
+prototypes/movil/feed-lab
+prototypes/movil/**/shots
+**/__pycache__
+**/*.pyc

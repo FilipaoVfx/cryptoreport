@@ -1,0 +1,17 @@
+{
+  "id": "/b4-urania/",
+  "name": "CryptoReport · Urania",
+  "short_name": "CryptoReport",
+  "description": "Videos, narrativas y evidencia de los creadores que sigues.",
+  "lang": "es",
+  "start_url": "/b4-urania/#/diario",
+  "scope": "/b4-urania/",
+  "display": "standalone",
+  "background_color": "#0b0717",
+  "theme_color": "#0b0717",
+  "icons": [
+    { "src": "/icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "/icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "/icons/maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

@@ -1726,7 +1726,7 @@
       case 'search-tx': searchTx(); break;
       case 'demo': CR.toast('Ejemplo de estado: en el producto llevaría a esta acción.'); break;
       case 'reload': location.reload(); break;
-      case 'retry-video': screen = null; route(CR.parseHash()); break;
+      case 'retry-video': location.reload(); break;
       default: break;
     }
   });

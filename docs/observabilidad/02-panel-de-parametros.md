@@ -162,7 +162,7 @@ Generado desde [`registros/parametros.json`](contratos/registros/parametros.json
 | Parámetro | Vigente | Sobre del panel | Techo del host | Aplicación | Riesgo | Rol | Estado | Origen |
 |---|---|---|---|---|---|---|---|---|
 | `providers.scrapertech.monthly_quota` | 1 000 peticiones | 100–1 000 | 1 000 | `next_cycle` | `high` | `admin` + 2.ª persona | `active` | `CR_SCRAPERTECH_MONTHLY_QUOTA` |
-| `providers.supadata.monthly_credits` | 20 créditos | 0–20 | 20 | `next_cycle` | `high` | `admin` + 2.ª persona | `active` | `CR_SUPADATA_MONTHLY_CREDITS` |
+| `providers.supadata.monthly_credits` | 100 créditos | 0–100 | 100 | `next_cycle` | `high` | `admin` + 2.ª persona | `active` | `CR_SUPADATA_MONTHLY_CREDITS` |
 | `providers.supadata.max_generate_attempts` | 2 | 0–2 | — | `next_cycle` | `high` | `admin` + 2.ª persona | `planned` | `MAX_GENERATE_ATTEMPTS` |
 | `budget.model_api_monthly_usd` | 0 USD | 0–50 | 0 | `immediate` | `critical` | `admin` + 2.ª persona | `planned` | `config.py` |
 
@@ -287,7 +287,7 @@ Su salud sale de `kv health:<proveedor>`, de la tabla `attempts` y de `cr.provid
 | `youtube_pages` | `discovery_source` | `active` | `channel_pages`, `shorts_probe` | gratis | timeout 25 s | runs.feeds (marca «vía páginas del canal») | Fechas relativas aproximadas; hay que pedir hl=es para no recibir títulos traducidos. |
 | `scrapertech` | `transcript_provider` | `active` | `captions`, `metadata` | por petición (`scrapertech_requests`) | timeout 75 s, 2 intentos, cuota 1 000 al mes | kv health:scrapertech y tabla attempts | Errores dentro de HTTP 200; ≈30 % de data=null que se resuelve al repetir. video.php omite la duración justo tras publicar; la cubre repair_durations. |
 | `ytdlp` | `transcript_provider` | `degraded_known` | `captions` | gratis | timeout 120 s | tabla attempts (outcome blocked) | Bot-check de YouTube para la IP del VPS: 9 de 9 intentos blocked. Funcionaría con CR_YTDLP_PROXY (túnel por tablet) o cookies. |
-| `supadata` | `transcript_provider` | `active` | `captions`, `generate` | por crédito (`supadata_credits`) | timeout 150 s, cuota 20 al mes | kv health:supadata, attempts (reserved) y /me | generate transcribe la pista doblada al árabe: solo se permite con una única pista de audio. |
+| `supadata` | `transcript_provider` | `active` | `captions`, `generate` | por crédito (`supadata_credits`) | timeout 150 s, cuota 100 al mes | kv health:supadata, attempts (reserved) y /me | generate transcribe la pista doblada al árabe: solo se permite con una única pista de audio. |
 | `rclone_drive` | `transport` | `active` | `list`, `read`, `write` | gratis | timeout 90 s, 2 intentos | kv last_errors del puente (drive_quota, drive_auth, drive_transport) | El cliente OAuth compartido agotó su cuota el 13 y el 14 de octubre (drive_quota). |
 | `telegram` | `notifier` | `disabled` | `notify` | gratis | — | líneas [aviso] del journal | Sin bot ni chat elegidos: los avisos solo llegan al journal. |
 | `openai` | `model_provider` | `disabled` | `inference`, `analysis` | por token (`model_api_usd`) | timeout 900 s, 3 intentos | meta.validation y meta.usage de cada análisis | Proveedor por defecto, pero openai no figura en requirements.txt (H-06). Guarda G-01 cerrada: desactivado por configuración. |
@@ -334,7 +334,7 @@ Cada guarda declara dónde se aplica, cómo falla y qué prueba la demuestra. La
 | Video | Intentos | 8, y después `failed` | `extractor.max_attempts` |
 | Video sin pista | Abandono | 72 h, y después `no_captions` o `unavailable` | `extractor.give_up_hours` |
 | Proveedor | Cooldown | 30 min tras `auth`, `quota` o 3 errores seguidos | `extractor.provider_cooldown_s` |
-| Supadata | Gasto | 2 consultas nativas por video y 20 créditos al mes | `providers.supadata.monthly_credits` |
+| Supadata | Gasto | 2 consultas nativas por video y 100 créditos al mes | `providers.supadata.monthly_credits` |
 | Generación de pago | Intentos | 2 por video (desactivada) | `providers.supadata.max_generate_attempts` |
 | Recuperación | Por ciclo y por versión | 2 por ciclo, 2 por versión y 6 h de espera | `extractor.recovery_*` |
 | rclone | Reintentos | 1 (90 s por proceso); `drive_quota` o `drive_auth` detienen las subidas | `bridge.drive_retries` |

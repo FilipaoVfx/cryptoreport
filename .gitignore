@@ -1,2 +1,22 @@
 # Descargas de clientes OAuth de Google: configurar fuera del repositorio.
 client_secret_*.json
+
+# Entorno local, credenciales y artefactos generados.
+.env
+.env.*
+!.env.example
+**/.venv/
+**/venv/
+**/__pycache__/
+*.py[cod]
+*.sqlite
+*.sqlite-*
+*.sqlite3
+*.db
+node_modules/
+dist/
+.vercel/
+.gstack/
+playwright-report/
+test-results/
+coverage/

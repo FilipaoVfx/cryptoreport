@@ -1,0 +1,16 @@
+{
+  "name": "cryptoreport-urania",
+  "version": "0.1.0",
+  "private": true,
+  "type": "commonjs",
+  "engines": { "node": "24.x" },
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "dev": "node scripts/dev.mjs",
+    "test": "node --test tests/*.test.mjs prototypes/movil/b4-urania/*.test.cjs",
+    "test:browser": "node tests/pwa.browser.cjs",
+    "test:offline": "python3 scripts/check_offline.py",
+    "check": "npm test && npm run build"
+  },
+  "devDependencies": { "playwright": "1.62.1" }
+}

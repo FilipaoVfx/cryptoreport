@@ -118,7 +118,7 @@
      "description": "Créditos usados / límite mensual del perfil sin pago.",
      "signal": "metric:cr.budget.used{cr.budget.name=supadata_credits}", "aggregation": "ratio", "levels": {"warning": {"op": "gte", "value": 0.8}, "critical": {"op": "gte", "value": 1.0}},
      "unit": "1", "window": "calendar_month", "mode": "alert",
-     "source": {"kind": "code", "path": "services/transcripts/ops/cryptoreport-transcripts-no-paid.conf", "anchor": "CR_SUPADATA_MONTHLY_CREDITS=20", "note": "Al 100 % el código deja de llamar a Supadata."},
+     "source": {"kind": "code", "path": "services/transcripts/ops/cryptoreport-transcripts-no-paid.conf", "anchor": "CR_SUPADATA_MONTHLY_CREDITS=100", "note": "Al 100 % el código deja de llamar a Supadata."},
      "baseline": {"value": 0.2, "note": "4 de 20 créditos en octubre."},
      "alert": {"runbook": "RB-08", "intervention": "freeze_paid_providers"}},
     {"id": "CO-02", "domain": "cost", "category": "budget", "name": "Peticiones de Scraper.Tech del mes",

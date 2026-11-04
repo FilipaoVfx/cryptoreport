@@ -26,7 +26,7 @@
      "change": {"min_role": "admin", "approval": "second_person", "requires": ["Cambio de código revisado"]},
      "thresholds": ["CO-01"]},
     {"id": "G-05", "title": "Tope mensual de Supadata", "description": "Al agotar CR_SUPADATA_MONTHLY_CREDITS deja de llamarse a Supadata (nativo y generate).",
-     "enforcement": {"point": "systemd", "path": "services/transcripts/ops/cryptoreport-transcripts-no-paid.conf", "anchor": "CR_SUPADATA_MONTHLY_CREDITS=20"},
+     "enforcement": {"point": "systemd", "path": "services/transcripts/ops/cryptoreport-transcripts-no-paid.conf", "anchor": "CR_SUPADATA_MONTHLY_CREDITS=100"},
      "mode": "enforce", "failure_mode": "fail_closed",
      "tests": ["services/transcripts/tests/test_supadata.py::test_monthly_cap_stops_native_calls"],
      "change": {"min_role": "admin", "approval": "second_person", "requires": ["Subir el techo en el host; el panel solo puede bajarlo"]},

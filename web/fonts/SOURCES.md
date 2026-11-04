@@ -1,0 +1,1 @@
+Urbanist and Literata: Google Fonts, SIL Open Font License. Latin WOFF2 subsets downloaded from fonts.googleapis.com / fonts.gstatic.com. License notices included. Files are versioned; builds do not download fonts.

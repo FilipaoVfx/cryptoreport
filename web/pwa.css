@@ -1,0 +1,7 @@
+.pwa-install{background:none;border:0;font:inherit;cursor:pointer;min-width:44px;min-height:44px;color:inherit}
+.pwa-install:not([hidden]){display:inline-flex;align-items:center;justify-content:center}
+.pwa-install[hidden],.pwa-status[hidden],.pwa-status button[hidden]{display:none!important}
+.pwa-status{position:fixed;z-index:1000;left:50%;transform:translateX(-50%);bottom:calc(76px + env(safe-area-inset-bottom,0px));width:max-content;max-width:calc(100vw - 24px);display:flex;gap:12px;align-items:center;padding:10px 14px;background:#201631;color:#f7efff;border:1px solid #8b74b4;border-radius:12px;font:13px/1.5 Urbanist,system-ui,sans-serif;box-shadow:0 8px 24px #0004}
+.pwa-status button{border:1px solid #bfa9e6;border-radius:7px;min-height:44px;min-width:90px;padding:5px 12px;background:#c8b2eb;color:#1d132b;font:600 13px Urbanist,system-ui,sans-serif;cursor:pointer}
+.pwa-status button:focus-visible,.pwa-install:focus-visible{outline:2px solid #dbc6ff;outline-offset:3px}
+@media(display-mode:standalone){.pwa-install{display:none!important}}

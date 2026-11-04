@@ -27,7 +27,7 @@
      "known_issues": ["Bot-check de YouTube para la IP del VPS: 9 de 9 intentos blocked. Funcionaría con CR_YTDLP_PROXY (túnel por tablet) o cookies."]},
     {"id": "supadata", "kind": "transcript_provider", "title": "Supadata (modo nativo)", "lifecycle": "active",
      "capabilities": ["captions", "generate"], "paid": true, "cost": {"model": "per_credit", "budget": "supadata_credits", "note": "1 crédito por consulta nativa, también en 206; generate cuesta 2 × minutos y está desactivado."},
-     "limits": {"timeout_s": 150, "monthly_quota": 20, "parameters": ["providers.supadata.monthly_credits", "providers.supadata.generate", "providers.supadata.generate_after_hours", "providers.supadata.max_generate_attempts"]},
+     "limits": {"timeout_s": 150, "monthly_quota": 100, "parameters": ["providers.supadata.monthly_credits", "providers.supadata.generate", "providers.supadata.generate_after_hours", "providers.supadata.max_generate_attempts"]},
      "health_source": "kv health:supadata, attempts (reserved) y /me", "endpoint": {"server_address": "api.supadata.ai", "method": "GET"},
      "secrets": ["SUPADATA_API_KEY"], "code": {"path": "services/transcripts/crtranscripts/providers.py", "anchor": "class Supadata:"}, "services": ["cr-extractor"],
      "known_issues": ["generate transcribe la pista doblada al árabe: solo se permite con una única pista de audio."]},

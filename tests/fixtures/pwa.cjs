@@ -1,0 +1,8 @@
+// Synthetic publication with the same serialized contract as build_data.py.
+module.exports = function fixture() {
+  const now = new Date().toISOString(), id = 'fixturevid1', generation = 'a'.repeat(32);
+  const video = { id, ch: 'fixture', title: 'Video de prueba: evidencia y lectura sin conexión', pub: now, short: false, dur: 60, segs: 2, cov: 1, prov: 'fixture', fetched: now, state: 'ok', analysis: null, analysis_sha256: null, featured: [], topics: [], peaks: [], sections: ['bitcoin'], tone: { label: 'neutra', bull: 0, bear: 0, share: null, str: 0, wave: [0, 0], title: { pol: 'neutra', str: 0, why: [] } } };
+  const index = { generatedAt: now, generation, detailBase: `g/${generation}/v/`, postureVersion: 1, period: { from: now, to: now }, channels: [{ slug: 'fixture', name: 'Creador de prueba', initials: 'CP' }], sections: { bitcoin: 'Bitcoin', altcoins: 'Altcoins', macro: 'Macro', bolsa: 'Bolsa' }, videos: [video], topics: [], claims: [], contrasts: [], themes: [], method: {} };
+  const doc = { id, segments: [[0, 30, 'Primer fragmento de prueba: las palabras conservan su video de origen y pueden leerse sin conexión después de abrirlas.', 0], [30, 30, 'Segundo fragmento de prueba: navegar al diario conserva la evidencia guardada, sin llamar a proveedores ni generar análisis.', 0]], segWhy: {}, aTone: null, analysis: null, analysis_sha256: null, meta: null, claims: [] };
+  return { '/data/index.json': index, [`/data/g/${generation}/v/${id}.json`]: doc, '/data/social-feed.json': { version: 1, status: 'ok', posts: [], accounts: [] }, '/data/social-connections.json': { status: 'pending_schedule', connections: [] }, '/data/pipeline-status.json': {} };
+};
