@@ -4,9 +4,7 @@
 node_modules
 dist
 docs
-services/*
-!services/data
-!services/data/**
+services
 prototypes/movil/data
 prototypes/movil/feed-lab
 prototypes/movil/**/shots
