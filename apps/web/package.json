@@ -1,0 +1,13 @@
+{
+  "name": "cryptoreport-web",
+  "version": "0.1.0",
+  "private": true,
+  "type": "commonjs",
+  "engines": {
+    "node": "24.x"
+  },
+  "scripts": {
+    "build": "node ../../scripts/build.mjs --service",
+    "dev": "node ../../scripts/dev.mjs --service"
+  }
+}
