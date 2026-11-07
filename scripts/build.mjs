@@ -4,7 +4,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
-const out = path.join(root, 'dist');
+const out = path.join(root, process.argv.includes('--service') ? 'apps/web/dist' : 'dist');
 const source = path.join(root, 'prototypes/movil');
 // Only this owned generated directory is replaced. Never copy docs, runtime data or services.
 await rm(out, { recursive: true, force: true });
@@ -48,4 +48,4 @@ const version = hash.digest('hex').slice(0, 16);
 const urls = assets.map(file => '/' + path.relative(out, file).split(path.sep).join('/'));
 urls.push('/b4-urania/');
 await writeFile(path.join(out, 'sw.js'), 'const VERSION = ' + JSON.stringify(version) + ';\nconst PRECACHE = ' + JSON.stringify(urls) + ';\n' + swSource);
-console.log(JSON.stringify({ build: 'ok', output: 'dist', version, precacheAssets: urls.length }));
+console.log(JSON.stringify({ build: 'ok', output: path.relative(root, out), version, precacheAssets: urls.length }));

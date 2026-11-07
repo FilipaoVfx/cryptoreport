@@ -12,24 +12,33 @@ function reply(res, status, value, headers = {}) {
   res.end(value == null ? undefined : typeof value === 'string' || Buffer.isBuffer(value) ? value : JSON.stringify(value));
 }
 
-module.exports = async function handler(req, res) {
+module.exports = function createReader({ originEnv = 'CR_DATA_ORIGIN', authEnv = 'CR_DATA_AUTHORIZATION', internal = false } = {}) {
+  return async function handler(req, res) {
   if (!['GET', 'HEAD'].includes(req.method)) return reply(res, 405, { error: 'method_not_allowed' }, { Allow: 'GET, HEAD' });
   const values = req.query?.path ?? new URL(req.url, 'http://localhost').searchParams.getAll('path');
   const path = typeof values === 'string' ? values : Array.isArray(values) && values.length === 1 ? values[0] : null;
   if (typeof path !== 'string' || !PATHS.test(path)) return reply(res, 400, { error: 'invalid_data_path' });
   let target;
   try {
-    const origin = new URL(process.env.CR_DATA_ORIGIN || '');
-    if (origin.username || origin.password || origin.search || origin.hash || !origin.pathname.endsWith('/')) throw Error('invalid_origin');
-    if (origin.protocol !== 'https:' && !(origin.protocol === 'http:' && ['127.0.0.1', 'localhost', '[::1]'].includes(origin.hostname))) throw Error('invalid_origin');
-    target = new URL(path, origin);
+    const origin = new URL(process.env[originEnv] || '');
+    if (origin.username || origin.password || origin.search || origin.hash || (!internal && !origin.pathname.endsWith('/'))) throw Error('invalid_origin');
+    if (origin.protocol !== 'https:' && !(origin.protocol === 'http:' && (internal || ['127.0.0.1', 'localhost', '[::1]'].includes(origin.hostname)))) throw Error('invalid_origin');
+    if (internal) {
+      origin.pathname = origin.pathname.replace(/\/?$/, '/');
+      target = new URL('api/data', origin);
+      target.searchParams.set('path', path);
+    } else target = new URL(path, origin);
   } catch {
-    return reply(res, 503, { error: 'data_origin_not_configured' });
+    return reply(res, 503, { error: internal ? 'data_service_not_configured' : 'data_origin_not_configured' });
   }
   try {
     const headers = { Accept: 'application/json' };
-    if (process.env.CR_DATA_AUTHORIZATION) headers.Authorization = process.env.CR_DATA_AUTHORIZATION;
-    const upstream = await fetch(target, { headers, redirect: 'manual', signal: AbortSignal.timeout(10_000) });
+    if (authEnv && process.env[authEnv]) headers.Authorization = process.env[authEnv];
+    const upstream = await fetch(target, { headers, redirect: 'manual', signal: AbortSignal.timeout(internal ? 12_000 : 10_000) });
+    if (internal && [503, 504].includes(upstream.status)) {
+      await upstream.body?.cancel();
+      return reply(res, upstream.status, { error: upstream.status === 503 ? 'data_origin_not_configured' : 'data_origin_timeout' });
+    }
     if (upstream.status === 404) { await upstream.body?.cancel(); return reply(res, 404, { error: 'data_not_found' }); }
     if (!upstream.ok || !/application\/(?:json|[a-z0-9.-]+\+json)\b/i.test(upstream.headers.get('content-type') || '')) {
       await upstream.body?.cancel();
@@ -62,4 +71,5 @@ module.exports = async function handler(req, res) {
     const timeout = ['TimeoutError', 'AbortError'].includes(error.name);
     return reply(res, timeout ? 504 : 502, { error: timeout ? 'data_origin_timeout' : 'data_origin_unavailable' });
   }
-}
+  };
+};

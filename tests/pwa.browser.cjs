@@ -10,11 +10,11 @@ const output = process.env.CAPTURE_DIR || '/tmp/cryptoreport-pwa-check';
 
 (async () => {
   await fs.mkdir(output, { recursive: true });
-  let fixtureServer = null, appServer = null, publication = null, browser = null, originalWorker = null;
+  let dataServer = null, fixtureServer = null, appServer = null, publication = null, browser = null, originalWorker = null;
   const failures = new Set();
   const results = [], swPath = path.resolve(__dirname, '../dist/sw.js');
   async function startApp(port = '0') {
-    const child = appServer = spawn(process.execPath, ['scripts/dev.mjs'], { cwd: path.resolve(__dirname, '..'), env: { ...process.env, PORT: String(port), CR_DATA_ORIGIN: `http://127.0.0.1:${fixtureServer.address().port}/data/`, CR_DATA_AUTHORIZATION: '' }, stdio: ['ignore', 'pipe', 'pipe'] });
+    const child = appServer = spawn(process.execPath, ['scripts/dev.mjs'], { cwd: path.resolve(__dirname, '..'), env: { ...process.env, PORT: String(port), DATA_SERVICE_URL: `http://127.0.0.1:${dataServer.address().port}/` }, stdio: ['ignore', 'pipe', 'pipe'] });
     return new Promise((resolve, reject) => {
       const timeout = setTimeout(() => reject(Error('Dev server readiness timed out')), 15000);
       child.stdout.on('data', chunk => { const match = String(chunk).match(/http:\/\/127\.0\.0\.1:\d+\/b4-urania\//); if (match) { clearTimeout(timeout); resolve(match[0]); } });
@@ -39,6 +39,10 @@ const output = process.env.CAPTURE_DIR || '/tmp/cryptoreport-pwa-check';
       res.end(JSON.stringify(res.statusCode === 200 ? doc : { error: 'fixture_unavailable' }));
     });
     await new Promise(resolve => fixtureServer.listen(0, '127.0.0.1', resolve));
+    process.env.CR_DATA_ORIGIN = `http://127.0.0.1:${fixtureServer.address().port}/data/`;
+    delete process.env.CR_DATA_AUTHORIZATION;
+    dataServer = http.createServer(require('../services/data/api/data.js'));
+    await new Promise(resolve => dataServer.listen(0, '127.0.0.1', resolve));
     base = await startApp();
   }
   browser = await chromium.launch({ args: ['--no-sandbox'] });
@@ -82,7 +86,7 @@ const output = process.env.CAPTURE_DIR || '/tmp/cryptoreport-pwa-check';
       const before = await page.locator('#nb-body').innerText();
       await page.waitForFunction(async () => (await (await caches.open('cryptoreport-data-v1')).keys()).some(r => /\/v\/[^/]+\.json$/.test(new URL(r.url).pathname)));
       await context.setOffline(true);
-      if (fixtureServer) await stopApp(); // No HTTP server remains available to the worker.
+      if (fixtureServer) await stopApp(); // No public HTTP server remains available to the worker.
       await page.reload({ waitUntil: 'domcontentloaded' });
       await page.waitForFunction(() => !!window.CR?.idx);
       await page.waitForFunction(() => !document.getElementById('nb').hidden && document.getElementById('nb-body').textContent.length > 40);
@@ -191,6 +195,7 @@ const output = process.env.CAPTURE_DIR || '/tmp/cryptoreport-pwa-check';
     if (originalWorker) await fs.writeFile(swPath, originalWorker);
     if (browser) await browser.close();
     await stopApp();
+    if (dataServer?.listening) { dataServer.closeAllConnections(); await new Promise(resolve => dataServer.close(resolve)); }
     if (fixtureServer?.listening) { fixtureServer.closeAllConnections(); await new Promise(resolve => fixtureServer.close(resolve)); }
   }
 })().catch(error => { console.error(error); process.exitCode = 1; });
