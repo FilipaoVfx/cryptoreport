@@ -12,8 +12,4 @@ La web publicable es Urania (`prototypes/movil/b4-urania`). `scripts/build.mjs` 
 
 ## Datos y secretos
 
-Mantener `.env`, tokens, SQLite, entornos virtuales, datos generados y artefactos locales fuera de Git. `CR_DATA_ORIGIN` y la autenticación opcional se consumen únicamente en `services/data/api/data.js`. No sustituir errores del origen por datos ficticios en producción.
-
-## Vercel Services
-
-`apps/web` contiene la entrada pública y `services/data` la lectura interna de JSON. La función `apps/web/api/data.js` usa exclusivamente `DATA_SERVICE_URL`, inyectada por Vercel en runtime. No definirla en configuración ni en builds. `vercel dev --local` arranca ambos servicios con bindings; los simuladores de pruebas usan URLs de fixtures propias. Los procesos Python permanecen en el VPS.
+Mantener `.env`, tokens, SQLite, entornos virtuales, datos generados y artefactos locales fuera de Git. `CR_DATA_ORIGIN` y la autenticación opcional se consumen únicamente en `api/data.js`. No sustituir errores del origen por datos ficticios en producción.

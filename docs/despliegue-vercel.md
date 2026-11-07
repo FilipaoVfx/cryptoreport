@@ -2,39 +2,37 @@
 
 ## Separación de servicios
 
-## Servicios y rutas propuestos
+Vercel sirve `dist` y una función Node de lectura. El VPS sigue descubriendo videos, guardando transcripciones, ejecutando análisis y publicando las generaciones de datos. Las tareas persistentes, SQLite, OAuth de Drive, systemd y los secretos de proveedores no se trasladan a las funciones de Vercel.
 
-- `web`, raíz `apps/web`: servicio público; catch-all `/(.*)`. `/` redirige a `/b4-urania/`. `/data/:path*` se reescribe dentro de web a `/api/data?path=:path*`; `/api/data` conserva compatibilidad.
-- `data`, raíz `services/data`: interno, sin rewrite público. Su función `/api/data` admite únicamente GET/HEAD y nombres de documentos publicados permitidos.
-- Único binding: `web → data`, tipo `service`, formato `url`, variable generada `DATA_SERVICE_URL`. Se usa solo dentro de la función, nunca durante build ni en middleware. No establecerla en Dashboard ni `.env`.
-- `analysis`, `bridge`, `transcripts` permanecen en el VPS. Son trabajos con SQLite, archivos, sesiones CLI, OAuth y systemd, no aplicaciones HTTP independientes. `docs/observabilidad/herramientas` contiene validadores de CI. No hay llamadas HTTP entre esas carpetas que deban convertirse en bindings.
+`/data/index.json` se reescribe a `api/data.js`, que es un envoltorio de tres líneas sobre `lib/reader.js`. El lector está parametrizado (`createReader({ originEnv, authEnv, internal })`) y en este despliegue se usa en su modo por defecto: lee directamente del origen del VPS con `CR_DATA_ORIGIN` y `CR_DATA_AUTHORIZATION`. La función construye el destino a partir de `CR_DATA_ORIGIN` y una ruta permitida. No acepta URLs externas del cliente, credenciales en la URL del origen, redirecciones del origen, HTML de login ni cuerpos de más de 4 MB. Los índices usan revalidación y caché compartida de 30 segundos; los detalles de una generación tienen URLs inmutables. Una generación debe permanecer disponible mientras la referencia un índice publicado.
 
-El servicio de lectura conserva la lista de JSON permitidos, autenticación del origen en servidor, validación de JSON y tamaño máximo de 4 MB. La entrada web usa el binding y no consume credenciales del origen. No se trasladan proveedores, extracción o inferencia a Vercel.
+## Configuración del proyecto
 
-## Configuración
+| Ajuste | Valor |
+|---|---|
+| Repositorio / rama | `FilipaoVfx/cryptoreport` / `main` |
+| Root Directory | raíz del repositorio |
+| Framework | Other |
+| Install Command | `npm ci` |
+| Build Command | `npm run build` |
+| Output Directory | `dist` |
+| Node | `24.x` |
+| `CR_DATA_ORIGIN` | URL HTTPS del directorio publicado, con `/data/` al final |
+| `CR_DATA_AUTHORIZATION` | opcional; cabecera Authorization del origen, solo en servidor |
 
-Root Directory del proyecto: raíz del repositorio. Usar `vercel.json`; eliminar overrides antiguos del Dashboard que impongan un build o salida global. El servicio web construye `apps/web/dist`; el lector interno tiene su función `api/data.js`. Node 24 en ambos paquetes.
+Configura las variables para **Production** y, si usas previews, también para **Preview**. Cambiar una variable requiere un nuevo despliegue. No uses prefijos de variables públicas de frontend. `.env.example` contiene únicamente ejemplos.
 
-Configurar `CR_DATA_ORIGIN` con URL HTTPS del directorio de JSON del VPS, acabada en `/data/`, y opcionalmente `CR_DATA_AUTHORIZATION`. Estas variables corresponden al lector interno; aunque el proyecto comparta entorno, la función pública no las utiliza. Mantener secretos fuera del navegador. No asignar `DATA_SERVICE_URL`.
+El origen debe exponer `index.json`, `social-feed.json`, `social-connections.json`, `pipeline-status.json` y los documentos `g/<generación>/v/<video>.json`, `g/<generación>/a/<activo>.json` y `g/<generación>/t/<tesis>.json` referidos por la publicación. Los JSON se generan con `prototypes/movil/build_data.py`; el build de Vercel no los regenera ni invoca proveedores.
 
-El origen debe conservar `index.json`, `pipeline-status.json`, `social-feed.json`, `social-connections.json` y las rutas `g/<generación>/v|a|t/<id>.json` referidas por el índice. Sigue siendo una dependencia externa del VPS: un binding Vercel no lo migra ni vuelve persistente su almacenamiento.
+## Comprobación después del despliegue
 
-## Desarrollo y comprobación
-
-```sh
-npm ci
-npm test
-npm run build
-CR_DATA_ORIGIN=https://datos.example.com/data/ npx vercel@65.12.1 dev --local
-```
-
-`vercel dev --local` no modifica un proyecto remoto ni requiere claves de modelos. Inyecta las URLs internas. Comprobar interfaz, manifiesto, JSON y retornos del navegador a través de su puerto público. Para pruebas usar un origen sintético de localhost, no disparar extracción ni tareas reales.
-
-Errores: sin binding, 503 `data_service_not_configured`; lector sin origen, 503 `data_origin_not_configured`; origen inválido, 502; timeout, 504; documento inexistente, 404. Las respuestas de error no se cachean. La PWA, sus URLs e instalación mantienen el comportamiento anterior.
-
-## Confirmación antes del push
-
-Revisar el `vercel.json` completo y confirmar los nombres `web`/`data`, que solo web sea público en `/(.*)`, y el binding `web → data`. La propuesta difiere del ejemplo de cuatro carpetas Python por las responsabilidades verificadas en el código. El push queda pendiente de esa confirmación solicitada por el propietario.
+1. Abrir `/`: debe terminar en `/b4-urania/` sin clave de propuesta ni cookie previa.
+2. Abrir `/manifest.webmanifest`: debe ser JSON con `display: standalone`, iconos 192/512, un icono maskable y el inicio en Diario.
+3. Abrir `/data/index.json`: debe devolver 200 JSON. Un 503 `data_origin_not_configured` indica variable ausente o inválida; un 502/504 indica respuesta inválida o indisponibilidad del origen. Un 404 indica un documento ausente.
+4. Recorrer Diario, Feed, búsqueda y un video con su transcripción; comprobar que no hay desbordamiento horizontal.
+5. Tras la primera visita, desconectar la red y recargar el mismo video: debe conservar el texto ya abierto y mostrar el aviso de caché. Un documento no visitado debe indicarse como no disponible, sin inventar contenido.
+6. Instalar desde Android o añadir a inicio en Safari y abrir el icono: debe entrar a Diario en modo standalone. Verificar estos pasos en los dispositivos reales que se vayan a usar.
+7. Publicar una versión nueva y confirmar que **Actualizar** carga la nueva interfaz. El service worker conserva solo sus cachés propias; no borra guardados del usuario.
 
 ## Caché y límites
 
@@ -49,6 +47,20 @@ YouTube no se descarga ni se replica para lectura offline. Su reproducción y su
 - [Límites de las funciones](https://vercel.com/docs/functions/limitations).
 - [Instalación de PWA](https://web.dev/learn/pwa/installation).
 
-## Verificación local de esta propuesta
+## El origen en el VPS
 
-CLI Vercel 65.12.1 en modo `dev --local`, con origen sintético: interfaz, manifiesto y ambos accesos JSON responden 200; rutas de fuente `/services/...` y `/apps/...` redirigen a una página inexistente y terminan en 404. Esas redirecciones también evitan el fallback de archivos de la CLI local. No se probó un despliegue remoto ni conectividad del origen real del VPS. `npm test`: 44 pruebas pasan; PWA en Chromium: 360, 390 y 1280 px, lectura offline, generaciones y actualización pasan.
+El origen es el host estable de nginx, no el quick tunnel de Cloudflare, cuya URL cambia en cada reinicio y por eso no sirve como origen de Vercel.
+
+| | |
+|---|---|
+| Origen | `https://cryptoreport.2-25-233-186.sslip.io/data/` |
+| Certificado | Let's Encrypt gestionado por Certbot |
+| Sitio nginx | `/etc/nginx/sites-enabled/cryptoreport`, raíz `/var/www/cryptoreport` |
+| Autenticación | `auth_basic` con `/etc/nginx/cryptoreport.htpasswd` |
+| JSON publicados | `/root/cryptoreport/prototypes/movil/data`, escritos por `build_data.py` |
+
+Los JSON viven bajo `/root`, que es `0700`, así que `www-data` no puede atravesarlo. Un bind mount de solo lectura en `/var/www/cryptoreport/data` resuelve la travesía sin aflojar permisos ni copiar los 767 MB, y una unidad `.mount` de systemd lo mantiene tras reiniciar.
+
+La función de Vercel se autentica con un usuario propio del htpasswd, distinto del humano, para poder revocarlo por separado. `CR_DATA_AUTHORIZATION` guarda la cabecera `Basic <base64>` completa y solo existe en el entorno de servidor de Vercel: nunca llega al navegador, y el lector no reenvía credenciales del cliente hacia el origen.
+
+Los datos siguen detrás de `auth_basic`. El bind mount no los vuelve públicos.

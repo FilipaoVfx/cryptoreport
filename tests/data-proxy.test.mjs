@@ -2,7 +2,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import http from 'node:http';
-import handler from '../services/data/api/data.js';
+import handler from '../api/data.js';
 
 test('data proxy enforces its real HTTP boundary without forwarding client credentials', async t => {
   let upstreamMode = 'ok', seen = [], authorization = '';

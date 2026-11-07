@@ -4,7 +4,7 @@ App móvil para recorrer videos, transcripciones, narrativas y su evidencia. La 
 
 ## Desplegar en Vercel
 
-Importa la rama `main` con **Root Directory** en la raíz. `vercel.json` usa Services: `web` (`apps/web`) publica Urania y la función de entrada, y `data` (`services/data`) lee el origen publicado del VPS. El binding declarado en `web` inyecta `DATA_SERVICE_URL` en runtime; no configures esa variable manualmente. Los builds, salidas y funciones se declaran por servicio. El build de `web` produce `apps/web/dist`; `npm run build` desde la raíz conserva `dist` para pruebas.
+Importa este repositorio usando la rama `main`, con **Root Directory** en la raíz y **Framework Preset: Other**. `vercel.json` ya declara el build (`npm run build`), la salida (`dist`) y las rutas. Node 24 y las dependencias están fijados en `package.json` y `package-lock.json`.
 
 Configura **`CR_DATA_ORIGIN`** en los entornos de Vercel que vayas a usar. Es la URL HTTPS del directorio de JSON publicados por el VPS, terminada en `/data/`. Por ejemplo: `https://datos.example.com/data/`. Debe responder con JSON en `index.json` y conservar los detalles de la generación referida por ese índice. Si ese origen necesita autenticación, configura también `CR_DATA_AUTHORIZATION` como secreto del servidor. Ninguna de estas variables se incluye en el JavaScript del navegador.
 
@@ -23,10 +23,10 @@ Después de la primera visita, la app conserva su interfaz y los JSON que hayas 
 ```sh
 npm ci
 npm run build
-CR_DATA_ORIGIN=https://datos.example.com/data/ npx vercel@65.12.1 dev --local
+CR_DATA_ORIGIN=https://datos.example.com/data/ npm run dev
 ```
 
-Abre la URL que imprime el servidor. Vercel ejecuta ambos servicios e inyecta el binding. El servidor `scripts/dev.mjs` es una herramienta interna para ese desarrollo y las pruebas, no un sustituto del orquestador.
+Abre la URL que imprime el servidor. Este servidor local reproduce las rutas y cabeceras de Vercel y admite un origen HTTP solo en localhost para pruebas.
 
 ```sh
 npm test

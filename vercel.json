@@ -1,114 +1,27 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
+  "framework": null,
+  "buildCommand": "npm run build",
+  "outputDirectory": "dist",
+  "functions": { "api/data.js": { "maxDuration": 15 } },
   "redirects": [
-    {
-      "source": "/",
-      "destination": "/b4-urania/",
-      "permanent": false
-    },
-    {
-      "source": "/index.html",
-      "destination": "/b4-urania/",
-      "permanent": false
-    },
-    {
-      "source": "/services/:path*",
-      "destination": "/not-found",
-      "permanent": false
-    },
-    {
-      "source": "/apps/:path*",
-      "destination": "/not-found",
-      "permanent": false
-    }
+    { "source": "/", "destination": "/b4-urania/", "permanent": false },
+    { "source": "/index.html", "destination": "/b4-urania/", "permanent": false }
+  ],
+  "rewrites": [
+    { "source": "/data/:path*", "destination": "/api/data?path=:path*" }
   ],
   "headers": [
     {
       "source": "/(.*)",
       "headers": [
-        {
-          "key": "X-Content-Type-Options",
-          "value": "nosniff"
-        },
-        {
-          "key": "Referrer-Policy",
-          "value": "strict-origin-when-cross-origin"
-        },
-        {
-          "key": "X-Frame-Options",
-          "value": "DENY"
-        },
-        {
-          "key": "Content-Security-Policy",
-          "value": "default-src 'self'; script-src 'self' https://www.youtube.com https://s.ytimg.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self'; connect-src 'self' https://www.youtube.com; frame-src https://www.youtube.com https://www.youtube-nocookie.com; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'; worker-src 'self'"
-        }
+        { "key": "X-Content-Type-Options", "value": "nosniff" },
+        { "key": "Referrer-Policy", "value": "strict-origin-when-cross-origin" },
+        { "key": "X-Frame-Options", "value": "DENY" },
+        { "key": "Content-Security-Policy", "value": "default-src 'self'; script-src 'self' https://www.youtube.com https://s.ytimg.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self'; connect-src 'self' https://www.youtube.com; frame-src https://www.youtube.com https://www.youtube-nocookie.com; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'; worker-src 'self'" }
       ]
     },
-    {
-      "source": "/sw.js",
-      "headers": [
-        {
-          "key": "Cache-Control",
-          "value": "no-cache"
-        }
-      ]
-    },
-    {
-      "source": "/manifest.webmanifest",
-      "headers": [
-        {
-          "key": "Content-Type",
-          "value": "application/manifest+json"
-        },
-        {
-          "key": "Cache-Control",
-          "value": "no-cache"
-        }
-      ]
-    }
-  ],
-  "services": {
-    "web": {
-      "root": "apps/web",
-      "buildCommand": "npm run build",
-      "outputDirectory": "dist",
-      "devCommand": "npm run build && npm run dev",
-      "functions": {
-        "api/data.js": {
-          "maxDuration": 20
-        }
-      },
-      "bindings": [
-        {
-          "type": "service",
-          "service": "data",
-          "format": "url",
-          "env": "DATA_SERVICE_URL"
-        }
-      ],
-      "rewrites": [
-        {
-          "source": "/data/:path*",
-          "destination": "/api/data?path=:path*"
-        }
-      ]
-    },
-    "data": {
-      "root": "services/data",
-      "devCommand": "node dev.mjs",
-      "functions": {
-        "api/data.js": {
-          "maxDuration": 15
-        }
-      }
-    }
-  },
-  "rewrites": [
-    {
-      "source": "/(.*)",
-      "destination": {
-        "service": "web"
-      }
-    }
+    { "source": "/sw.js", "headers": [{ "key": "Cache-Control", "value": "no-cache" }] },
+    { "source": "/manifest.webmanifest", "headers": [{ "key": "Content-Type", "value": "application/manifest+json" }, { "key": "Cache-Control", "value": "no-cache" }] }
   ]
 }
