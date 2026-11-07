@@ -49,18 +49,25 @@ YouTube no se descarga ni se replica para lectura offline. Su reproducción y su
 
 ## El origen en el VPS
 
-El origen es el host estable de nginx, no el quick tunnel de Cloudflare, cuya URL cambia en cada reinicio y por eso no sirve como origen de Vercel.
+La función de Vercel no alcanza `/root`, así que el origen tiene que ser un servidor del VPS. Hay dos, y conviene saber en cuál se está.
 
-| | |
-|---|---|
-| Origen | `https://cryptoreport.2-25-233-186.sslip.io/data/` |
-| Certificado | Let's Encrypt gestionado por Certbot |
-| Sitio nginx | `/etc/nginx/sites-enabled/cryptoreport`, raíz `/var/www/cryptoreport` |
-| Autenticación | `auth_basic` con `/etc/nginx/cryptoreport.htpasswd` |
-| JSON publicados | `/root/cryptoreport/prototypes/movil/data`, escritos por `build_data.py` |
+**En efecto ahora:** el quick tunnel de Cloudflare sobre `serve.py`, servicio `cryptoreport-urania-tunnel.service`, que publica `127.0.0.1:8741` sin autenticación. Funciona porque `serve.py` corre como root y lee directamente `/root/cryptoreport/prototypes/movil/data`.
 
-Los JSON viven bajo `/root`, que es `0700`, así que `www-data` no puede atravesarlo. Un bind mount de solo lectura en `/var/www/cryptoreport/data` resuelve la travesía sin aflojar permisos ni copiar los 767 MB, y una unidad `.mount` de systemd lo mantiene tras reiniciar.
+El nombre del túnel no se escribe aquí, porque es un endpoint abierto y este repositorio es público. Se consulta en el VPS:
 
-La función de Vercel se autentica con un usuario propio del htpasswd, distinto del humano, para poder revocarlo por separado. `CR_DATA_AUTHORIZATION` guarda la cabecera `Basic <base64>` completa y solo existe en el entorno de servidor de Vercel: nunca llega al navegador, y el lector no reenvía credenciales del cliente hacia el origen.
+```sh
+PID=$(systemctl show -p MainPID --value cryptoreport-urania-tunnel.service)
+PORT=$(ss -ltnp | grep -oE "127.0.0.1:[0-9]+ .*pid=$PID," | grep -oE '127.0.0.1:[0-9]+' | cut -d: -f2 | head -1)
+curl -s "http://127.0.0.1:$PORT/quicktunnel"
+```
 
-Los datos siguen detrás de `auth_basic`. El bind mount no los vuelve públicos.
+**El riesgo es la URL:** un quick tunnel recibe su nombre al arrancar el proceso, de modo que si el servicio reinicia la URL cambia y `CR_DATA_ORIGIN` queda apuntando a la nada. `Restart=always` significa que un fallo basta. Mientras el proceso vive, el nombre sobrevive a las reconexiones del borde.
+
+**El objetivo:** el host estable de nginx, `https://cryptoreport.2-25-233-186.sslip.io/data/`, con certificado de Certbot, definido en `/etc/nginx/sites-enabled/cryptoreport` y protegido con `auth_basic` contra `/etc/nginx/cryptoreport.htpasswd`.
+
+Faltan dos piezas para moverse ahí:
+
+1. Una ubicación `/data/` que haga `proxy_pass` a `http://127.0.0.1:8741/data/`. Hereda `auth_basic` del bloque server, así que los datos no quedan públicos. Se usa un proxy en vez de servir los archivos porque los JSON viven bajo `/root`, que es `0700`, y `www-data` no lo atraviesa.
+2. Un usuario propio en el htpasswd, distinto del humano para poder revocarlo aparte. Su cabecera `Basic <base64>` completa va en `CR_DATA_AUTHORIZATION`: solo entorno de servidor, nunca llega al navegador, y el lector no reenvía credenciales del cliente hacia el origen.
+
+Un bind mount en `/var/www/cryptoreport/data` también resolvería la travesía y dejaría que nginx sirviera los archivos con su `try_files`, sin proxy. El proxy es preferible por no depender de un montaje que haya que mantener tras reiniciar.
